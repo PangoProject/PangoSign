@@ -1,0 +1,28 @@
+<head>
+    <title>SignoDapp</title>
+</head>
+
+<body>
+    <h1>Signo Certificate viewer page</h1>
+
+    {{> main}}
+
+</body>
+
+<template name="main">
+  <p>Account ballance is:{{wallet}} {{TemplateVar.get "walletvalue"}} Wei</p>
+  <p>Account address is:{{wallet}} {{TemplateVar.get "address"}}</p>
+
+<hr>
+<form class="search-address">
+    <label>ETH address of contract:</label>
+    <input type="text" name="address" placeholder="public address" />
+    <input type="submit" value="Search" />
+</form>
+
+
+<h2>Certificate infomation is below</h2>
+<p>Cert public address is: {{TemplateVar.get "certAddress"}}</p>
+<p>Unique ID is: {{TemplateVar.get "uniqueID"}}</p>
+<p>Metadata is: {{TemplateVar.get "metaData"}}</p>
+</template>
