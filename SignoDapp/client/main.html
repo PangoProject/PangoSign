@@ -1,25 +1,61 @@
 <head>
-  <title>SignoDapp</title>
+  <title>Signo pre Alpha</title>
 </head>
 
 <body>
-  <h1>Welcome to Meteor!</h1>
+  <h1>Signo Alpha</h1>
 
-  {{> hello}}
-  {{> info}}
+  {{> Wallet}}
+  <hr>
+  {{> CertificateSearch}}  
+  <hr>
+  {{> CandidateSearch}}  
 </body>
 
-<template name="hello">
-  <button>Click Me</button>
-  <p>You've pressed the button {{counter}} times.</p>
+<template name="searches">
+  
 </template>
 
-<template name="info">
-  <h2>Learn Meteor!</h2>
-  <ul>
-    <li><a href="https://www.meteor.com/try" target="_blank">Do the Tutorial</a></li>
-    <li><a href="http://guide.meteor.com" target="_blank">Follow the Guide</a></li>
-    <li><a href="https://docs.meteor.com" target="_blank">Read the Docs</a></li>
-    <li><a href="https://forums.meteor.com" target="_blank">Discussions</a></li>
-  </ul>
+<template name="Wallet">
+    <p>Your ETH ballance is:{{getEthBallance}} {{TemplateVar.get "walletvalue"}} wei</p>
+
+</template>
+
+<template name="CertificateSearch">
+ <h1>Search for Certificate</h1>
+ 
+ <form class="search-address">
+     <label>ETH address of contract:</label>
+     <input type="text" name="address" placeholder="public address" />
+     <input type="submit" value="Find Certificate" />
+ </form> 
+ <h3>Certificate infomation is below</h3>
+ <p>Cert public address is: {{TemplateVar.get "certificateAddress"}}</p>
+ <p>Unique ID is: {{TemplateVar.get "uniqueID"}}</p>
+ <p>Certificate issuer address: {{TemplateVar.get "certificateIssuer"}}</p>
+ <p>Metadata is: {{TemplateVar.get "metaData"}}</p>
+</template>
+
+<template name="CandidateSearch">
+<h1> Search for Candidate</h1>
+
+<form class="search-candidate">
+<label> Candidate Info: </label>
+<input type="text" name = "candidateName" placeholder="Joe Soap"/>
+<input type="date" name = "candidateDOB"/>
+<input type="text" name = "idHash" placeholder="IdHash"/>
+<input type="submit" value="Find Candidate" />
+</form>
+
+{{#each result in TemplateVar.get "testreturn"}}
+<li class="result {{result.certificateAddress}}">{{result.certificateAddress}}</li>
+
+ <h3>Certificate infomation is below</h3>
+ <p>Cert public address is: {{TemplateVar.get "certificateAddress{{result.certificateAddress}}"}}</p>
+ <p>Unique ID is: {{TemplateVar.get "uniqueID{{result.certificateAddress}}"}}</p>
+ <p>Certificate issuer address: {{TemplateVar.get "certificateIssuer{{result.certificateAddress}}"}}</p>
+ <p>Metadata is: {{TemplateVar.get "metaData{{result.certificateAddress}}"}}</p>
+<br>
+{{/each}}
+
 </template>
