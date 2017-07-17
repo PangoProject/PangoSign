@@ -26,7 +26,7 @@ ecmascript-runtime-client@0.4.3
 ecmascript-runtime-server@0.4.1
 ejson@1.0.13
 es5-shim@4.6.15
-ethereum:web3@0.19.11
+ethereum:web3@0.20.1
 fastclick@1.0.13
 frozeman:template-var@1.3.0
 geojson-utils@1.0.10
@@ -61,6 +61,7 @@ reactive-var@1.0.11
 reload@1.1.11
 retry@1.0.9
 routepolicy@1.0.12
+session@1.1.7
 shell-server@0.2.4
 spacebars@1.0.15
 spacebars-compiler@1.1.2

@@ -47,15 +47,18 @@
 <input type="submit" value="Find Candidate" />
 </form>
 
-{{#each result in TemplateVar.get "testreturn"}}
-<li class="result {{result.certificateAddress}}">{{result.certificateAddress}}</li>
-
- <h3>Certificate infomation is below</h3>
- <p>Cert public address is: {{TemplateVar.get "certificateAddress{{result.certificateAddress}}"}}</p>
- <p>Unique ID is: {{TemplateVar.get "uniqueID{{result.certificateAddress}}"}}</p>
- <p>Certificate issuer address: {{TemplateVar.get "certificateIssuer{{result.certificateAddress}}"}}</p>
- <p>Metadata is: {{TemplateVar.get "metaData{{result.certificateAddress}}"}}</p>
-<br>
+{{#each  result in searchResults}}
+{{#with result}}
+{{> ChildCertificate resultCertificateAddress=certificateAddress}}
+{{/with}}
 {{/each}}
 
+</template>
+
+<template name="ChildCertificate">
+  <h3>Certificate infomation is below</h3>
+  <p>Cert public address is: {{TemplateVar.get "certificateAddress"}}</p>
+  <p>Unique ID is: {{TemplateVar.get "uniqueID"}}</p>
+  <p>Certificate issuer address: {{TemplateVar.get "certificateIssuer"}}</p>
+  <p>Metadata is: {{TemplateVar.get "metaData"}}</p>
 </template>

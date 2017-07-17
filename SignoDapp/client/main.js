@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Session } from 'meteor/session';
 
 import './main.html';
 
@@ -29,34 +30,48 @@ Template.Wallet.helpers({
   }
 })
 
+Template.ChildCertificate.onCreated(function(){
+  var template =Template.instance();
+  var address = template.data.resultCertificateAddress;
+  // console.log(template.data.resultCertificateAddress)
+  GetCertificate(address, template)
+})
 
 Template.CandidateSearch.helpers({
-  'searchResults': function(){
+  searchResults: function(){
+    return Session.get('certificateSearchResults');
+  },
+  // getResultCertificateAddress: function(){
+  //   console.log(Certificates.find());
+  //   return Template.instance().certificateAddress;
+  // }
+  });
+
     
-    console.log(Template.instance().searchResults.get());
+  //   console.log(Template.instance().searchResults.get());
     
     
-    myContract = GetContract(Template.instance().searchResults.get());
-    temp = Template.instance();
-    myContract.certificateIssuer(function(err, res,temp) {
+  //   myContract = GetContract(Template.instance().searchResults.get());
+  //   temp = Template.instance();
+  //   myContract.certificateIssuer(function(err, res,temp) {
       
-      if(res!=0 && res!=null && res){
-        console.log("res set to:");
-        console.log(res);
-      //  return temp.searchResultsCerts.set(res);
-      TemplateVar.set(temp, "testreturn", res);
-      }
-  })
+  //     if(res!=0 && res!=null && res){
+  //       console.log("res set to:");
+  //       console.log(res);
+  //     //  return temp.searchResultsCerts.set(res);
+  //     TemplateVar.set(temp, "testreturn", res);
+  //     }
+  // })
     
-    if(Template.instance().searchResultsCerts.get()){
-      console.log("return method:");
-      console.log(resTemp);
-      //return Template.instance().searchResultsCerts.get();
-      TemplateVar.set(template, "testreturn", res);
-    }
+//   //   if(Template.instance().searchResultsCerts.get()){
+//   //     console.log("return method:");
+//   //     console.log(resTemp);
+//   //     //return Template.instance().searchResultsCerts.get();
+//   //     TemplateVar.set(template, "testreturn", res);
+//   //   }
     
-  }
-})
+//   }
+// })
 
 Template.CertificateSearch.events({
      "submit .search-address": function(event, t) {
@@ -95,12 +110,9 @@ Template.CandidateSearch.events({
     searchResults = Certificates.find({idHash:idHash}).fetch();
     
     
-    console.log(searchResults);
-    TemplateVar.set(template, "testreturn", searchResults);
+    Session.set('certificateSearchResults', searchResults);
 
-    searchResults.forEach(function(element) {
-      GetCertificateForCandidate(element.certificateAddress, template);
-    }, this);    
+
     // TemplateVar.set( "searchResults", searchResults);
 
     // var tempArray =[];
@@ -190,10 +202,4 @@ function GetCertificate(contractAddress, template){
   myContract.sundryData(function(err, res) {
       TemplateVar.set(template, "metaData", res)
   })
-}
-
-
-function GetCertificateValues(contractAddress){
-  
-
 }
