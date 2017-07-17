@@ -3,11 +3,13 @@ contract Certificate {
     address public certificateIssuer;
     bytes32 public idHash;
     string public sundryData;
+    bool public isDeleted;
     
     function Certificate(bytes32 hash, string sundry){
         certificateIssuer = msg.sender;
         idHash = hash;
         sundryData = sundry;
+        isDeleted = false;
     }
     
     modifier isCertificateOwner() {
@@ -17,5 +19,6 @@ contract Certificate {
     
     function removeCertificate() public isCertificateOwner{
         suicide(msg.sender);
+        isDeleted = true;
     }
 }
