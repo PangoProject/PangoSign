@@ -24,3 +24,4 @@ reactive-dict
 ethereum:web3
 session
 sha
+momentjs:moment

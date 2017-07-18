@@ -18,7 +18,6 @@ contract Certificate {
     }
     
     function removeCertificate() public isCertificateOwner{
-        suicide(msg.sender);
         isDeleted = true;
     }
 }

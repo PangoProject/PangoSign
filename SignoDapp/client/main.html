@@ -7,6 +7,8 @@
 
   {{> WalletBallance}}
   <hr> {{> CandidateSearch}}
+  <hr> {{> CreateNewCertificate}}
+  <hr>
 </body>
 
 <template name="WalletBallance">
@@ -23,33 +25,69 @@
     <input type="radio" class="searchType" name="searchType" value="candidateIdHash">Candidate ID Hash
     <input type="radio" class="searchType" name="searchType" value="certificateAddress">Certificate Address
     <input type="radio" class="searchType" name="searchType" value="certificateIssuer">Certificate Issuer
-
-    <br> {{#if compare searchType "candidateNameDOB"}}
-    <label> Candidate Info: </label>
-    <input type="text" name="candidateName" placeholder="Vitalik" />
-    <input type="date" name="candidateDOB" /> {{/if}} {{#if compare searchType "candidateIdHash"}}
-    <label> Candidate Info: </label>
-    <input type="text" name="idHash" placeholder="ID Hash" />{{/if}} {{#if compare searchType "certificateAddress"}}
-    <label>Certificate Adress: </label>
-    <input type="text" name="certificateAddress" placeholder="Certificate Public Key" />{{/if}} {{#if compare searchType
-    "certificateIssuer"}}
-    <label>Issuer Address: </label>
-    <input type="text" name="certificateIssuer" placeholder="Institute Public Key" /> {{/if}}
-
     <br>
     <input type="submit" value="Find Candidate" />
     <input type="button" class="resetSearch" value="Reset Search" />
+    <br> {{#if compare searchType "candidateNameDOB"}}
+    <label> Candidate Info: </label>
+    <input type="text" name="candidateName" placeholder="Vitalik" />
+    <input type="date" name="candidateDOB" /> {{> searchResultsList searchResults=searchResults commonMetaData=commonMetaData
+    commonMetaDataText=commonMetaDataText}} {{/if}} {{#if compare searchType "candidateIdHash"}}
+    <label> Candidate ID Hash: </label>
+    <input type="text" name="idHash" placeholder="ID Hash" /> {{> searchResultsList searchResults=searchResults commonMetaData=commonMetaData
+    commonMetaDataText=commonMetaDataText}} {{/if}} {{#if compare searchType "certificateAddress"}}
+    <label>Certificate Adress: </label>
+    <input type="text" name="certificateAddress" placeholder="Certificate Public Key" />{{> searchResultsList searchResults=searchResults
+    commonMetaData=commonMetaData commonMetaDataText=commonMetaDataText}}{{/if}} {{#if compare searchType "certificateIssuer"}}
+    <label>Issuer Address: </label>
+    <input type="text" name="certificateIssuer" placeholder="Institute Public Key" /> {{> searchResultsList searchResults=searchResults
+    commonMetaData=commonMetaData commonMetaDataText=commonMetaDataText}}{{/if}}
+
+
   </form>
+</template>
 
-  {{#each result in searchResults}} {{#with result}} {{> ChildCertificate resultCertificateAddress=certificateAddress}} {{/with}}
-  {{/each}}
+<template name="searchResultsList">
+  {{#if searchResults}}
+  <div style="background-color:green;color:pink;padding:20px;">
+    <div style="background-color:yellow;color:blue;padding:20px;">
+      <h2>Your Search Results are:</h2>
+      {{> candidateCommonMetaData commonMetaDataText=commonMetaDataText}}
+    </div>
+    {{#each result in searchResults}} {{#with result}} {{> ChildCertificate resultCertificateAddress=certificateAddress resultTimeStamp=timeStamp}}
+    {{/with}} {{/each}}
+  </div>
+  {{/if}}
+</template>
 
+<template name="candidateCommonMetaData">
+  <div style="background-color:brown;color:yellow;padding:20px;">
+    <p>{{commonMetaDataText}}</p>
+  </div>
 </template>
 
 <template name="ChildCertificate">
-  <h2>Certificate infomation is below</h2>
-  <p>Certificate public address: {{TemplateVar.get "certificateAddress"}}</p>
-  <p>ID Hash: {{TemplateVar.get "idHash"}}</p>
-  <p>Certificate issuer address: {{TemplateVar.get "certificateIssuer"}}</p>
-  <p>Metadata: {{TemplateVar.get "sundryData"}}</p>
+  <div style="background-color:pink;color:green;padding:20px;">
+    <h3>Certificate infomation is below</h3>
+    <p>Certificate public address: {{TemplateVar.get "certificateAddress"}}</p>
+    <p> Date created: {{formatDate resultTimeStamp}}</p>
+    <p>ID Hash: {{TemplateVar.get "idHash"}}</p>
+    <p>Certificate issuer address: {{TemplateVar.get "certificateIssuer"}}</p>
+    <p>Metadata: {{TemplateVar.get "sundryData"}}</p>
+  </div>
+</template>
+
+<template name="CreateNewCertificate">
+  <h1>Add a new certificate</h1>
+  <h2>You can add a new certificate here</h2>
+  {{> CreateNewCertificateForm}}
+</template>
+
+<template name="CreateNewCertificateForm">
+  <form class="newCertificateForm">
+    <input type="text" name="candidateName" placeholder="Vitalik" />
+    <input type="date" name="candidateDOB" />
+    <input type="text" name="sundryData" />
+    <input type="submit" value="Add Certificate" />
+  </form>
 </template>
