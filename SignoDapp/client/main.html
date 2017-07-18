@@ -1,64 +1,43 @@
 <head>
-  <title>Signo pre Alpha</title>
+  <title>Signo pre-Alpha</title>
 </head>
 
 <body>
-  <h1>Signo Alpha</h1>
+  <h1>Signo pre-Alpha</h1>
 
-  {{> Wallet}}
-  <hr>
-  {{> CertificateSearch}}  
+  {{> WalletBallance}}
   <hr>
   {{> CandidateSearch}}  
 </body>
 
-<template name="searches">
-  
-</template>
-
-<template name="Wallet">
-    <p>Your ETH ballance is:{{getEthBallance}} {{TemplateVar.get "walletvalue"}} wei</p>
-
-</template>
-
-<template name="CertificateSearch">
- <h1>Search for Certificate</h1>
- 
- <form class="search-address">
-     <label>ETH address of contract:</label>
-     <input type="text" name="address" placeholder="public address" />
-     <input type="submit" value="Find Certificate" />
- </form> 
- <h3>Certificate infomation is below</h3>
- <p>Cert public address is: {{TemplateVar.get "certificateAddress"}}</p>
- <p>Unique ID is: {{TemplateVar.get "uniqueID"}}</p>
- <p>Certificate issuer address: {{TemplateVar.get "certificateIssuer"}}</p>
- <p>Metadata is: {{TemplateVar.get "metaData"}}</p>
+<template name="WalletBallance">
+  <p>Your wallet adress is:{{getEthBallance}} {{TemplateVar.get "walletAddress"}} </p>  
+  <p>Your ETH ballance is:{{getEthBallance}} {{TemplateVar.get "walletBallance"}} ETH</p>
 </template>
 
 <template name="CandidateSearch">
-<h1> Search for Candidate</h1>
+<h1> Search for a Candidate</h1>
 
-<form class="search-candidate">
+<form class="searchCandidate">
 <label> Candidate Info: </label>
-<input type="text" name = "candidateName" placeholder="Joe Soap"/>
+<input type="text" name = "candidateName" placeholder="Vitalik"/>
 <input type="date" name = "candidateDOB"/>
-<input type="text" name = "idHash" placeholder="IdHash"/>
+<input type="text" name = "idHash" placeholder="ID Hash"/>
 <input type="submit" value="Find Candidate" />
 </form>
 
 {{#each  result in searchResults}}
-{{#with result}}
-{{> ChildCertificate resultCertificateAddress=certificateAddress}}
-{{/with}}
+  {{#with result}}
+    {{> ChildCertificate resultCertificateAddress=certificateAddress}}
+  {{/with}}
 {{/each}}
 
 </template>
 
 <template name="ChildCertificate">
-  <h3>Certificate infomation is below</h3>
-  <p>Cert public address is: {{TemplateVar.get "certificateAddress"}}</p>
-  <p>Unique ID is: {{TemplateVar.get "uniqueID"}}</p>
+  <h2>Certificate infomation is below</h2>
+  <p>Certtificate public address: {{TemplateVar.get "certificateAddress"}}</p>
+  <p>ID Hash: {{TemplateVar.get "idHash"}}</p>
   <p>Certificate issuer address: {{TemplateVar.get "certificateIssuer"}}</p>
-  <p>Metadata is: {{TemplateVar.get "metaData"}}</p>
+  <p>Metadata: {{TemplateVar.get "sundryData"}}</p>
 </template>
