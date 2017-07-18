@@ -6,37 +6,49 @@
   <h1>Signo pre-Alpha</h1>
 
   {{> WalletBallance}}
-  <hr>
-  {{> CandidateSearch}}  
+  <hr> {{> CandidateSearch}}
 </body>
 
 <template name="WalletBallance">
-  <p>Your wallet adress is:{{getEthBallance}} {{TemplateVar.get "walletAddress"}} </p>  
+  <p>Your wallet adress is:{{getEthBallance}} {{TemplateVar.get "walletAddress"}} </p>
   <p>Your ETH ballance is:{{getEthBallance}} {{TemplateVar.get "walletBallance"}} ETH</p>
 </template>
 
 <template name="CandidateSearch">
-<h1> Search for a Candidate</h1>
+  <h1> Search for a Candidate</h1>
 
-<form class="searchCandidate">
-<label> Candidate Info: </label>
-<input type="text" name = "candidateName" placeholder="Vitalik"/>
-<input type="date" name = "candidateDOB"/>
-<input type="text" name = "idHash" placeholder="ID Hash"/>
-<input type="submit" value="Find Candidate" />
-</form>
+  <form class="candidateSearch">
+    <h2>Select Search Method</h2>
+    <input type="radio" class="searchType" name="searchType" value="candidateNameDOB" checked>Candidate Name and DOB
+    <input type="radio" class="searchType" name="searchType" value="candidateIdHash">Candidate ID Hash
+    <input type="radio" class="searchType" name="searchType" value="certificateAddress">Certificate Address
+    <input type="radio" class="searchType" name="searchType" value="certificateIssuer">Certificate Issuer
 
-{{#each  result in searchResults}}
-  {{#with result}}
-    {{> ChildCertificate resultCertificateAddress=certificateAddress}}
-  {{/with}}
-{{/each}}
+    <br> {{#if compare searchType "candidateNameDOB"}}
+    <label> Candidate Info: </label>
+    <input type="text" name="candidateName" placeholder="Vitalik" />
+    <input type="date" name="candidateDOB" /> {{/if}} {{#if compare searchType "candidateIdHash"}}
+    <label> Candidate Info: </label>
+    <input type="text" name="idHash" placeholder="ID Hash" />{{/if}} {{#if compare searchType "certificateAddress"}}
+    <label>Certificate Adress: </label>
+    <input type="text" name="certificateAddress" placeholder="Certificate Public Key" />{{/if}} {{#if compare searchType
+    "certificateIssuer"}}
+    <label>Issuer Address: </label>
+    <input type="text" name="certificateIssuer" placeholder="Institute Public Key" /> {{/if}}
+
+    <br>
+    <input type="submit" value="Find Candidate" />
+    <input type="button" class="resetSearch" value="Reset Search" />
+  </form>
+
+  {{#each result in searchResults}} {{#with result}} {{> ChildCertificate resultCertificateAddress=certificateAddress}} {{/with}}
+  {{/each}}
 
 </template>
 
 <template name="ChildCertificate">
   <h2>Certificate infomation is below</h2>
-  <p>Certtificate public address: {{TemplateVar.get "certificateAddress"}}</p>
+  <p>Certificate public address: {{TemplateVar.get "certificateAddress"}}</p>
   <p>ID Hash: {{TemplateVar.get "idHash"}}</p>
   <p>Certificate issuer address: {{TemplateVar.get "certificateIssuer"}}</p>
   <p>Metadata: {{TemplateVar.get "sundryData"}}</p>
