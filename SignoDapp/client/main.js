@@ -80,7 +80,7 @@ function createContract(candidateName, candidateDOB, sundryData) {
     {
       from: Address,
       data: BYTE_CODE,
-      gas: "4476768"
+      gas: "4000000"
     },
     function(e, contract) {
       console.log(e, contract);
