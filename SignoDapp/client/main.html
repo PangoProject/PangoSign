@@ -5,9 +5,10 @@
 <body>
   <h1>Signo pre-Alpha</h1>
 
-  {{> WalletBallance}}
+  <hr> {{> WalletBallance}}
   <hr> {{> CandidateSearch}}
   <hr> {{> CreateNewCertificate}}
+  <hr> {{> DeleteCertificate}}
   <hr>
 </body>
 
@@ -26,7 +27,7 @@
     <input type="radio" class="searchType" name="searchType" value="certificateAddress">Certificate Address
     <input type="radio" class="searchType" name="searchType" value="certificateIssuer">Certificate Issuer
     <br>
-    <input type="submit" value="Find Candidate" />
+    <input type="submit" value="Find Certificate" />
     <input type="button" class="resetSearch" value="Reset Search" />
     <br> {{#if compare searchType "candidateNameDOB"}}
     <label> Candidate Info: </label>
@@ -68,12 +69,14 @@
 
 <template name="ChildCertificate">
   <div style="background-color:pink;color:green;padding:20px;">
+{{#unless TemplateVar.get "isDeleted"}}
     <h3>Certificate infomation is below</h3>
     <p>Certificate public address: {{TemplateVar.get "certificateAddress"}}</p>
     <p> Date created: {{formatDate resultTimeStamp}}</p>
     <p>ID Hash: {{TemplateVar.get "idHash"}}</p>
     <p>Certificate issuer address: {{TemplateVar.get "certificateIssuer"}}</p>
     <p>Metadata: {{TemplateVar.get "sundryData"}}</p>
+      {{/unless}}
   </div>
 </template>
 
@@ -89,5 +92,18 @@
     <input type="date" name="candidateDOB" />
     <input type="text" name="sundryData" />
     <input type="submit" value="Add Certificate" />
+  </form>
+</template>
+
+<template name="DeleteCertificate">
+  <h1>Delete certificates</h1>
+  <h2>You can delete certificates here in case the information is incorrect</h2>
+  {{> DeleteCertificateForm}}
+</template>
+
+<template name="DeleteCertificateForm">
+  <form class="deleteCertificateForm">
+    <input type="text" name="certificateAddress" placeholder="0x0123456789abcdef012345679abcdef0123456" />
+    <input type="submit" class="deleteCertificate" value="Delete Certificate" />
   </form>
 </template>
