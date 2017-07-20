@@ -2,6 +2,7 @@
   <title>Signo pre-Alpha</title>
 </head>
 
+
 <body>
   <h1>Signo pre-Alpha</h1>
 
@@ -85,13 +86,53 @@
   <h2>You can add a new certificate here</h2>
   {{> CreateNewCertificateForm}}
 </template>
-
 <template name="CreateNewCertificateForm">
-  <form class="newCertificateForm">
-    <input type="text" name="candidateName" placeholder="Vitalik" />
-    <input type="date" name="candidateDOB" />
-    <input type="text" name="sundryData" />
-    <input type="submit" value="Add Certificate" />
+  <form class="newCertificateForm" id="newCertificateForm">
+          <table>
+          <tr>
+              <th>Field</th>
+              <th>Value</th>
+          </tr>
+          <tr>
+              <td><p>Name</p></td>
+              <td><input type="text" name="candidateName" placeholder="Vitalik" /></td>
+          </tr>
+          <tr>
+              <td><p>Date of birth</p></td>
+              <td><input type="date" name="candidateDOB" /></td>
+          </tr>
+          <tr>
+              <td><p>Sundry</p></td>
+              <td><br><input type="date" name="yearIssued" /></td>
+          </tr>
+          <tr>
+              <td><p>University</p></td>
+              <td><input type="text" name="university" /></td>
+          </tr>
+          <tr>
+              <td><p>School</p></td>
+              <td><input type="text" name="school" /></td>
+          </tr>
+          <tr>
+              <td><p>Degree</p></td>
+              <td><input type="text" name="degree" /></td>
+          </tr>
+          <tr>
+              <td><p>Signee</p></td>
+              <td><input type="text" name="signee" /></td>
+          </tr>
+          <tr>
+              <td><p>Courses</p></td>
+              <td><input type="text" name="courses" /></td>
+          </tr>
+          <tr>
+              <td><p>Other</p></td>
+              <td><textarea rows="4" cols="50" name="comment"></textarea></td>
+          </tr>
+      </table>
+      <input type="checkbox" name="isAnonymous" checked="1"/><label>Certificate anonymous?</label>
+      <input type="submit" value="Add Certificate" />
+
   </form>
 </template>
 
