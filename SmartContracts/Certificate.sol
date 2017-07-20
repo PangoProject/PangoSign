@@ -17,7 +17,7 @@ contract Certificate {
         _;
     }
     
-    function removeCertificate() public isCertificateOwner{
+    function deleteCertificate() public isCertificateOwner{
         isDeleted = true;
     }
 }
