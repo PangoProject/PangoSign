@@ -47,14 +47,26 @@ const BYTE_CODE = "6060604052341561000f57600080fd5b6040516104b13803806104b183398
 let Address;
 
 Certificates = new Mongo.Collection("certificates");
-
-Meteor.subscribe('theCertificates');
+try {
+    Meteor.subscribe('theCertificates');
+}
+catch (err) {
+    console.log("Could not connect to DB: " + err);
+}
 
 function getContract(certificateAddress) {
-    return web3.eth.contract(ABI_ARRAY).at(certificateAddress);
+    try {
+        return web3.eth.contract(ABI_ARRAY).at(certificateAddress);
+    }
+    catch (err) {
+        console.log(err);
+    }
 }
 
 function createContract(candidateName, candidateDOB, sundryData) {
+    // Meteor.call('insertCertificate', (err, res) => {
+    //     if (!err) console.log(res);
+    // });
     const hash =
         "0x" +
         SHA256(
@@ -64,59 +76,64 @@ function createContract(candidateName, candidateDOB, sundryData) {
             .toString()
             .toLowerCase();
     const sundry = sundryData;
-
-    let certificateContract = web3.eth.contract(ABI_ARRAY);
-    let certificate = certificateContract.new(
-        hash,
-        sundry,
-        {
-            from: Address,
-            data: BYTE_CODE,
-            gas: "4000000"
-        },
-        function (e, contract) {
-            console.log(e, contract);
-            if (typeof contract.address !== "undefined") {
-                console.log(
-                    "Contract mined! address: " +
-                    contract.address +
-                    " transactionHash: " +
-                    contract.transactionHash
-                );
-                Meteor.call('insertCertificate', contract.address, (err,res)=>{
-                    if(!err) console.log(res);
-                });
-                // Certificates.insert({
-                //     idHash: hash,
-                //     certificateIssuer: Address,
-                //     certificateAddress: contract.address,
-                //     timeStamp: Date.now() / 1000
-                // });
+    try {
+        let certificateContract = web3.eth.contract(ABI_ARRAY);
+        let certificate = certificateContract.new(
+            hash,
+            sundry,
+            {
+                from: Address,
+                data: BYTE_CODE,
+                gas: "4000000"
+            },
+            function (e, contract) {
+                console.log(e, contract);
+                if (typeof contract.address !== "undefined") {
+                    console.log(
+                        "Contract mined! address: " +
+                        contract.address +
+                        " transactionHash: " +
+                        contract.transactionHash
+                    );
+                    try {
+                        Meteor.call('insertCertificate', contract.address);
+                    }
+                    catch (err) {
+                        console.log("DB Connection failed: " + err);
+                    }
+                }
             }
-        }
-    );
+        );
+    }
+    catch (err) {
+        console.log("There was an error creating your certificate: " + err);
+    }
 }
 
 function getCertificateFromBlockchain(certificateAddress, template) {
-    //So that certificates aren't shown when the db loads before the blockchain query returns
-    TemplateVar.set(template, "isDeleted", true);
-    let myContract = getContract(certificateAddress);
+    try {
+        //So that certificates aren't shown when the db loads before the blockchain query returns
+        TemplateVar.set(template, "isDeleted", true);
+        let myContract = getContract(certificateAddress);
 
-    TemplateVar.set(template, "certificateAddress", certificateAddress);
+        TemplateVar.set(template, "certificateAddress", certificateAddress);
 
-    myContract.idHash(function (err, res) {
-        TemplateVar.set(template, "idHash", res);
-    });
-    myContract.certificateIssuer(function (err, res) {
-        TemplateVar.set(template, "certificateIssuer", res);
-    });
-    myContract.sundryData(function (err, res) {
-        TemplateVar.set(template, "sundryData", res);
-    });
-    myContract.isDeleted(function (err, res) {
-        console.log(res);
-        TemplateVar.set(template, "isDeleted", res);
-    });
+        myContract.idHash(function (err, res) {
+            TemplateVar.set(template, "idHash", res);
+        });
+        myContract.certificateIssuer(function (err, res) {
+            TemplateVar.set(template, "certificateIssuer", res);
+        });
+        myContract.sundryData(function (err, res) {
+            TemplateVar.set(template, "sundryData", res);
+        });
+        myContract.isDeleted(function (err, res) {
+            TemplateVar.set(template, "isDeleted", res);
+        });
+    }
+    catch (err) {
+        console.log("Unable to retrieve certificate from Blockchain: " + err);
+    }
 }
 
 function deleteCertificate(certificateAddress) {
@@ -163,6 +180,8 @@ Template.WalletBallance.helpers({
                     let ethBlance = web3.fromWei(res, "ether");
                     TemplateVar.set(template, "walletBallance", ethBlance);
                 });
+            } else {
+                console.log("There was an error fetching wallet ballance: " + err);
             }
         });
     }
@@ -184,12 +203,12 @@ Template.CandidateSearch.helpers({
 });
 
 Template.CandidateSearch.events({
-    "click .searchType": function (event, t) {
+    "click .searchType": function (event) {
         Session.set("searchType", event.target.value);
         Session.set("certificateSearchResults", null);
     },
 
-    "submit .candidateSearch": function (event, t) {
+    "submit .candidateSearch": function (event) {
         let template = Template.instance();
 
         let searchResults;
@@ -254,47 +273,62 @@ Template.CandidateSearch.events({
         return false;
     },
 
-    "click .resetSearch": function (event, t) {
+    "click .resetSearch": function () {
         Session.set("certificateSearchResults", null);
     }
 });
 
 Template.CreateNewCertificateForm.events({
-    "submit .newCertificateForm": function (event, t) {
-        let candidateName = event.target.candidateName.value;
-        let candidateDOB = event.target.candidateDOB.value;
-        let elements = document.getElementById("newCertificateForm").elements;
-        let json = elementToJSON(elements);
-        let isAnonymous = event.target.isAnonymous.checked;
-
-        createContract(candidateName, candidateDOB, json);
+    "submit .newCertificateForm": function (event) {
+        let candidateName = event.target.name.value;
+        let candidateDOB = event.target.DOB.value;
+        if(candidateName !== ""&& candidateName !== undefined) {
+            let elements = document.getElementById("newCertificateForm").elements;
+            let json = elementToJSON(elements);
+            createContract(candidateName, candidateDOB, json);
+        } else{
+            alert("Please enter a name.")
+        }
         return false;
     }
 });
 
 function elementToJSON(elements) {
-    let json = "{";
-    for (let element in elements) {
-        if (elements[element].value !== "" && elements[element].value !== undefined && isNaN(parseInt(element, 10)) && element !== "isAnonymous") {
-            let dictEntry = {};
-            dictEntry[element] = elements[element].value;
-            let newEntry = JSON.stringify(dictEntry).toString();
+    try {
+        let json = "";
+        for (let element in elements) {
+            if (elements[element].value !== "" && elements[element].value !== undefined && isNaN(parseInt(element, 10)) && element !== "isAnonymous") {
+                if ((element === "name" || element === "DOB") && elements["isAnonymous"].checked === true) continue;
+                let dictEntry = {};
+                dictEntry[element] = elements[element].value;
+                let newEntry = JSON.stringify(dictEntry).toString();
 
-            json = json + newEntry.substring(1, newEntry.length - 1) + ",";
+                json = json + newEntry.substring(1, newEntry.length - 1) + ",";
+            }
         }
+        return json.substring(0, json.length - 1);
     }
-    return json.substring(0, json.length - 1) + "}";
+    catch(err){
+        console.log("Unable to parse JSON of data: " + err);
+    }
 }
 
 function JSONToMap(json) {
-    var map = new Map();
-    map = JSON.parse(json);
-    console.log("map below")
-    console.log(typeof(map));
+    if(json==="") return "";
+    let map = new Map();
+    json = json.substr(1, json.length-2);
+    let arrayOfPairs = json.split('","');
+    for (let pair in arrayOfPairs){
+        let jsonPair = '{"'+ arrayOfPairs[pair] + '"}';
+        let dictPair = JSON.parse(jsonPair);
+        let key = Object.keys(dictPair)[0];
+        map[key] = dictPair[key];
+    }
+    return map;
 }
 
 Template.DeleteCertificateForm.events({
-    "submit .deleteCertificateForm": function (event, t) {
+    "submit .deleteCertificateForm": function (event) {
         let certificateAddress = event.target.certificateAddress.value;
         deleteCertificate(certificateAddress);
     }

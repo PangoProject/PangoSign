@@ -86,6 +86,7 @@
   <h2>You can add a new certificate here</h2>
   {{> CreateNewCertificateForm}}
 </template>
+
 <template name="CreateNewCertificateForm">
   <form class="newCertificateForm" id="newCertificateForm">
           <table>
@@ -95,11 +96,11 @@
           </tr>
           <tr>
               <td><p>Name</p></td>
-              <td><input type="text" name="candidateName" placeholder="Vitalik" /></td>
+              <td><input type="text" name="name" placeholder="Vitalik" /></td>
           </tr>
           <tr>
               <td><p>Date of birth</p></td>
-              <td><input type="date" name="candidateDOB" /></td>
+              <td><input type="date" name="DOB" /></td>
           </tr>
           <tr>
               <td><p>Sundry</p></td>
@@ -111,7 +112,7 @@
           </tr>
           <tr>
               <td><p>School</p></td>
-              <td><input type="text" name="school" /></td>
+              <td><input type="text" name="faculty" /></td>
           </tr>
           <tr>
               <td><p>Degree</p></td>
@@ -127,7 +128,7 @@
           </tr>
           <tr>
               <td><p>Other</p></td>
-              <td><textarea rows="4" cols="50" name="comment"></textarea></td>
+              <td><textarea rows="4" cols="50" name="other"></textarea></td>
           </tr>
       </table>
       <input type="checkbox" name="isAnonymous" checked="1"/><label>Certificate anonymous?</label>
