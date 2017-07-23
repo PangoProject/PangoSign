@@ -125,7 +125,8 @@ function getCertificateFromBlockchain(certificateAddress, template) {
             TemplateVar.set(template, "certificateIssuer", res);
         });
         myContract.sundryData(function (err, res) {
-            TemplateVar.set(template, "sundryData", res);
+            let mapOfJSON = JSONToMap(res);
+            TemplateVar.set(template, "sundryData", mapOfJSON);
         });
         myContract.isDeleted(function (err, res) {
             TemplateVar.set(template, "isDeleted", res);
@@ -143,6 +144,13 @@ function deleteCertificate(certificateAddress) {
         if (!err) console.log("hi" + res);
     });
 }
+
+Template.registerHelper('arrayify', function(obj){
+    var results = [];
+    for (var key in obj) results.push(({key:key,value:obj[key]}));
+    console.log(obj);
+    return results;
+})
 
 Template.registerHelper("compare", function (v1, v2) {
     if (typeof v1 === "object" && typeof v2 === "object") {
@@ -314,7 +322,8 @@ function elementToJSON(elements) {
 }
 
 function JSONToMap(json) {
-    if(json==="") return "";
+    console.log(json)
+    if(json===""||json===undefined) return "";
     let map = new Map();
     json = json.substr(1, json.length-2);
     let arrayOfPairs = json.split('","');
