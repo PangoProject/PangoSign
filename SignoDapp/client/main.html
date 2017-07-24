@@ -10,6 +10,7 @@
 <hr> {{> CandidateSearch}}
 <hr> {{> CreateNewCertificate}}
 <hr> {{> DeleteCertificate}}
+<hr> {{> UpdateCertificate}}
 <hr>
 </body>
 
@@ -124,8 +125,8 @@
                 <td><input type="date" name="DOB"/></td>
             </tr>
             <tr>
-                <td><p>Sundry</p></td>
-                <td><br><input type="date" name="YearIssued"/></td>
+                <td><p>Date Issued</p></td>
+                <td><br><input type="date" name="DateIssued"/></td>
             </tr>
             <tr>
                 <td><p>University</p></td>
@@ -152,7 +153,7 @@
                 <td><textarea rows="4" cols="50" name="Other"></textarea></td>
             </tr>
         </table>
-        <input type="checkbox" name="isAnonymous" checked="1"/><label>Certificate anonymous?</label>
+        <input type="checkbox" name="isAnonymous"/><label>Certificate anonymous?</label>
         <input type="submit" value="Add Certificate"/>
 
     </form>
@@ -168,5 +169,40 @@
     <form class="deleteCertificateForm">
         <input type="text" name="certificateAddress" placeholder="0x0123456789abcdef012345679abcdef0123456"/>
         <input type="submit" class="deleteCertificate" value="Delete Certificate"/>
+    </form>
+</template>
+
+<template name="UpdateCertificate">
+    <h1>Update certificates</h1>
+    <h2>You can update certificates here in case the information is incorrect</h2>
+    {{> UpdateCertificateForm}}
+</template>
+
+<template name="UpdateCertificateForm">
+    <form class="updateCertificateForm">
+        <input type="text" name="certificateAddress" placeholder="0x0123456789abcdef012345679abcdef0123456"/>
+        <input type="submit" class="findCertificate" value="Find Certificate"/>
+    </form>
+    {{#if updateCertificateSearchResults}}
+        {{>UpdateCertificateFormChild updateCertificateSearchResults=updateCertificateSearchResults}}
+    {{/if}}
+</template>
+
+<template name="UpdateCertificateFormChild">
+    <form class="updateCertificateFormChild" id="updateCertificateFormChild">
+        <table>
+            <tr>
+                <th>Field</th>
+                <th>Value</th>
+            </tr>
+            {{#each objectToPairs (TemplateVar.get "sundryData")}}
+                <tr>
+                    <td>{{key}}</td>
+                    <td><input type="text" name="{{key}}" value="{{value}}"></td>
+                </tr>
+            {{/each}}
+            <input type="checkbox" name="isAnonymous"/><label>Certificate anonymous?</label>
+        </table>
+        <input type="submit" class="updateCertificate" value="Update Certificate"/>
     </form>
 </template>

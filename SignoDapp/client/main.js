@@ -142,12 +142,12 @@ function deleteCertificate(certificateAddress) {
     let myContract = getContract(certificateAddress);
     myContract.deleteCertificate(function (err, res) {
         console.log(err);
-        if (!err) console.log("hi" + res);
+        if (!err) console.log("Certificate Successfully deleted " + res);
     });
 }
 
-Template.registerHelper("objectToPairs",function(object){
-    return _.map(object, function(value, key) {
+Template.registerHelper("objectToPairs", function (object) {
+    return _.map(object, function (value, key) {
         return {
             key: key,
             value: value
@@ -181,6 +181,14 @@ Template.ChildCertificate.onCreated(function () {
     getCertificateFromBlockchain(address, template);
 });
 
+Template.UpdateCertificateFormChild.onCreated(function () {
+    let template = Template.instance();
+    let searchResults = template.data.updateCertificateSearchResults;
+    let address = searchResults[0].certificateAddress;
+
+    getCertificateFromBlockchain(address, template);
+});
+
 Template.WalletBallance.helpers({
     getEthBallance: function () {
         try {
@@ -197,7 +205,7 @@ Template.WalletBallance.helpers({
                     console.log("There was an error fetching wallet ballance: " + err);
                 }
             });
-        } catch(err){
+        } catch (err) {
             console.log("There was an error retrieving web3.")
         }
     }
@@ -222,16 +230,19 @@ Template.CandidateSearch.helpers({
 });
 
 Template.ChildCertificate.helpers({
-    sundryData: function(){
-        return _.map(this.Address, function(value, key){
+    sundryData: function () {
+        return _.map(this.Address, function (value, key) {
             return {
                 key: key,
                 value: value
             };
         });
-    },
-    issuerMetaData: function () {
-        return Session.get("issuerMetaData");
+    }
+});
+
+Template.UpdateCertificateForm.helpers({
+    updateCertificateSearchResults: function () {
+        return Session.get("updateCertificateSearchResults");
     }
 });
 
@@ -267,9 +278,9 @@ Template.CandidateSearch.events({
                 commonMetaData = searchResults.length;
                 commonMetaDataText =
                     "Number of certificates issued to candidate: " + commonMetaData;
-                for(let result in searchResults){
+                for (let result in searchResults) {
                     let count = Certificates.find({certificateIssuer: searchResults[result].certificateIssuer}).count();
-                    searchResults[result]["issuerMetaData"]=count;
+                    searchResults[result]["issuerMetaData"] = count;
                 }
                 break;
             case "candidateIdHash":
@@ -281,9 +292,9 @@ Template.CandidateSearch.events({
                 commonMetaData = searchResults.length;
                 commonMetaDataText =
                     "Number of certificates issued to candidate: " + commonMetaData;
-                for(let result in searchResults){
+                for (let result in searchResults) {
                     let count = Certificates.find({certificateIssuer: searchResults[result].certificateIssuer}).count();
-                    searchResults[result]["issuerMetaData"]=count;
+                    searchResults[result]["issuerMetaData"] = count;
                 }
                 break;
             case "certificateAddress":
@@ -291,12 +302,11 @@ Template.CandidateSearch.events({
                 searchResults = Certificates.find(
                     {
                         certificateAddress: certificateAddress
-                    },
-                    {sort: {timeStamp: -1}}
+                    }
                 ).fetch();
-                for(let result in searchResults){
+                for (let result in searchResults) {
                     let count = Certificates.find({certificateIssuer: searchResults[result].certificateIssuer}).count();
-                    searchResults[result]["issuerMetaData"]=count;
+                    searchResults[result]["issuerMetaData"] = count;
                 }
                 break;
             case "certificateIssuer":
@@ -328,11 +338,11 @@ Template.CreateNewCertificateForm.events({
     "submit .newCertificateForm": function (event) {
         let candidateName = event.target.Name.value;
         let candidateDOB = event.target.DOB.value;
-        if(candidateName !== ""&& candidateName !== undefined) {
+        if (candidateName !== "" && candidateName !== undefined) {
             let elements = document.getElementById("newCertificateForm").elements;
             let json = elementToJSON(elements);
             createContract(candidateName, candidateDOB, json);
-        } else{
+        } else {
             alert("Please enter a name.")
         }
         return false;
@@ -354,19 +364,18 @@ function elementToJSON(elements) {
         }
         return json.substring(0, json.length - 1);
     }
-    catch(err){
+    catch (err) {
         console.log("Unable to parse JSON of data: " + err);
     }
 }
 
 function JSONToMap(json) {
-    console.log(json)
-    if(json===""||json===undefined) return "";
+    if (json === "" || json === undefined) return "";
     let map = new Map();
-    json = json.substr(1, json.length-2);
+    json = json.substr(1, json.length - 2);
     let arrayOfPairs = json.split('","');
-    for (let pair in arrayOfPairs){
-        let jsonPair = '{"'+ arrayOfPairs[pair] + '"}';
+    for (let pair in arrayOfPairs) {
+        let jsonPair = '{"' + arrayOfPairs[pair] + '"}';
         let dictPair = JSON.parse(jsonPair);
         let key = Object.keys(dictPair)[0];
         map[key] = dictPair[key];
@@ -380,3 +389,43 @@ Template.DeleteCertificateForm.events({
         deleteCertificate(certificateAddress);
     }
 });
+
+Template.UpdateCertificateForm.events({
+    "submit .updateCertificateForm": function (event) {
+        try {
+            let certificateAddress = event.target.certificateAddress.value;
+            let searchResults = Certificates.find(
+                {
+                    certificateAddress: certificateAddress
+                }
+            ).fetch();
+            if (searchResults[0].certificateIssuer === Address) {
+                Session.set("updateCertificateSearchResults", searchResults);
+            } else {
+                alert("You did not create this certificate and thus, cannot edit it.");
+            }
+        } catch (err) {
+            console.log("Failed to update certificate: " + err);
+        }
+        return false
+    }
+});
+
+Template.UpdateCertificateFormChild.events({
+    "submit .updateCertificateFormChild": function(event){
+        let template = Template.instance();
+        let candidateName = event.target.Name.value;
+        let candidateDOB = event.target.DOB.value;
+        if (candidateName !== "" && candidateName !== undefined) {
+            let elements = document.getElementById("updateCertificateFormChild").elements;
+            let json = elementToJSON(elements);
+            createContract(candidateName, candidateDOB, json);
+            let searchResults = template.data.updateCertificateSearchResults;
+            let certificateAddressOld = searchResults[0].certificateAddress;
+            deleteCertificate(certificateAddressOld);
+        } else {
+            alert("Please enter a name.")
+        }
+        return false;
+    }
+})
