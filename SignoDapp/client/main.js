@@ -412,7 +412,7 @@ Template.UpdateCertificateForm.events({
 });
 
 Template.UpdateCertificateFormChild.events({
-    "submit .updateCertificateFormChild": function(event){
+    "submit .updateCertificateFormChild": function (event) {
         let template = Template.instance();
         let candidateName = event.target.Name.value;
         let candidateDOB = event.target.DOB.value;
