@@ -62,7 +62,7 @@
                 {{> candidateCommonMetaData commonMetaDataText=commonMetaDataText}}
             </div>
             {{#each result in searchResults}} {{#with
-                    result}} {{> ChildCertificate resultCertificateAddress=certificateAddress resultTimeStamp=timeStamp}}
+                    result}} {{> ChildCertificate resultCertificateAddress=certificateAddress resultTimeStamp=timeStamp issuerMetaData=issuerMetaData}}
             {{/with}} {{/each}}
         </div>
     {{/if}}
@@ -83,20 +83,21 @@
             <p> Date created: {{formatDate resultTimeStamp}}</p>
             <p>ID Hash: {{TemplateVar.get "idHash"}}</p>
             <p>Certificate issuer address: {{TemplateVar.get "certificateIssuer"}}</p>
+            {{#if TemplateVar.get "issuerMetaData"}}
+                <p># of certificates issued by issuer: {{TemplateVar.get "issuerMetaData"}}</p>
+            {{/if}}
             <table>
                 <tr>
                     <th>Field</th>
                     <th>Value</th>
                 </tr>
-                {{arrayify TemplateVar.get "sundryData"}}
+                {{#each objectToPairs (TemplateVar.get "sundryData")}}
                     <tr>
                         <td>{{key}}</td>
                         <td>{{value}}</td>
                     </tr>
-
+                {{/each}}
             </table>
-            <p>Metadata: {{TemplateVar.get "sundryData"}}</p>
-
         </div>
     {{/unless}}
 </template>
@@ -116,7 +117,7 @@
             </tr>
             <tr>
                 <td><p>Name</p></td>
-                <td><input type="text" name="name" placeholder="Vitalik"/></td>
+                <td><input type="text" name="Name" placeholder="Vitalik"/></td>
             </tr>
             <tr>
                 <td><p>Date of birth</p></td>
@@ -124,31 +125,31 @@
             </tr>
             <tr>
                 <td><p>Sundry</p></td>
-                <td><br><input type="date" name="yearIssued"/></td>
+                <td><br><input type="date" name="YearIssued"/></td>
             </tr>
             <tr>
                 <td><p>University</p></td>
-                <td><input type="text" name="university"/></td>
+                <td><input type="text" name="University"/></td>
             </tr>
             <tr>
                 <td><p>School</p></td>
-                <td><input type="text" name="faculty"/></td>
+                <td><input type="text" name="Faculty"/></td>
             </tr>
             <tr>
                 <td><p>Degree</p></td>
-                <td><input type="text" name="degree"/></td>
+                <td><input type="text" name="Degree"/></td>
             </tr>
             <tr>
                 <td><p>Signee</p></td>
-                <td><input type="text" name="signee"/></td>
+                <td><input type="text" name="Signee"/></td>
             </tr>
             <tr>
                 <td><p>Courses</p></td>
-                <td><input type="text" name="courses"/></td>
+                <td><input type="text" name="Courses"/></td>
             </tr>
             <tr>
                 <td><p>Other</p></td>
-                <td><textarea rows="4" cols="50" name="other"></textarea></td>
+                <td><textarea rows="4" cols="50" name="Other"></textarea></td>
             </tr>
         </table>
         <input type="checkbox" name="isAnonymous" checked="1"/><label>Certificate anonymous?</label>

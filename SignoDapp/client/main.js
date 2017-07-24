@@ -131,6 +131,7 @@ function getCertificateFromBlockchain(certificateAddress, template) {
         myContract.isDeleted(function (err, res) {
             TemplateVar.set(template, "isDeleted", res);
         });
+
     }
     catch (err) {
         console.log("Unable to retrieve certificate from Blockchain: " + err);
@@ -145,12 +146,14 @@ function deleteCertificate(certificateAddress) {
     });
 }
 
-Template.registerHelper('arrayify', function(obj){
-    var results = [];
-    for (var key in obj) results.push(({key:key,value:obj[key]}));
-    console.log(obj);
-    return results;
-})
+Template.registerHelper("objectToPairs",function(object){
+    return _.map(object, function(value, key) {
+        return {
+            key: key,
+            value: value
+        };
+    });
+});
 
 Template.registerHelper("compare", function (v1, v2) {
     if (typeof v1 === "object" && typeof v2 === "object") {
@@ -174,24 +177,29 @@ Template.CandidateSearch.onCreated(function () {
 Template.ChildCertificate.onCreated(function () {
     let template = Template.instance();
     let address = template.data.resultCertificateAddress;
+    TemplateVar.set(template, "issuerMetaData", template.data.issuerMetaData);
     getCertificateFromBlockchain(address, template);
 });
 
 Template.WalletBallance.helpers({
     getEthBallance: function () {
-        let template = Template.instance();
-        web3.eth.getAccounts(function (err, res) {
-            if (!err) {
-                Address = res[0];
-                TemplateVar.set(template, "walletAddress", Address);
-                web3.eth.getBalance(Address, function (err, res) {
-                    let ethBlance = web3.fromWei(res, "ether");
-                    TemplateVar.set(template, "walletBallance", ethBlance);
-                });
-            } else {
-                console.log("There was an error fetching wallet ballance: " + err);
-            }
-        });
+        try {
+            let template = Template.instance();
+            web3.eth.getAccounts(function (err, res) {
+                if (!err) {
+                    Address = res[0];
+                    TemplateVar.set(template, "walletAddress", Address);
+                    web3.eth.getBalance(Address, function (err, res) {
+                        let ethBlance = web3.fromWei(res, "ether");
+                        TemplateVar.set(template, "walletBallance", ethBlance);
+                    });
+                } else {
+                    console.log("There was an error fetching wallet ballance: " + err);
+                }
+            });
+        } catch(err){
+            console.log("There was an error retrieving web3.")
+        }
     }
 });
 
@@ -207,6 +215,23 @@ Template.CandidateSearch.helpers({
     },
     searchType: function () {
         return Session.get("searchType");
+    },
+    issuerMetaData: function () {
+        return Session.get("issuerMetaData");
+    }
+});
+
+Template.ChildCertificate.helpers({
+    sundryData: function(){
+        return _.map(this.Address, function(value, key){
+            return {
+                key: key,
+                value: value
+            };
+        });
+    },
+    issuerMetaData: function () {
+        return Session.get("issuerMetaData");
     }
 });
 
@@ -242,6 +267,10 @@ Template.CandidateSearch.events({
                 commonMetaData = searchResults.length;
                 commonMetaDataText =
                     "Number of certificates issued to candidate: " + commonMetaData;
+                for(let result in searchResults){
+                    let count = Certificates.find({certificateIssuer: searchResults[result].certificateIssuer}).count();
+                    searchResults[result]["issuerMetaData"]=count;
+                }
                 break;
             case "candidateIdHash":
                 idHash = event.target.idHash.value;
@@ -252,6 +281,10 @@ Template.CandidateSearch.events({
                 commonMetaData = searchResults.length;
                 commonMetaDataText =
                     "Number of certificates issued to candidate: " + commonMetaData;
+                for(let result in searchResults){
+                    let count = Certificates.find({certificateIssuer: searchResults[result].certificateIssuer}).count();
+                    searchResults[result]["issuerMetaData"]=count;
+                }
                 break;
             case "certificateAddress":
                 let certificateAddress = event.target.certificateAddress.value;
@@ -261,9 +294,13 @@ Template.CandidateSearch.events({
                     },
                     {sort: {timeStamp: -1}}
                 ).fetch();
+                for(let result in searchResults){
+                    let count = Certificates.find({certificateIssuer: searchResults[result].certificateIssuer}).count();
+                    searchResults[result]["issuerMetaData"]=count;
+                }
                 break;
             case "certificateIssuer":
-                let certificateIssuer = event.target.certificateIssuer.value;
+                let certificateIssuer = event.target.certificateIssuer.value.toLowerCase();
                 searchResults = Certificates.find(
                     {
                         certificateIssuer: certificateIssuer
@@ -274,6 +311,7 @@ Template.CandidateSearch.events({
                 commonMetaDataText =
                     "Number of certificates issued by institution: " + commonMetaData;
                 break;
+
         }
         Session.set("certificateSearchResults", searchResults);
         Session.set("commonMetaData", commonMetaData);
@@ -288,7 +326,7 @@ Template.CandidateSearch.events({
 
 Template.CreateNewCertificateForm.events({
     "submit .newCertificateForm": function (event) {
-        let candidateName = event.target.name.value;
+        let candidateName = event.target.Name.value;
         let candidateDOB = event.target.DOB.value;
         if(candidateName !== ""&& candidateName !== undefined) {
             let elements = document.getElementById("newCertificateForm").elements;

@@ -19,7 +19,7 @@ shell-server@0.2.4            # Server-side component of the `meteor shell` comm
 
 frozeman:template-var
 reactive-dict
-ethereum:web3
 session
 sha
 momentjs:moment
+ethereum:web3
