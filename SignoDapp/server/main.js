@@ -53,7 +53,6 @@ function getContract(certificateAddress) {
 }
 
 Meteor.startup(() => {
-    // code to run on server at startup
 });
 
 Meteor.publish('theCertificates', function () {
@@ -62,35 +61,35 @@ Meteor.publish('theCertificates', function () {
 
 Meteor.methods({
     'insertCertificate': function (certificateAddress) {
-
         if (BYTE_CODE.includes(web3.eth.getCode(certificateAddress).substr(2))) {
             let timeStamp = Date.now() / 1000;
-            getCertificateFromBlockchain(certificateAddress).then((res) => {
-                    Certificates.insert({
-                        idHash: res["idHash"],
-                        certificateIssuer: res["certificateIssuer"],
-                        certificateAddress: certificateAddress,
-                        timeStamp: timeStamp
-                    });
+            getCertificateFromBlockchain(certificateAddress).then((res, err) => {
+                    if (!err) {
+                        Certificates.insert({
+                            idHash: res["idHash"],
+                            certificateIssuer: res["certificateIssuer"],
+                            certificateAddress: certificateAddress,
+                            timeStamp: timeStamp
+                        });
+                        console.log("Entry successfully added to DB");
+                        contractCreationStatus = "Entry " + certificateAddress + " successfully added to db";
+                    }
                 }
             );
-            console.log("Entry successfully added to DB");
         } else {
             console.log("Byte Codes Don't Match, it looks like you are doing something fishy");
         }
-
     }
 });
 
-
 function getCertificateFromBlockchain(certificateAddress) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, error) => {
         let myContract = getContract(certificateAddress);
 
         let idHash;
         let certificateIssuer;
 
-        //Dear Gods of programming: We are sorry for our sins, but this is a simplistic double promise
+        //Dear Gods of programming: We are sorry for our sins, but this is a simplistic double-promise
         myContract.idHash(function (err, res) {
             if (!err) {
                 idHash = res;
@@ -99,7 +98,7 @@ function getCertificateFromBlockchain(certificateAddress) {
                     certificateIssuer: certificateIssuer,
                     certificateAddress: certificateAddress
                 });
-            }
+            } else error(err);
         });
         myContract.certificateIssuer(function (err, res) {
             if (!err) {
@@ -109,7 +108,7 @@ function getCertificateFromBlockchain(certificateAddress) {
                     certificateIssuer: certificateIssuer,
                     certificateAddress: certificateAddress
                 });
-            }
+            } else error(err);
         });
 
     });

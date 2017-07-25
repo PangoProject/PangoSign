@@ -63,51 +63,54 @@ function getContract(certificateAddress) {
     }
 }
 
-function createContract(candidateName, candidateDOB, sundryData) {
-    // Meteor.call('insertCertificate', (err, res) => {
-    //     if (!err) console.log(res);
-    // });
-    const hash =
-        "0x" +
-        SHA256(
-            candidateName.toString().toLowerCase() +
-            candidateDOB.toString().toLowerCase()
-        )
-            .toString()
-            .toLowerCase();
-    const sundry = sundryData;
-    try {
-        let certificateContract = web3.eth.contract(ABI_ARRAY);
-        let certificate = certificateContract.new(
-            hash,
-            sundry,
-            {
-                from: Address,
-                data: BYTE_CODE,
-                gas: "4000000"
-            },
-            function (e, contract) {
-                console.log(e, contract);
-                if (typeof contract.address !== "undefined") {
-                    console.log(
-                        "Contract mined! address: " +
-                        contract.address +
-                        " transactionHash: " +
-                        contract.transactionHash
-                    );
-                    try {
-                        Meteor.call('insertCertificate', contract.address);
-                    }
-                    catch (err) {
-                        console.log("DB Connection failed: " + err);
+function createCertificate(candidateName, candidateDOB, sundryData, idHash = "") {
+    return new Promise((certificateAddress, error) => {
+        let hash;
+        if (idHash === "") {
+            hash =
+                "0x" +
+                SHA256(
+                    candidateName.toString().toLowerCase() +
+                    candidateDOB.toString().toLowerCase()
+                )
+                    .toString()
+                    .toLowerCase();
+
+        } else hash = idHash;
+        try {
+            let certificateContract = web3.eth.contract(ABI_ARRAY);
+            let certificate = certificateContract.new(
+                hash,
+                sundryData,
+                {
+                    from: Address,
+                    data: BYTE_CODE,
+                    gas: "4000000"
+                },
+                function (e, contract) {
+                    console.log(e, contract);
+                    if (typeof contract.address !== "undefined") {
+                        console.log(
+                            "Contract mined! address: " +
+                            contract.address +
+                            " transactionHash: " +
+                            contract.transactionHash
+                        );
+                        try {
+                            Meteor.call('insertCertificate', contract.address);
+                            certificateAddress(contract.address);
+                        }
+                        catch (err) {
+                            console.log("DB Connection failed: " + err);
+                        }
                     }
                 }
-            }
-        );
-    }
-    catch (err) {
-        console.log("There was an error creating your certificate: " + err);
-    }
+            );
+        }
+        catch (err) {
+            console.log("There was an error creating your certificate: " + err);
+        }
+    });
 }
 
 function getCertificateFromBlockchain(certificateAddress, template) {
@@ -139,10 +142,45 @@ function getCertificateFromBlockchain(certificateAddress, template) {
 }
 
 function deleteCertificate(certificateAddress) {
-    let myContract = getContract(certificateAddress);
-    myContract.deleteCertificate(function (err, res) {
-        console.log(err);
-        if (!err) console.log("Certificate Successfully deleted " + res);
+    return new Promise((resolve) => {
+        let myContract = getContract(certificateAddress);
+        myContract.deleteCertificate(function (err, res) {
+            if (!err) resolve(res);
+        });
+    });
+}
+
+function updateCertificate(oldCertificateAddress, candidateName = "", candidateDOB = "", sundryData) {
+    return new Promise((result) => {
+        myContract = getContract(oldCertificateAddress);
+        myContract.idHash((err, res) => {
+            if (!err) {
+                let oldIdHash = res;
+                let newIdHash;
+                if (candidateName !== "") {
+                    newIdHash =
+                        "0x" +
+                        SHA256(
+                            candidateName.toString().toLowerCase() +
+                            candidateDOB.toString().toLowerCase()
+                        )
+                            .toString()
+                            .toLowerCase();
+                } else newIdHash = oldIdHash;
+                if (oldIdHash !== newIdHash) confirm("Are you sure you want to change this certificate, you have changed the owner.");
+                createCertificate(null, null, sundryData, newIdHash).then((newCertificateAddress) => {
+                    if (newCertificateAddress) {
+                        deleteCertificate(oldCertificateAddress).then((resolve) => {
+                            if (resolve) {
+                                console.log("Successfully updated the certificate.");
+                            } else console.log("Failed to delete certificate.")
+                        });
+                    }
+                });
+            } else {
+                throw "Something went horribly wrong with updating, please refresh and try again.";
+            }
+        });
     });
 }
 
@@ -263,18 +301,31 @@ Template.CandidateSearch.events({
             case "candidateNameDOB":
                 let candidateName = event.target.candidateName.value;
                 let candidateDOB = event.target.candidateDOB.value;
-                idHash =
+                if (candidateDOB !== null && candidateDOB !== undefined && candidateDOB !== "") {
+                    let idHashFull =
+                        "0x" +
+                        SHA256(
+                            candidateName.toString().toLowerCase() +
+                            candidateDOB.toString().toLowerCase()
+                        )
+                            .toString()
+                            .toLowerCase();
+                    searchResults = Certificates.find(
+                        {idHash: idHashFull},
+                        {sort: {timeStamp: -1}}
+                    ).fetch();
+                }
+                let idHashShort =
                     "0x" +
                     SHA256(
-                        candidateName.toString().toLowerCase() +
-                        candidateDOB.toString().toLowerCase()
+                        candidateName.toString().toLowerCase()
                     )
                         .toString()
                         .toLowerCase();
-                searchResults = Certificates.find(
-                    {idHash: idHash},
+                searchResults.concat(Certificates.find(
+                    {idHash: idHashShort},
                     {sort: {timeStamp: -1}}
-                ).fetch();
+                ).fetch());
                 commonMetaData = searchResults.length;
                 commonMetaDataText =
                     "Number of certificates issued to candidate: " + commonMetaData;
@@ -341,7 +392,7 @@ Template.CreateNewCertificateForm.events({
         if (candidateName !== "" && candidateName !== undefined) {
             let elements = document.getElementById("newCertificateForm").elements;
             let json = elementToJSON(elements);
-            createContract(candidateName, candidateDOB, json);
+            createCertificate(candidateName, candidateDOB, json);
         } else {
             alert("Please enter a name.")
         }
@@ -419,10 +470,11 @@ Template.UpdateCertificateFormChild.events({
         if (candidateName !== "" && candidateName !== undefined) {
             let elements = document.getElementById("updateCertificateFormChild").elements;
             let json = elementToJSON(elements);
-            createContract(candidateName, candidateDOB, json);
+            // createCertificate(candidateName, candidateDOB, json);
             let searchResults = template.data.updateCertificateSearchResults;
             let certificateAddressOld = searchResults[0].certificateAddress;
-            deleteCertificate(certificateAddressOld);
+            updateCertificate(certificateAddressOld, candidateName, candidateDOB, json);
+            // deleteCertificate(certificateAddressOld);
         } else {
             alert("Please enter a name.")
         }
