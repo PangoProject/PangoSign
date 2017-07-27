@@ -150,7 +150,7 @@ function deleteCertificate(certificateAddress) {
     });
 }
 
-function updateCertificate(oldCertificateAddress, candidateName = "", candidateDOB = "", sundryData) {
+function updateCertificate(oldCertificateAddress, candidateName = "", candidateDOB = "", sundryData = "") {
     return new Promise((result) => {
         myContract = getContract(oldCertificateAddress);
         myContract.idHash((err, res) => {
@@ -182,6 +182,40 @@ function updateCertificate(oldCertificateAddress, candidateName = "", candidateD
             }
         });
     });
+}
+
+function elementToJSON(elements) {
+    try {
+        let json = "";
+        for (let element in elements) {
+            if (elements[element].value !== "" && elements[element].value !== undefined && isNaN(parseInt(element, 10)) && element !== "isAnonymous") {
+                if ((element === "Name" || element === "DOB") && elements["isAnonymous"].checked === true) continue;
+                let dictEntry = {};
+                dictEntry[element] = elements[element].value;
+                let newEntry = JSON.stringify(dictEntry).toString();
+
+                json = json + newEntry.substring(1, newEntry.length - 1) + ",";
+            }
+        }
+        return json.substring(0, json.length - 1);
+    }
+    catch (err) {
+        console.log("Unable to parse JSON of data: " + err);
+    }
+}
+
+function JSONToMap(json) {
+    if (json === "" || json === undefined) return "";
+    let map = new Map();
+    json = json.substr(1, json.length - 2);
+    let arrayOfPairs = json.split('","');
+    for (let pair in arrayOfPairs) {
+        let jsonPair = '{"' + arrayOfPairs[pair] + '"}';
+        let dictPair = JSON.parse(jsonPair);
+        let key = Object.keys(dictPair)[0];
+        map[key] = dictPair[key];
+    }
+    return map;
 }
 
 Template.registerHelper("objectToPairs", function (object) {
@@ -400,40 +434,6 @@ Template.CreateNewCertificateForm.events({
     }
 });
 
-function elementToJSON(elements) {
-    try {
-        let json = "";
-        for (let element in elements) {
-            if (elements[element].value !== "" && elements[element].value !== undefined && isNaN(parseInt(element, 10)) && element !== "isAnonymous") {
-                if ((element === "name" || element === "DOB") && elements["isAnonymous"].checked === true) continue;
-                let dictEntry = {};
-                dictEntry[element] = elements[element].value;
-                let newEntry = JSON.stringify(dictEntry).toString();
-
-                json = json + newEntry.substring(1, newEntry.length - 1) + ",";
-            }
-        }
-        return json.substring(0, json.length - 1);
-    }
-    catch (err) {
-        console.log("Unable to parse JSON of data: " + err);
-    }
-}
-
-function JSONToMap(json) {
-    if (json === "" || json === undefined) return "";
-    let map = new Map();
-    json = json.substr(1, json.length - 2);
-    let arrayOfPairs = json.split('","');
-    for (let pair in arrayOfPairs) {
-        let jsonPair = '{"' + arrayOfPairs[pair] + '"}';
-        let dictPair = JSON.parse(jsonPair);
-        let key = Object.keys(dictPair)[0];
-        map[key] = dictPair[key];
-    }
-    return map;
-}
-
 Template.DeleteCertificateForm.events({
     "submit .deleteCertificateForm": function (event) {
         let certificateAddress = event.target.certificateAddress.value;
@@ -450,10 +450,14 @@ Template.UpdateCertificateForm.events({
                     certificateAddress: certificateAddress
                 }
             ).fetch();
-            if (searchResults[0].certificateIssuer === Address) {
-                Session.set("updateCertificateSearchResults", searchResults);
-            } else {
-                alert("You did not create this certificate and thus, cannot edit it.");
+            if(searchResults.length !== 0) {
+                if (searchResults[0].certificateIssuer === Address) {
+                    Session.set("updateCertificateSearchResults", searchResults);
+                } else {
+                    alert("You did not create this certificate and thus, cannot edit it.");
+                }
+            } else{
+                alert("No certificates with this address were found.");
             }
         } catch (err) {
             console.log("Failed to update certificate: " + err);
@@ -465,16 +469,16 @@ Template.UpdateCertificateForm.events({
 Template.UpdateCertificateFormChild.events({
     "submit .updateCertificateFormChild": function (event) {
         let template = Template.instance();
-        let candidateName = event.target.Name.value;
-        let candidateDOB = event.target.DOB.value;
+        let candidateName;
+        if(event.target.Name) candidateName = event.target.Name.value;
+        let candidateDOB;
+        if(event.target.DOB) candidateDOB = event.target.DOB.value;
         if (candidateName !== "" && candidateName !== undefined) {
             let elements = document.getElementById("updateCertificateFormChild").elements;
             let json = elementToJSON(elements);
-            // createCertificate(candidateName, candidateDOB, json);
             let searchResults = template.data.updateCertificateSearchResults;
             let certificateAddressOld = searchResults[0].certificateAddress;
             updateCertificate(certificateAddressOld, candidateName, candidateDOB, json);
-            // deleteCertificate(certificateAddressOld);
         } else {
             alert("Please enter a name.")
         }
