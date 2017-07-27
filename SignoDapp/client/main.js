@@ -411,7 +411,7 @@ Template.CandidateSearch.events({
         Session.set("certificateSearchResults", searchResults);
         Session.set("commonMetaData", commonMetaData);
         Session.set("commonMetaDataText", commonMetaDataText);
-        return false;
+        event.preventDefault();
     },
 
     "click .resetSearch": function () {
@@ -430,7 +430,7 @@ Template.CreateNewCertificateForm.events({
         } else {
             alert("Please enter a name.")
         }
-        return false;
+        event.preventDefault();
     }
 });
 
@@ -462,7 +462,7 @@ Template.UpdateCertificateForm.events({
         } catch (err) {
             console.log("Failed to update certificate: " + err);
         }
-        return false
+        event.preventDefault();
     }
 });
 
@@ -482,6 +482,6 @@ Template.UpdateCertificateFormChild.events({
         } else {
             alert("Please enter a name.")
         }
-        return false;
+        event.preventDefault();
     }
 })
