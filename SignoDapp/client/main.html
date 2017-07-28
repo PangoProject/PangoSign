@@ -8,10 +8,9 @@
 
 <hr> {{> WalletBallance}}
 <hr> {{> CandidateSearch}}
-<hr> {{> CreateNewCertificate}}
+<hr> {{> createCertificate}}
 <hr> {{> DeleteCertificate}}
 <hr> {{> UpdateCertificate}}
-<hr> {{> createCertificate}}
 <hr>
 </body>
 
@@ -104,62 +103,6 @@
     {{/unless}}
 </template>
 
-<template name="CreateNewCertificate">
-    <h1>Add a new certificate</h1>
-    <h2>You can add a new certificate here</h2>
-    {{> CreateNewCertificateForm}}
-</template>
-
-<template name="CreateNewCertificateForm">
-    <form class="newCertificateForm" id="newCertificateForm">
-        <table>
-            <tr>
-                <th>Field</th>
-                <th>Value</th>
-            </tr>
-            <tr>
-                <td><p>Name</p></td>
-                <td><input type="text" name="Name" placeholder="Vitalik"/></td>
-            </tr>
-            <tr>
-                <td><p>Date of birth</p></td>
-                <td><input type="date" name="DOB"/></td>
-            </tr>
-            <tr>
-                <td><p>Date Issued</p></td>
-                <td><br><input type="date" name="DateIssued"/></td>
-            </tr>
-            <tr>
-                <td><p>University</p></td>
-                <td><input type="text" name="University"/></td>
-            </tr>
-            <tr>
-                <td><p>School</p></td>
-                <td><input type="text" name="Faculty"/></td>
-            </tr>
-            <tr>
-                <td><p>Degree</p></td>
-                <td><input type="text" name="Degree"/></td>
-            </tr>
-            <tr>
-                <td><p>Signee</p></td>
-                <td><input type="text" name="Signee"/></td>
-            </tr>
-            <tr>
-                <td><p>Courses</p></td>
-                <td><input type="text" name="Courses"/></td>
-            </tr>
-            <tr>
-                <td><p>Other</p></td>
-                <td><textarea rows="4" cols="50" name="Other"></textarea></td>
-            </tr>
-        </table>
-        <input type="checkbox" name="isAnonymous"/><label>Certificate anonymous?</label>
-        <input type="submit" value="Add Certificate"/>
-
-    </form>
-</template>
-
 <template name="DeleteCertificate">
     <h1>Delete certificates</h1>
     <h2>You can delete certificates here in case the information is incorrect</h2>
@@ -190,52 +133,40 @@
 </template>
 
 <template name="UpdateCertificateFormChild">
-    <form class="updateCertificateFormChild" id="updateCertificateFormChild">
-        <table>
-            <tr>
-                <th>Field</th>
-                <th>Value</th>
-            </tr>
-            {{#each objectToPairs (TemplateVar.get "sundryData")}}
-                <tr>
-                    <td>{{key}}</td>
-                    <td><input type="text" name="{{key}}" value="{{value}}"></td>
-                </tr>
-            {{/each}}
-            <input type="checkbox" name="isAnonymous"/><label>Certificate anonymous?</label>
-        </table>
-        <input type="submit" class="updateCertificate" value="Update Certificate"/>
-    </form>
+    {{#if (TemplateVar.get "json")}}
+        {{>UpdateCertificateFormChildChild json=(TemplateVar.get "json")}}
+        <br>
+        Is anonymous? <input type="checkbox" id="anonymousUpdate" {{updateCheckboxAnonymous}}>
+        <button type="submit" id="update">Update</button>
+    {{/if}}
 </template>
 
-
+<template name="UpdateCertificateFormChildChild">
+    {{#each inputs}}
+        {{> inputFields}}
+    {{/each}}
+</template>
 
 <template name="createCertificate">
-    {{>compulsoryFields}}
+    <h2>Create a new Certificate</h2>
+    {{#each inputs}}
+        {{> inputFields}}
+    {{/each}}
+    <br>
     <button id='add-input'>
         Add Input
     </button>
     <br>
-
-    {{#each inputs}}
-        {{> inputFields}}
-    {{/each}}
-
-    <button type="button" id="createCertificate">Create</button>
+    Is anonymous?<input type="checkbox" id="anonymousCreate">
+    <button type="submit" id="createCertificate">Create</button>
 
 </template>
+
 <template name='inputFields'>
-    <input name='inputKey' class='inputKey' type='text' uniqid="{{uniqid}}" value="{{keyValue}}">
-    <input name='inputValue' class='inputValue' type='text' uniqid="{{uniqid}}" value="{{value}}">
-    <button class='remove-input' uniqid="{{uniqid}}">Remove</button>
+    <input name='inputKey' class='inputKey' type='text' uniqid="{{uniqid}}" value="{{keyValue}}" {{readOnly}}>
+    <input name='inputValue' class='inputValue' type='{{type}}' uniqid="{{uniqid}}" value="{{value}}">
+    {{#unless readOnly}}
+        <button class='remove-input' uniqid="{{uniqid}}">Remove</button>
+    {{/unless}}
     <br>
-</template>
-
-<template name="compulsoryFields">
-    <input name='inputKey' type='text' uniqid="name" value="Name" readonly>
-    <input name='inputValue' type='text' uniqid="name" value="">
-    <br>
-    <input name='inputKey' type='text' uniqid="DOB" value="Date of Birth" readonly>
-    <input name='inputValue' type='date' uniqid="DOB" value="">
-    <input type="checkbox" uniqid="isAnonymous" name="isAnonymous"/><label>Certificate anonymous?</label>
 </template>

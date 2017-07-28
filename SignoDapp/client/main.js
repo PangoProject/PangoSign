@@ -130,6 +130,7 @@ function getCertificateFromBlockchain(certificateAddress, template) {
         });
         myContract.sundryData(function (err, res) {
             let mapOfJSON = JSONToMap(res);
+            TemplateVar.set(template, "json", res);
             TemplateVar.set(template, "sundryData", mapOfJSON);
         });
         myContract.isDeleted(function (err, res) {
@@ -140,6 +141,52 @@ function getCertificateFromBlockchain(certificateAddress, template) {
     catch (err) {
         console.log("Unable to retrieve certificate from Blockchain: " + err);
     }
+}
+
+function JSONToArrayOfObjects(json) {
+    if (json === "" || json === undefined) return [];
+    let objectArray = [];
+    json = json.substr(1, json.length - 2);
+    let arrayOfPairs = json.split('","');
+    for (let pair in arrayOfPairs) {
+        let jsonPair = '{"' + arrayOfPairs[pair] + '"}';
+        let dictPair = JSON.parse(jsonPair);
+        let key = Object.keys(dictPair)[0];
+        let value = dictPair[key];
+        elem = {
+            uniqid: Random.id(),
+            keyValue: key,
+            value: value,
+            readOnly: "",
+            type: "text"
+        };
+        if ((key == "Name") || (key == "DOB")) {
+            elem.readOnly = "readonly";
+        }
+        if (key == "DOB") elem.type = "date"
+        if (pair == 0 && key != "Name") {
+            Session.set("updateCheckboxAnonymous", "checked");
+
+            objectArray = [
+                {
+                    uniqid: "Name",
+                    keyValue: "Name",
+                    value: "",
+                    readOnly: "readonly",
+                    type: "text"
+                },
+                {
+                    uniqid: "DOB",
+                    keyValue: "DOB",
+                    value: "",
+                    readOnly: "readonly",
+                    type: "date"
+                }];
+        }
+
+        objectArray.push(elem);
+    }
+    return objectArray;
 }
 
 function deleteCertificate(certificateAddress) {
@@ -185,25 +232,6 @@ function updateCertificate(oldCertificateAddress, candidateName = "", candidateD
     });
 }
 
-function elementToJSON(elements) {
-    try {
-        let json = "";
-        for (let element in elements) {
-            if (elements[element].value !== "" && elements[element].value !== undefined && isNaN(parseInt(element, 10)) && element !== "isAnonymous") {
-                if ((element === "Name" || element === "DOB") && elements["isAnonymous"].checked === true) continue;
-                let dictEntry = {};
-                dictEntry[element] = elements[element].value;
-                let newEntry = JSON.stringify(dictEntry).toString();
-                json = json + newEntry.substring(1, newEntry.length - 1) + ",";
-            }
-        }
-        return json.substring(0, json.length - 1);
-    }
-    catch (err) {
-        console.log("Unable to parse JSON of data: " + err);
-    }
-}
-
 function JSONToMap(json) {
     if (json === "" || json === undefined) return "";
     let map = new Map();
@@ -216,6 +244,29 @@ function JSONToMap(json) {
         map[key] = dictPair[key];
     }
     return map;
+}
+
+function arrayToJSON(array) {
+    // try {
+    let json = "";
+
+
+    let isAnonymous = _.filter(array, function (x) {
+        return x.keyValue == "Anonymous";
+    })[0]["value"];
+
+    for (input in array) {
+        if (((array[input]["keyValue"] === "Name" || array[input]["keyValue"] === "DOB") && isAnonymous) || array[input]["keyValue"] === "Anonymous" || array[input]["KeyValue"] === "" || array[input]["value"] === "") continue;
+        let dictEntry = {};
+        dictEntry[array[input]["keyValue"]] = array[input]["value"];
+        let newEntry = JSON.stringify(dictEntry).toString();
+        json = json + newEntry.substring(1, newEntry.length - 1) + ",";
+    }
+    return json.substring(0, json.length - 1);
+    // }
+    // catch (err) {
+    //     console.log("Unable to parse JSON of data: " + err);
+    // }
 }
 
 Template.registerHelper("objectToPairs", function (object) {
@@ -257,8 +308,39 @@ Template.UpdateCertificateFormChild.onCreated(function () {
     let template = Template.instance();
     let searchResults = template.data.updateCertificateSearchResults;
     let address = searchResults[0].certificateAddress;
-
     getCertificateFromBlockchain(address, template);
+});
+
+Template.UpdateCertificateFormChildChild.onCreated(function () {
+    let template = Template.instance();
+    let json = template.data.json;
+    Session.set("inputs", JSONToArrayOfObjects(json));
+});
+
+Template.UpdateCertificateFormChild.helpers({
+    updateCheckboxAnonymous: function () {
+        return Session.get("updateCheckboxAnonymous");
+    }
+});
+
+Template.UpdateCertificateFormChildChild.helpers({
+    inputs: function () {
+        return Session.get('inputs'); // reactively watches the Session variable, so when it changes, this result will change and our template will change
+    }
+});
+
+Template.UpdateCertificateFormChildChild.events({
+    'click #add-input': function () {
+        var inputs = Session.get('inputs');
+        var uniqid = Random.id(); // Give a unique ID so you can pull _this_ input when you click remove
+        inputs.push(
+            {
+                uniqid: uniqid,
+                keyValue: "",
+                value: ""
+            });
+        Session.set('inputs', inputs);
+    }
 });
 
 Template.WalletBallance.helpers({
@@ -419,21 +501,6 @@ Template.CandidateSearch.events({
     }
 });
 
-Template.CreateNewCertificateForm.events({
-    "submit .newCertificateForm": function (event) {
-        let candidateName = event.target.Name.value;
-        let candidateDOB = event.target.DOB.value;
-        if (candidateName !== "" && candidateName !== undefined) {
-            let elements = document.getElementById("newCertificateForm").elements;
-            let json = elementToJSON(elements);
-            createCertificate(candidateName, candidateDOB, json);
-        } else {
-            alert("Please enter a name.")
-        }
-        event.preventDefault();
-    }
-});
-
 Template.DeleteCertificateForm.events({
     "submit .deleteCertificateForm": function (event) {
         let certificateAddress = event.target.certificateAddress.value;
@@ -467,15 +534,27 @@ Template.UpdateCertificateForm.events({
 });
 
 Template.UpdateCertificateFormChild.events({
-    "submit .updateCertificateFormChild": function (event) {
+    "click #update": function (event) {
         let template = Template.instance();
-        let candidateName;
-        if (event.target.Name) candidateName = event.target.Name.value;
-        let candidateDOB;
-        if (event.target.DOB) candidateDOB = event.target.DOB.value;
-        if (candidateName !== "" && candidateName !== undefined) {
-            let elements = document.getElementById("updateCertificateFormChild").elements;
-            let json = elementToJSON(elements);
+        let inputs = Session.get("inputs");
+        let elem =
+            {
+                uniqid: "isAnonymous",
+                keyValue: "Anonymous",
+                value: document.getElementById("anonymousUpdate").checked,
+                readOnly: "readonly",
+                type: "checkbox"
+            };
+        inputs.push(elem);
+        let candidateName = _.filter(inputs, function (x) {
+            return x.keyValue == "Name";
+        })[0].value;
+
+        let candidateDOB = _.filter(inputs, function (x) {
+            return x.keyValue == "DOB";
+        })[0].value;
+        if (candidateName !== "" && candidateName !== undefined && document.getElementById("anonymousUpdate").checked) {
+            let json = arrayToJSON(inputs);
             let searchResults = template.data.updateCertificateSearchResults;
             let certificateAddressOld = searchResults[0].certificateAddress;
             updateCertificate(certificateAddressOld, candidateName, candidateDOB, json);
@@ -486,40 +565,23 @@ Template.UpdateCertificateFormChild.events({
     }
 })
 
-
-//client only code
 Template.createCertificate.onCreated(function () {
-    defaultInput = [];
-    // defaultInput = [{
-    //     uniqid: Random.id(),
-    //     keyValue: "Name",
-    //     value: ""
-    // },
-    //     {
-    //         uniqid: Random.id(),
-    //         keyValue: "Date Of Birth",
-    //         value: ""
-    //     }];
-    Session.set('inputs', defaultInput); // on page load, set this to have no inputs
-
-});
-
-Template.compulsoryFields.onCreated(function () {
-    requiredInputs = [{
-        uniqid: "name",
-        keyValue: "Name",
-        value: ""
-    },
+    defaultInput = [
+        {
+            uniqid: "Name",
+            keyValue: "Name",
+            value: "",
+            readOnly: "readonly",
+            type: "text"
+        },
         {
             uniqid: "DOB",
             keyValue: "DOB",
-            value: ""
-        },{
-            uniqid: "isAnonymous",
-            keyValue: "isAnonymous",
-            value: false
+            value: "",
+            readOnly: "readonly",
+            type: "date"
         }];
-    Session.set('requiredInputs', requiredInputs);
+    Session.set('inputs', defaultInput);
 });
 
 Template.createCertificate.helpers({
@@ -528,7 +590,6 @@ Template.createCertificate.helpers({
     }
 });
 
-// Now we'll set up a click handler to add inputs to our array when we   click the "add" button
 Template.createCertificate.events({
     'click #add-input': function () {
         var inputs = Session.get('inputs');
@@ -537,24 +598,36 @@ Template.createCertificate.events({
             {
                 uniqid: uniqid,
                 keyValue: "",
-                value: ""
+                value: "",
+                readOnly: "",
+                type: "text"
             });
         Session.set('inputs', inputs);
     },
-    'click #createCertificate': function(){
-        sundryData=Session.get('requiredInputs').concat(Session.get('inputs'));
-
+    'click #createCertificate': function (event) {
+        sundryData = Session.get('inputs');
         candidateName = _.filter(sundryData, function (x) {
             return x.keyValue == "Name";
         })[0]["value"];
         candidateDOB = _.filter(sundryData, function (x) {
             return x.keyValue == "DOB";
         })[0]["value"];
+        elem =
+            {
+                uniqid: "isAnonymous",
+                keyValue: "Anonymous",
+                value: document.getElementById("anonymousCreate").checked,
+                readOnly: "readonly",
+                type: "checkbox"
+            };
+        sundryData.push(elem);
         json = arrayToJSON(sundryData);
-        createCertificate(candidateName,candidateDOB,json);
+        createCertificate(candidateName, candidateDOB, json);
+
+        event.preventDefault();
     }
 });
-// We also need handlers for when the inputs themselves are changed / removed
+
 Template.inputFields.events({
     'click .remove-input': function (event) {
         var uniqid = $(event.currentTarget).attr('uniqid');
@@ -576,39 +649,3 @@ Template.inputFields.events({
         Session.set('inputs', inputs);
     }
 });
-
-Template.compulsoryFields.events({
-    'change input': function (event) {
-        var $input = $(event.currentTarget);
-        var uniqid = $input.attr('uniqid');
-        inputs = Session.get('requiredInputs');
-        index = inputs.findIndex(function (x) {
-            return x.uniqid == uniqid;
-        });
-        if ($input.context.name == "isAnonymous") inputs[index].value = $input.context.checked;
-        else inputs[index].value = $input.val();
-        Session.set('requiredInputs', inputs);
-    }
-});
-
-
-
-function arrayToJSON(array) {
-    try {
-        let json = "";
-        isAnonymous = _.filter(array, function (x) {
-            return x.keyValue == "isAnonymous";
-        })[0]["value"];
-       for (input in array){
-           if ((((array[input]["keyValue"] === "Name" || array[input]["keyValue"] === "DOB") && isAnonymous) || array[input]["keyValue"]==="isAnonymous")  || array[input]["KeyValue"]==="" || array[input]["value"]==="") continue;
-           let dictEntry={};
-           dictEntry[array[input]["keyValue"]]=array[input]["value"];
-           let newEntry = JSON.stringify(dictEntry).toString();
-           json = json + newEntry.substring(1, newEntry.length - 1) + ",";
-       }
-        return json.substring(0, json.length - 1);
-    }
-    catch (err) {
-        console.log("Unable to parse JSON of data: " + err);
-    }
-}
