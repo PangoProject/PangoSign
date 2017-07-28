@@ -23,3 +23,5 @@ session
 sha
 momentjs:moment
 ethereum:web3
+underscore
+random

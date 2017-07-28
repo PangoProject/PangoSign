@@ -1,5 +1,6 @@
 import {Template} from "meteor/templating";
 import {Session} from "meteor/session";
+
 import "./main.html";
 
 const ABI_ARRAY = [{
@@ -193,7 +194,6 @@ function elementToJSON(elements) {
                 let dictEntry = {};
                 dictEntry[element] = elements[element].value;
                 let newEntry = JSON.stringify(dictEntry).toString();
-
                 json = json + newEntry.substring(1, newEntry.length - 1) + ",";
             }
         }
@@ -450,13 +450,13 @@ Template.UpdateCertificateForm.events({
                     certificateAddress: certificateAddress
                 }
             ).fetch();
-            if(searchResults.length !== 0) {
+            if (searchResults.length !== 0) {
                 if (searchResults[0].certificateIssuer === Address) {
                     Session.set("updateCertificateSearchResults", searchResults);
                 } else {
                     alert("You did not create this certificate and thus, cannot edit it.");
                 }
-            } else{
+            } else {
                 alert("No certificates with this address were found.");
             }
         } catch (err) {
@@ -470,9 +470,9 @@ Template.UpdateCertificateFormChild.events({
     "submit .updateCertificateFormChild": function (event) {
         let template = Template.instance();
         let candidateName;
-        if(event.target.Name) candidateName = event.target.Name.value;
+        if (event.target.Name) candidateName = event.target.Name.value;
         let candidateDOB;
-        if(event.target.DOB) candidateDOB = event.target.DOB.value;
+        if (event.target.DOB) candidateDOB = event.target.DOB.value;
         if (candidateName !== "" && candidateName !== undefined) {
             let elements = document.getElementById("updateCertificateFormChild").elements;
             let json = elementToJSON(elements);
@@ -485,3 +485,130 @@ Template.UpdateCertificateFormChild.events({
         event.preventDefault();
     }
 })
+
+
+//client only code
+Template.createCertificate.onCreated(function () {
+    defaultInput = [];
+    // defaultInput = [{
+    //     uniqid: Random.id(),
+    //     keyValue: "Name",
+    //     value: ""
+    // },
+    //     {
+    //         uniqid: Random.id(),
+    //         keyValue: "Date Of Birth",
+    //         value: ""
+    //     }];
+    Session.set('inputs', defaultInput); // on page load, set this to have no inputs
+
+});
+
+Template.compulsoryFields.onCreated(function () {
+    requiredInputs = [{
+        uniqid: "name",
+        keyValue: "Name",
+        value: ""
+    },
+        {
+            uniqid: "DOB",
+            keyValue: "DOB",
+            value: ""
+        },{
+            uniqid: "isAnonymous",
+            keyValue: "isAnonymous",
+            value: false
+        }];
+    Session.set('requiredInputs', requiredInputs);
+});
+
+Template.createCertificate.helpers({
+    inputs: function () {
+        return Session.get('inputs'); // reactively watches the Session variable, so when it changes, this result will change and our template will change
+    }
+});
+
+// Now we'll set up a click handler to add inputs to our array when we   click the "add" button
+Template.createCertificate.events({
+    'click #add-input': function () {
+        var inputs = Session.get('inputs');
+        var uniqid = Random.id(); // Give a unique ID so you can pull _this_ input when you click remove
+        inputs.push(
+            {
+                uniqid: uniqid,
+                keyValue: "",
+                value: ""
+            });
+        Session.set('inputs', inputs);
+    },
+    'click #createCertificate': function(){
+        sundryData=Session.get('requiredInputs').concat(Session.get('inputs'));
+
+        candidateName = _.filter(sundryData, function (x) {
+            return x.keyValue == "Name";
+        })[0]["value"];
+        candidateDOB = _.filter(sundryData, function (x) {
+            return x.keyValue == "DOB";
+        })[0]["value"];
+        json = arrayToJSON(sundryData);
+        createCertificate(candidateName,candidateDOB,json);
+    }
+});
+// We also need handlers for when the inputs themselves are changed / removed
+Template.inputFields.events({
+    'click .remove-input': function (event) {
+        var uniqid = $(event.currentTarget).attr('uniqid');
+        inputs = Session.get('inputs');
+        inputs = _.filter(inputs, function (x) {
+            return x.uniqid != uniqid;
+        });
+        Session.set('inputs', inputs);
+    },
+    'change input': function (event) {
+        var $input = $(event.currentTarget);
+        var uniqid = $input.attr('uniqid');
+        inputs = Session.get('inputs');
+        index = inputs.findIndex(function (x) {
+            return x.uniqid == uniqid;
+        });
+        if ($input.context.name == "inputKey") inputs[index].keyValue = $input.val();
+        if ($input.context.name == "inputValue") inputs[index].value = $input.val();
+        Session.set('inputs', inputs);
+    }
+});
+
+Template.compulsoryFields.events({
+    'change input': function (event) {
+        var $input = $(event.currentTarget);
+        var uniqid = $input.attr('uniqid');
+        inputs = Session.get('requiredInputs');
+        index = inputs.findIndex(function (x) {
+            return x.uniqid == uniqid;
+        });
+        if ($input.context.name == "isAnonymous") inputs[index].value = $input.context.checked;
+        else inputs[index].value = $input.val();
+        Session.set('requiredInputs', inputs);
+    }
+});
+
+
+
+function arrayToJSON(array) {
+    try {
+        let json = "";
+        isAnonymous = _.filter(array, function (x) {
+            return x.keyValue == "isAnonymous";
+        })[0]["value"];
+       for (input in array){
+           if ((((array[input]["keyValue"] === "Name" || array[input]["keyValue"] === "DOB") && isAnonymous) || array[input]["keyValue"]==="isAnonymous")  || array[input]["KeyValue"]==="" || array[input]["value"]==="") continue;
+           let dictEntry={};
+           dictEntry[array[input]["keyValue"]]=array[input]["value"];
+           let newEntry = JSON.stringify(dictEntry).toString();
+           json = json + newEntry.substring(1, newEntry.length - 1) + ",";
+       }
+        return json.substring(0, json.length - 1);
+    }
+    catch (err) {
+        console.log("Unable to parse JSON of data: " + err);
+    }
+}

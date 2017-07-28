@@ -11,6 +11,7 @@
 <hr> {{> CreateNewCertificate}}
 <hr> {{> DeleteCertificate}}
 <hr> {{> UpdateCertificate}}
+<hr> {{> createCertificate}}
 <hr>
 </body>
 
@@ -205,4 +206,36 @@
         </table>
         <input type="submit" class="updateCertificate" value="Update Certificate"/>
     </form>
+</template>
+
+
+
+<template name="createCertificate">
+    {{>compulsoryFields}}
+    <button id='add-input'>
+        Add Input
+    </button>
+    <br>
+
+    {{#each inputs}}
+        {{> inputFields}}
+    {{/each}}
+
+    <button type="button" id="createCertificate">Create</button>
+
+</template>
+<template name='inputFields'>
+    <input name='inputKey' class='inputKey' type='text' uniqid="{{uniqid}}" value="{{keyValue}}">
+    <input name='inputValue' class='inputValue' type='text' uniqid="{{uniqid}}" value="{{value}}">
+    <button class='remove-input' uniqid="{{uniqid}}">Remove</button>
+    <br>
+</template>
+
+<template name="compulsoryFields">
+    <input name='inputKey' type='text' uniqid="name" value="Name" readonly>
+    <input name='inputValue' type='text' uniqid="name" value="">
+    <br>
+    <input name='inputKey' type='text' uniqid="DOB" value="Date of Birth" readonly>
+    <input name='inputValue' type='date' uniqid="DOB" value="">
+    <input type="checkbox" uniqid="isAnonymous" name="isAnonymous"/><label>Certificate anonymous?</label>
 </template>
