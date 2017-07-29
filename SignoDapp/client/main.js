@@ -573,11 +573,9 @@ Template.UpdateCertificateFormChild.events({
         let candidateName = _.filter(inputs, function (x) {
             return x.keyValue == "Name";
         })[0].value;
-
         let candidateDOB = _.filter(inputs, function (x) {
             return x.keyValue == "DOB";
         })[0].value;
-        console.log(candidateName);
         console.log(document.getElementById("anonymousUpdate").checked);
         if ((candidateName === "" || candidateName === undefined) && !document.getElementById("anonymousUpdate").checked) {
             alert("Please enter a name as the certificate is NOT anonymous.")
@@ -590,7 +588,7 @@ Template.UpdateCertificateFormChild.events({
         }
         event.preventDefault();
     }
-})
+});
 
 Template.createCertificate.onCreated(function () {
 
