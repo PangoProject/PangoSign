@@ -243,11 +243,9 @@ function JSONToMap(json) {
         let key = Object.keys(dictPair)[0];
         map[key] = dictPair[key];
     }
-    console.log(map);
     if (map.Name == undefined) {
         map["This is an Anonymous Certificate"] = "";
     }
-    console.log()
     return map;
 }
 
