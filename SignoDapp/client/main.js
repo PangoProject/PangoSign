@@ -165,8 +165,8 @@ function JSONToArrayOfObjects(json) {
         }
         if (key == "DOB") elem.type = "date"
         if (pair == 0 && key != "Name") {
+            alert("This is an anonymous certificate, so there is no name or DOB loaded. If you enter values here, you will transfer ownership of this certificate unless you enter the same name as before. You can choose to leave them blank and the previous owner will keep ownership.");
             Session.set("updateCheckboxAnonymous", "checked");
-
             objectArray = [
                 {
                     uniqid: "Name",
@@ -243,6 +243,11 @@ function JSONToMap(json) {
         let key = Object.keys(dictPair)[0];
         map[key] = dictPair[key];
     }
+    console.log(map);
+    if (map.Name == undefined) {
+        map["This is an Anonymous Certificate"] = "";
+    }
+    console.log()
     return map;
 }
 
@@ -504,7 +509,26 @@ Template.CandidateSearch.events({
 Template.DeleteCertificateForm.events({
     "submit .deleteCertificateForm": function (event) {
         let certificateAddress = event.target.certificateAddress.value;
-        deleteCertificate(certificateAddress);
+        try {
+            let certificateAddress = event.target.certificateAddress.value;
+            let searchResults = Certificates.find(
+                {
+                    certificateAddress: certificateAddress
+                }
+            ).fetch();
+            if (searchResults.length !== 0) {
+                if (searchResults[0].certificateIssuer === Address) {
+                    deleteCertificate(certificateAddress);
+                } else {
+                    alert("You did not create this certificate and thus, cannot delete it.");
+                }
+            } else {
+                alert("No certificates with this address were found.");
+            }
+        } catch (err) {
+            console.log("Failed to delete certificate: " + err);
+        }
+    event.preventDefault();
     }
 });
 
@@ -553,40 +577,36 @@ Template.UpdateCertificateFormChild.events({
         let candidateDOB = _.filter(inputs, function (x) {
             return x.keyValue == "DOB";
         })[0].value;
-        if (candidateName !== "" && candidateName !== undefined && document.getElementById("anonymousUpdate").checked) {
+        console.log(candidateName);
+        console.log(document.getElementById("anonymousUpdate").checked);
+        if ((candidateName === "" || candidateName === undefined) && !document.getElementById("anonymousUpdate").checked) {
+            alert("Please enter a name as the certificate is NOT anonymous.")
+        } else {
             let json = arrayToJSON(inputs);
             let searchResults = template.data.updateCertificateSearchResults;
             let certificateAddressOld = searchResults[0].certificateAddress;
             updateCertificate(certificateAddressOld, candidateName, candidateDOB, json);
-        } else {
-            alert("Please enter a name.")
+
         }
         event.preventDefault();
     }
 })
 
 Template.createCertificate.onCreated(function () {
-    defaultInput = [
-        {
-            uniqid: "Name",
-            keyValue: "Name",
-            value: "",
-            readOnly: "readonly",
-            type: "text"
-        },
-        {
-            uniqid: "DOB",
-            keyValue: "DOB",
-            value: "",
-            readOnly: "readonly",
-            type: "date"
-        }];
+
+    Session.set("certificatesTemplates", templates);
+    defaultInput = _.filter(templates, function (x) {
+        return x.id == 0;
+    })[0].template;
     Session.set('inputs', defaultInput);
 });
 
 Template.createCertificate.helpers({
     inputs: function () {
         return Session.get('inputs'); // reactively watches the Session variable, so when it changes, this result will change and our template will change
+    },
+    certificatesTemplates: function () {
+        return Session.get("certificatesTemplates");
     }
 });
 
@@ -612,19 +632,30 @@ Template.createCertificate.events({
         candidateDOB = _.filter(sundryData, function (x) {
             return x.keyValue == "DOB";
         })[0]["value"];
-        elem =
-            {
-                uniqid: "isAnonymous",
-                keyValue: "Anonymous",
-                value: document.getElementById("anonymousCreate").checked,
-                readOnly: "readonly",
-                type: "checkbox"
-            };
-        sundryData.push(elem);
-        json = arrayToJSON(sundryData);
-        createCertificate(candidateName, candidateDOB, json);
+        if (candidateName == "") {
+            alert("Please enter at least the name to identify the certificate.")
+        } else {
+            elem =
+                {
+                    uniqid: "isAnonymous",
+                    keyValue: "Anonymous",
+                    value: document.getElementById("anonymousCreate").checked,
+                    readOnly: "readonly",
+                    type: "checkbox"
+                };
+            sundryData.push(elem);
+            json = arrayToJSON(sundryData);
+            createCertificate(candidateName, candidateDOB, json);
 
-        event.preventDefault();
+            event.preventDefault();
+        }
+    },
+    'change #certificatesTemplates': function (event) {
+        inputs = _.filter(Session.get("certificatesTemplates"), function (x) {
+            return x.id == event.target.value;
+        })[0].template;
+        Session.set("inputs", inputs);
+
     }
 });
 

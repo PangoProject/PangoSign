@@ -149,6 +149,13 @@
 
 <template name="createCertificate">
     <h2>Create a new Certificate</h2>
+    <lable>Pick a template:</lable>
+    <select name="certificatesTemplates" id="certificatesTemplates">
+        {{#each template in certificatesTemplates}}
+            <option value="{{template.id}}">{{template.name}}</option>
+            {{/each}}
+    </select>
+    <br>
     {{#each inputs}}
         {{> inputFields}}
     {{/each}}
