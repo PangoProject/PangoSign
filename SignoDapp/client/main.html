@@ -43,50 +43,11 @@
 
     <!-- Main content -->
     <main class="main">
-
         <div class="container-fluid animated fadeIn">
-
-
-
-
-
-            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-expanded="true">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-expanded="true">Profile</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" id="pills-dropdown1-tab" href="#pills-dropdown1" role="tab" data-toggle="pill" aria-controls="pills-dropdown1">@fat</a>
-                        <a class="dropdown-item" id="pills-dropdown2-tab" href="#pills-dropdown2" role="tab" data-toggle="pill" aria-controls="pills-dropdown2">@mdo</a>
-                    </div>
-                </li>
-            </ul>
-            <div class="tab-content" id="pills-tabContent">
-                <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">...</div>
-                <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">...</div>
-                <div class="tab-pane fade" id="pills-dropdown1" role="tabpanel" aria-labelledby="pills-dropdown1-tab">...</div>
-                <div class="tab-pane fade" id="pills-dropdown2" role="tabpanel" aria-labelledby="pills-dropdown2-tab">...</div>
-            </div>
-
-
-
-
-
-
-
-
-
-
             <div class="row">
                 <div class="col">
                     <div class="card">
-                        <div class="card-header">
-                            <strong>Wallet</strong>
-                        </div>
+                        <h3 class="card-header">Wallet</h3>
                         <div class="card-block">
                             {{> WalletBallance}}
                         </div>
@@ -96,9 +57,7 @@
             <div class="row">
                 <div class="col">
                     <div class="card">
-                        <div class="card-header">
-                            <strong>Search</strong>
-                        </div>
+                        <h3 class="card-header">Search</h3>
                         <div class="card-block">
                             {{> CandidateSearch}}
                         </div>
@@ -108,9 +67,7 @@
             <div class="row">
                 <div class="col">
                     <div class="card">
-                        <div class="card-header">
-                            <strong>Create</strong>
-                        </div>
+                        <h3 class="card-header">Create</h3>
                         <div class="card-block">
                             {{> createCertificate}}
                         </div>
@@ -120,9 +77,7 @@
             <div class="row">
                 <div class="col">
                     <div class="card">
-                        <div class="card-header">
-                            <strong>Remove</strong>
-                        </div>
+                        <h3 class="card-header">Remove</h3>
                         <div class="card-block">
                             {{> DeleteCertificate}}
                         </div>
@@ -132,19 +87,18 @@
             <div class="row">
                 <div class="col">
                     <div class="card">
-                        <div class="card-header">
-                            <strong>Change</strong>
-                        </div>
+                        <h3 class="card-header">Change</h3>
                         <div class="card-block">
                             {{> UpdateCertificate}}
                         </div>
                     </div>
                 </div>
             </div>
-
-
         </div>
         <!-- /.conainer-fluid -->
+
+    
+
     </main>
 
 
@@ -152,7 +106,7 @@
 
 <footer class="app-footer">
     <a href="signo.com">Signo</a> © 2017 Signo.
-    <span class="float-right">Powered by <a href="signo.com">The Ethereum Blockchain</a>
+    <span class="float-right">Powered by <a href="http://ethereum.org">The Ethereum Blockchain</a>
         </span>
 </footer>
 
@@ -171,72 +125,85 @@
 
 
 <template name="WalletBallance">
-    <p>Your wallet adress is:{{getEthBallance}} {{TemplateVar.get "walletAddress"}} </p>
-    <p>Your ETH ballance is:{{getEthBallance}} {{TemplateVar.get "walletBallance"}} ETH</p>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <p>Your wallet adress is:{{getEthBallance}} {{TemplateVar.get "walletAddress"}} </p>
+                <p>Your ETH ballance is:{{getEthBallance}} {{TemplateVar.get "walletBallance"}} ETH</p>
+            </div>
+        </div>
+    </div>
 </template>
 
 <template name="CandidateSearch">
-    <form class="candidateSearch">
-        <input type="radio" id="searchType" name="searchType" class="custom-control custom-radio"
-               value="candidateNameDOB" checked>Candidate Name and DOB
-        <input type="radio" id="searchType" name="searchType" class="custom-control custom-radio"
-               value="candidateIdHash">Candidate ID Hash
-        <input type="radio" id="searchType" name="searchType" class="custom-control custom-radio"
-               value="certificateAddress">Certificate Address
-        <input type="radio" id="searchType" name="searchType" class="custom-control custom-radio"
-               value="certificateIssuer">Certificate Issuer
-        <br>
-        <input type="submit" class="btn btn-primary" value="Find Certificate"/>
-        <input type="button" id="resetSearch" class="btn btn-secondary" value="Reset Search"/>
-        <br> {{#if compare searchType "candidateNameDOB"}}
-        <label> Candidate Info: </label>
-        <input type="text" name="candidateName" placeholder="Vitalik"/>
-        <input type="date"
-               name="candidateDOB"/> {{> searchResultsList searchResults=searchResults commonMetaData=commonMetaData
-            commonMetaDataText=commonMetaDataText}} {{/if}} {{#if compare searchType "candidateIdHash"}}
-        <label> Candidate ID Hash: </label>
-        <input type="text" name="idHash"
-               placeholder="ID Hash"/> {{> searchResultsList searchResults=searchResults commonMetaData=commonMetaData
-            commonMetaDataText=commonMetaDataText}} {{/if}} {{#if compare searchType "certificateAddress"}}
-        <label>Certificate Adress: </label>
-        <input type="text" name="certificateAddress"
-               placeholder="Certificate Public Key"/>{{> searchResultsList searchResults=searchResults
-            commonMetaData=commonMetaData commonMetaDataText=commonMetaDataText}}{{/if}} {{#if compare searchType
-                                                                                               "certificateIssuer"}}
-        <label>Issuer Address: </label>
-        <input type="text" name="certificateIssuer"
-               placeholder="Institute Public Key"/> {{> searchResultsList searchResults=searchResults
-            commonMetaData=commonMetaData commonMetaDataText=commonMetaDataText}}{{/if}}
 
 
-    </form>
+    <div class="container-fluid">
+        <form class="candidateSearch">
+            <div class="row">
+                <div class="col">
+                    <div class="btn-group" data-toggle="buttons">
+                        <label class="btn btn-secondary {{#if compare searchType "candidateNameDOB"}}active{{/if}}">
+                            <input type="radio" id="searchType" name="searchType" class="custom-control custom-radio"
+                                   value="candidateNameDOB" autocomplete="off">Candidate Name and DOB
+                        </label>
+                        <label class="btn btn-secondary {{#if compare searchType "candidateIdHash"}}active{{/if}}">
+                            <input type="radio" id="searchType" name="searchType" class="custom-control custom-radio"
+                                   value="candidateIdHash" autocomplete="off">Candidate ID Hash
+                        </label>
+                        <label class="btn btn-secondary {{#if compare searchType "certificateAddress"}}active{{/if}}">
+                            <input type="radio" id="searchType" name="searchType" class="custom-control custom-radio"
+                                   value="certificateAddress" autocomplete="off">Certificate Address
+                        </label>
+                        <label class="btn btn-secondary {{#if compare searchType "certificateIssuer"}}active{{/if}}">
+                            <input type="radio" id="searchType" name="searchType" class="custom-control custom-radio"
+                                   value="certificateIssuer" autocomplete="off">Certificate Issuer
+                        </label>
+                    </div>
+                </div>
+            </div>
 
 
+            <div class="row">
+                <div class="col">
+                    {{#if compare searchType "candidateNameDOB"}}
+                        <label> Candidate Info: </label>
+                        <input type="text" name="candidateName" placeholder="Vitalik"/>
+                        <input type="date" name="candidateDOB"/>
+                    {{/if}}
+                    {{#if compare searchType "candidateIdHash"}}
+                        <label> Candidate ID Hash: </label>
+                        <input type="text" name="idHash" placeholder="ID Hash"/>
+                    {{/if}}
+                    {{#if compare searchType "certificateAddress"}}
+                        <label>Certificate Adress: </label>
+                        <input type="text" name="certificateAddress" placeholder="Certificate Public Key"/>
+                    {{/if}}
+                    {{#if compare searchType "certificateIssuer"}}
+                        <label>Issuer Address: </label>
+                        <input type="text" name="certificateIssuer" placeholder="Institute Public Key"/>
+                    {{/if}}
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa fa-search" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        {{> searchResultsList searchResults=searchResults commonMetaData=commonMetaData commonMetaDataText=commonMetaDataText}}
+    </div>
 
 </template>
 
 <template name="searchResultsList">
     {{#if searchResults}}
-        <div style="background-color:green;color:pink;padding:20px;">
-            <div style="background-color:yellow;color:blue;padding:20px;">
-                <h2>Your Search Results are:</h2>
-                {{> candidateCommonMetaData commonMetaDataText=commonMetaDataText}}
+        <div class="card">
+            <div class="card-header">This is a card
+                <span class="badge badge-pill badge-primary float-right">
+                    {{commonMetaDataText}}
+                </span>
             </div>
+
             {{#each result in searchResults}} {{#with
                     result}} {{> ChildCertificate resultCertificateAddress=certificateAddress resultTimeStamp=timeStamp issuerMetaData=issuerMetaData}}
             {{/with}} {{/each}}
@@ -244,36 +211,38 @@
     {{/if}}
 </template>
 
-<template name="candidateCommonMetaData">
-    <div style="background-color:brown;color:yellow;padding:20px;">
-        <p>{{commonMetaDataText}}</p>
-    </div>
-</template>
-
 <template name="ChildCertificate">
     {{#unless TemplateVar.get "isDeleted"}}
-        <div style="background-color:pink;color:green;padding:20px;">
+        <div class="container-fluid">
+            <div class="card">
+                <div class="card-header"><h4>Certificate found:</h4></div>
+                <div class="card-block">
+                    <p>Certificate public address: {{TemplateVar.get "certificateAddress"}}</p>
+                    <p> Date created: {{formatDate resultTimeStamp}}</p>
+                    <p>ID Hash: {{TemplateVar.get "idHash"}}</p>
+                    <p>Certificate issuer address: {{TemplateVar.get "certificateIssuer"}}</p>
+                    {{#if TemplateVar.get "issuerMetaData"}}
+                        <p># of certificates issued by issuer: {{TemplateVar.get "issuerMetaData"}}</p>
+                    {{/if}}
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th scope="row" style="width:50%">Field</th>
+                            <th scope="row" style="width:50%">Value</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{#each objectToPairs (TemplateVar.get "sundryData")}}
+                            <tr>
+                                <td>{{key}}</td>
+                                <td>{{value}}</td>
+                            </tr>
+                        {{/each}}
+                        </tbody>
 
-            <h3>Certificate infomation is below</h3>
-            <p>Certificate public address: {{TemplateVar.get "certificateAddress"}}</p>
-            <p> Date created: {{formatDate resultTimeStamp}}</p>
-            <p>ID Hash: {{TemplateVar.get "idHash"}}</p>
-            <p>Certificate issuer address: {{TemplateVar.get "certificateIssuer"}}</p>
-            {{#if TemplateVar.get "issuerMetaData"}}
-                <p># of certificates issued by issuer: {{TemplateVar.get "issuerMetaData"}}</p>
-            {{/if}}
-            <table>
-                <tr>
-                    <th>Field</th>
-                    <th>Value</th>
-                </tr>
-                {{#each objectToPairs (TemplateVar.get "sundryData")}}
-                    <tr>
-                        <td>{{key}}</td>
-                        <td>{{value}}</td>
-                    </tr>
-                {{/each}}
-            </table>
+                    </table>
+                </div>
+            </div>
         </div>
     {{/unless}}
 </template>
@@ -283,72 +252,197 @@
 </template>
 
 <template name="DeleteCertificateForm">
-    <form class="deleteCertificateForm">
-        <input type="text" name="certificateAddress" placeholder="0x0123456789abcdef012345679abcdef0123456"/>
-        <input type="submit" id="deleteCertificate" class="btn btn-primary" value="Delete Certificate"/>
-    </form>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <form id="deleteCertificateForm">
+
+                    <div class="form-group {{TemplateVar.get "valid"}}">
+                        <label class="form-control-label" for="deleteCertificateAddress">
+                            Input Certificate address
+                        </label>
+                        <input type="text" class="form-control form-control-success" id="deleteCertificateAddress"
+                               name="certificateAddress"
+                               placeholder="0x0123456789abcdef012345679abcdef0123456"/>
+                    </div>
+                    <button type="submit" id="deleteCertificate" class="btn btn-danger">
+                        <i class="fa fa-trash" aria-hidden="true"></i> Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
 </template>
 
 <template name="UpdateCertificate">
-    {{> UpdateCertificateForm}}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                {{> UpdateCertificateForm}}
+            </div>
+        </div>
+    </div>
 </template>
 
 <template name="UpdateCertificateForm">
-    <form class="updateCertificateForm">
-        <input type="text" name="certificateAddress" placeholder="0x0123456789abcdef012345679abcdef0123456"/>
-        <input type="submit" id="findCertificate" class="btn btn-primary" value="Find Certificate"/>
-    </form>
-    {{#if updateCertificateSearchResults}}
-        {{>UpdateCertificateFormChild updateCertificateSearchResults=updateCertificateSearchResults}}
-    {{/if}}
+    <div class="row">
+        <div class="col">
+            <form id="updateCertificateForm">
+                <div class="form-group {{TemplateVar.get "valid"}}">
+                    <label class="form-control-label" for="updateAddress">
+                        Input Certificate address
+                    </label>
+                    <input type="text" class="form-control form-control-success" id="updateAddress"
+                           name="certificateAddress"
+                           placeholder="0x0123456789abcdef012345679abcdef0123456"/>
+                </div>
+                <button type="submit" id="findCertificate" class="btn btn-primary">
+                    <i class="fa fa-search" aria-hidden="true"></i> Find
+                </button>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        {{#if updateCertificateSearchResults}}
+            {{>UpdateCertificateFormChild updateCertificateSearchResults=updateCertificateSearchResults}}
+        {{/if}}
+    </div>
+
 </template>
 
 <template name="UpdateCertificateFormChild">
     {{#if (TemplateVar.get "json")}}
         {{>UpdateCertificateFormChildChild json=(TemplateVar.get "json")}}
-        <br>
-        Is anonymous? <input type="checkbox" id="anonymousUpdate" {{updateCheckboxAnonymous}}>
-        <button type="submit" id="update">Update</button>
+        <button type="submit" id="update" class="btn btn-primary">
+            <i class="fa fa-wrench" aria-hidden="true"></i> Update
+        </button>
     {{/if}}
 </template>
 
 <template name="UpdateCertificateFormChildChild">
-    {{#each inputs}}
-        {{> inputFields}}
-    {{/each}}
-</template>
-
-<template name="createCertificate">
-    <label>Pick a template:</label>
-    <select name="certificatesTemplates" id="certificatesTemplates" class="custom-select">
-        {{#each template in certificatesTemplates}}
-            <option value="{{template.id}}">{{template.name}}</option>
+    <table class="table">
+        <thead>
+        <tr>
+            <th style="width:30%">
+                <strong>
+                    Field
+                </strong>
+            </th>
+            <th style="width:auto; padding-bottom: 11px">
+                <strong>
+                    Value
+                </strong>
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each inputs}}
+            {{> inputFields}}
         {{/each}}
-    </select>
-    <br>
-    {{#each inputs}}
-        {{> inputFields}}
-    {{/each}}
-    <br>
-    <button id='add-input' class="btn btn-secondary">
-        Add Input
-    </button>
-    <br>Is anonymous?
-    <label class="switch switch-3d switch-primary">
-        <input type="checkbox" class="switch-input" id="anonymousCreate">
-        <span class="switch-label"></span>
-        <span class="switch-handle"></span>
-    </label>
-
-    <button type="submit" id="createCertificate" class="btn btn-primary">Create</button>
-
+        </tbody>
+        <tfoot>
+        <tr>
+            <td colspan="2">
+                <button id='add-input' class="btn btn-secondary rounded">
+                    <i class="fa fa-plus" aria-hidden="true"></i>
+                </button>
+                <div class="pull-right" style="padding-top: 4px">
+                    <strong class="text-muted">
+                        Anonymous certificate
+                    </strong>
+                    <label class="switch switch-text switch-pill switch-secondary">
+                        <input type="checkbox" class="switch-input" id="anonymousUpdate" {{updateCheckboxAnonymous}}>
+                        <span class="switch-label" data-on="On" data-off="Off"></span>
+                        <span class="switch-handle"></span>
+                    </label>
+                </div>
+            </td>
+        </tr>
+        </tfoot>
+    </table>
 </template>
-
+<template name="createCertificate">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th style="width:30%">
+                            <strong>
+                                Field
+                            </strong>
+                        </th>
+                        <th style="width:auto; padding-bottom: 11px">
+                            <strong>
+                                Value
+                            </strong>
+                            <div class="pull-right">
+                                <strong>Pick a template</strong>
+                                <select name="certificatesTemplates" id="certificatesTemplates" class="">
+                                    {{#each template in certificatesTemplates}}
+                                        <option value="{{template.id}}">{{template.name}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{#each inputs}}
+                        {{> inputFields}}
+                    {{/each}}
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="2">
+                            <button id='add-input' class="btn btn-secondary rounded">
+                                <i class="fa fa-plus" aria-hidden="true"></i>
+                            </button>
+                            <div class="pull-right" style="padding-top: 4px">
+                                <strong class="text-muted">
+                                    Anonymous certificate
+                                </strong>
+                                <label class="switch switch-text switch-pill switch-secondary">
+                                    <input type="checkbox" class="switch-input" id="anonymousCreate">
+                                    <span class="switch-label" data-on="On" data-off="Off"></span>
+                                    <span class="switch-handle"></span>
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                    </tfoot>
+                </table>
+                <button type="submit" id="createCertificate" class="btn btn-primary">
+                    <i class="fa fa-pencil" aria-hidden="true"></i> Create
+                </button>
+            </div>
+        </div>
+    </div>
+</template>
 <template name='inputFields'>
-    <input name='inputKey' class='inputKey' type='text' uniqid="{{uniqid}}" value="{{keyValue}}" {{readOnly}}>
-    <input name='inputValue' class='inputValue' type='{{type}}' uniqid="{{uniqid}}" value="{{value}}">
-    {{#unless readOnly}}
-        <button class='remove-input' uniqid="{{uniqid}}">Remove</button>
-    {{/unless}}
-    <br>
+    <tr>
+        <td>
+            <input name='inputKey' class='form-control' type='text' uniqid="{{uniqid}}"
+                   value="{{keyValue}}" {{readOnly}}>
+        </td>
+        <td>
+            <div class="input-group">
+                <input name='inputValue' class='form-control' type='{{type}}' uniqid="{{uniqid}}" value="{{value}}">
+                <span class="input-group-btn">
+                    {{#if readOnly}}
+                        <button id="remove-input" uniqid="{{uniqid}}" class="btn btn-link rounded"
+                                style="cursor: not-allowed" aria-disabled="true" disabled>
+                        <i class="fa fa-trash" aria-hidden="true"></i>
+                        </button>
+                    {{/if}}
+                    {{#unless readOnly}}
+                        <button id="remove-input" uniqid="{{uniqid}}" class="btn btn-danger rounded">
+                        <i class="fa fa-trash" aria-hidden="true"></i></button>
+                    {{/unless}}
+                </span>
+            </div>
+        </td>
+    </tr>
 </template>

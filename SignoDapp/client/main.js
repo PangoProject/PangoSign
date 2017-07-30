@@ -507,6 +507,7 @@ Template.CandidateSearch.events({
 Template.DeleteCertificateForm.events({
     "submit #deleteCertificateForm": function (event) {
         let certificateAddress = event.target.certificateAddress.value;
+
         try {
             let certificateAddress = event.target.certificateAddress.value;
             let searchResults = Certificates.find(
@@ -527,11 +528,20 @@ Template.DeleteCertificateForm.events({
             console.log("Failed to delete certificate: " + err);
         }
     event.preventDefault();
+    },
+    "change #deleteCertificateAddress": function(){
+        let certificateAddress = document.getElementById("deleteCertificateAddress").value;
+        let template = Template.instance();
+        if(web3.isAddress(certificateAddress)){
+            TemplateVar.set(template,"valid","has-success");
+        } else {
+            TemplateVar.set(template,"valid","has-danger");
+        }
     }
 });
 
 Template.UpdateCertificateForm.events({
-    "submit .updateCertificateForm": function (event) {
+    "submit #updateCertificateForm": function (event) {
         try {
             let certificateAddress = event.target.certificateAddress.value;
             let searchResults = Certificates.find(
@@ -552,6 +562,15 @@ Template.UpdateCertificateForm.events({
             console.log("Failed to update certificate: " + err);
         }
         event.preventDefault();
+    },
+    "change #updateCertificateForm": function(){
+        let certificateAddress = document.getElementById("updateAddress").value;
+        let template = Template.instance();
+        if(web3.isAddress(certificateAddress)){
+            TemplateVar.set(template,"valid","has-success");
+        } else {
+            TemplateVar.set(template,"valid","has-danger");
+        }
     }
 });
 
@@ -656,7 +675,7 @@ Template.createCertificate.events({
 });
 
 Template.inputFields.events({
-    'click .remove-input': function (event) {
+    'click #remove-input': function (event) {
         var uniqid = $(event.currentTarget).attr('uniqid');
         inputs = Session.get('inputs');
         inputs = _.filter(inputs, function (x) {
@@ -671,6 +690,7 @@ Template.inputFields.events({
         index = inputs.findIndex(function (x) {
             return x.uniqid == uniqid;
         });
+        console.log($input.context);
         if ($input.context.name == "inputKey") inputs[index].keyValue = $input.val();
         if ($input.context.name == "inputValue") inputs[index].value = $input.val();
         Session.set('inputs', inputs);
