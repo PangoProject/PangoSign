@@ -97,7 +97,6 @@
         </div>
         <!-- /.conainer-fluid -->
 
-    
 
     </main>
 
@@ -125,14 +124,30 @@
 
 
 <template name="WalletBallance">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col">
-                <p>Your wallet adress is:{{getEthBallance}} {{TemplateVar.get "walletAddress"}} </p>
-                <p>Your ETH ballance is:{{getEthBallance}} {{TemplateVar.get "walletBallance"}} ETH</p>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="card card-inverse card-info">
+                <div class="card-block">
+                    <div class="h1 text-muted text-right mb-2">
+                        <i class="fa fa-address-card" aria-hidden="true"></i>
+                    </div>
+                    <div class="h4 mb-0">{{getEthBallance}} {{TemplateVar.get "walletAddress"}}</div>
+                    <small class="text-muted text-uppercase font-weight-bold">You Wallet Address</small>
+                </div>
             </div>
+        </div><!--/.col-->
+        <div class="col-sm-6">
+            <div class="card card-inverse card-info">
+                <div class="card-block">
+                    <div class="h1 text-muted text-right mb-2">
+                        <i class="fa fa-money" aria-hidden="true"></i>
+                    </div>
+                        <div class="h4 mb-0">{{getEthBallance}} {{TemplateVar.get "walletBallance"}}</div>
+                        <small class="text-muted text-uppercase font-weight-bold">Your Ether Balance</small>
+                    </div>
+                </div>
+            </div><!--/.col-->
         </div>
-    </div>
 </template>
 
 <template name="CandidateSearch">
