@@ -404,7 +404,7 @@ Template.UpdateCertificateForm.helpers({
 });
 
 Template.CandidateSearch.events({
-    "click .searchType": function (event) {
+    "click #searchType": function (event) {
         Session.set("searchType", event.target.value);
         Session.set("certificateSearchResults", null);
     },
@@ -499,13 +499,13 @@ Template.CandidateSearch.events({
         event.preventDefault();
     },
 
-    "click .resetSearch": function () {
+    "click #resetSearch": function () {
         Session.set("certificateSearchResults", null);
     }
 });
 
 Template.DeleteCertificateForm.events({
-    "submit .deleteCertificateForm": function (event) {
+    "submit #deleteCertificateForm": function (event) {
         let certificateAddress = event.target.certificateAddress.value;
         try {
             let certificateAddress = event.target.certificateAddress.value;

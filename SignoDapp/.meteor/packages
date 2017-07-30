@@ -26,9 +26,8 @@ ethereum:web3
 underscore
 random
 fortawesome:fontawesome
-bkruse:pace
 coursierprive:tether
-jquery
 nahue:simple-line-icons
 fourseven:scss
 less
+jmsalash:chartjs
