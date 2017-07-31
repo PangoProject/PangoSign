@@ -300,6 +300,19 @@ Template.CandidateSearch.onCreated(function () {
     Session.set("commonMetaData", null);
 });
 
+Template.CandidateSearch.rendered = function () {
+    $('#searchCandidateDOB').datepicker({
+        format: "yyyy-mm-dd",
+        endDate: "today",
+        startView: 3,
+        maxViewMode: 3,
+        clearBtn: true,
+        autoclose: true,
+        defaultViewDate: { year: 1970, month: 0, day: 1 }
+    });
+};
+
+
 Template.ChildCertificate.onCreated(function () {
     let template = Template.instance();
     let address = template.data.resultCertificateAddress;
@@ -410,18 +423,16 @@ Template.CandidateSearch.events({
     },
 
     "submit .candidateSearch": function (event) {
-        let template = Template.instance();
-
-        let searchResults;
-        let commonMetaData;
-        let commonMetaDataText;
-        let idHash;
+        var searchResults=[];
+        var commonMetaData;
+        var commonMetaDataText;
+        var idHash;
         switch (Session.get("searchType")) {
             case "candidateNameDOB":
-                let candidateName = event.target.candidateName.value;
-                let candidateDOB = event.target.candidateDOB.value;
+                var candidateName =  document.getElementById("searchCandidateName").value;
+                var candidateDOB = document.getElementById("searchCandidateDOB").value;
                 if (candidateDOB !== null && candidateDOB !== undefined && candidateDOB !== "") {
-                    let idHashFull =
+                    var idHashFull =
                         "0x" +
                         SHA256(
                             candidateName.toString().toLowerCase() +
@@ -434,7 +445,7 @@ Template.CandidateSearch.events({
                         {sort: {timeStamp: -1}}
                     ).fetch();
                 }
-                let idHashShort =
+                var idHashShort =
                     "0x" +
                     SHA256(
                         candidateName.toString().toLowerCase()

@@ -142,12 +142,12 @@
                     <div class="h1 text-muted text-right mb-2">
                         <i class="fa fa-money" aria-hidden="true"></i>
                     </div>
-                        <div class="h4 mb-0">{{getEthBallance}} {{TemplateVar.get "walletBallance"}}</div>
-                        <small class="text-muted text-uppercase font-weight-bold">Your Ether Balance</small>
-                    </div>
+                    <div class="h4 mb-0">{{getEthBallance}} {{TemplateVar.get "walletBallance"}}</div>
+                    <small class="text-muted text-uppercase font-weight-bold">Your Ether Balance</small>
                 </div>
-            </div><!--/.col-->
-        </div>
+            </div>
+        </div><!--/.col-->
+    </div>
 </template>
 
 <template name="CandidateSearch">
@@ -178,13 +178,19 @@
                 </div>
             </div>
 
-
             <div class="row">
                 <div class="col">
                     {{#if compare searchType "candidateNameDOB"}}
-                        <label> Candidate Info: </label>
-                        <input type="text" name="candidateName" placeholder="Vitalik"/>
-                        <input type="date" name="candidateDOB"/>
+                        <div class="input-group date">
+                            <span class="input-group-addon" id="basic-addon1"><i class="fa fa-user"
+                                                                                 aria-hidden="true"></i></span>
+                            <input type="text" class="form-control" id="searchCandidateName" name="candidateName"
+                                   placeholder="Name"
+                                   aria-label="Username" aria-describedby="basic-addon1">
+                            <input type="text" name="candidateDOB" id='searchCandidateDOB' class="form-control"><span
+                                class="input-group-addon" placeholder="Date of Birth"><i class="fa fa-calendar"
+                                                                                         aria-hidden="true"></i></span>
+                        </div>
                     {{/if}}
                     {{#if compare searchType "candidateIdHash"}}
                         <label> Candidate ID Hash: </label>
@@ -198,8 +204,12 @@
                         <label>Issuer Address: </label>
                         <input type="text" name="certificateIssuer" placeholder="Institute Public Key"/>
                     {{/if}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
                     <button type="submit" class="btn btn-primary">
-                        <i class="fa fa-search" aria-hidden="true"></i>
+                        <i class="fa fa-search" aria-hidden="true"></i> Search
                     </button>
                 </div>
             </div>
