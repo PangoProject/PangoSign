@@ -164,7 +164,7 @@
                         </label>
                         <label class="btn btn-secondary {{#if compare searchType "candidateIdHash"}}active{{/if}}">
                             <input type="radio" id="searchType" name="searchType" class="custom-control custom-radio"
-                                   value="candidateIdHash" autocomplete="off">Candidate ID Hash
+                                   value="candidateIdHash" autocomplete="off">Candidate ID
                         </label>
                         <label class="btn btn-secondary {{#if compare searchType "certificateAddress"}}active{{/if}}">
                             <input type="radio" id="searchType" name="searchType" class="custom-control custom-radio"
@@ -193,16 +193,34 @@
                         </div>
                     {{/if}}
                     {{#if compare searchType "candidateIdHash"}}
-                        <label> Candidate ID Hash: </label>
-                        <input type="text" name="idHash" placeholder="ID Hash"/>
+                        <div class="input-group {{TemplateVar.get "valid"}}">
+                            <span class="input-group-addon" id="basic-addon1"><i class="fa fa-id-card"
+                                                                                 aria-hidden="true"></i>
+                            </span>
+                            <input type="text" class="form-control" id="searchCandidateIDHash"
+                                   placeholder="ID"
+                                   aria-label="Candidate ID" aria-describedby="basic-addon1">
+
+                        </div>
                     {{/if}}
                     {{#if compare searchType "certificateAddress"}}
-                        <label>Certificate Adress: </label>
-                        <input type="text" name="certificateAddress" placeholder="Certificate Public Key"/>
+                        <div class="input-group {{TemplateVar.get "valid"}}">
+                            <span class="input-group-addon" id="basic-addon1"><i class="fa fa-file-text"
+                                                                                 aria-hidden="true"></i>
+                            </span>
+                            <input type="text" class="form-control" id="searchCertificateAddress"
+                                   placeholder="Address"
+                                   aria-label="Certificate Address" aria-describedby="basic-addon1">
+                        </div>
                     {{/if}}
                     {{#if compare searchType "certificateIssuer"}}
-                        <label>Issuer Address: </label>
-                        <input type="text" name="certificateIssuer" placeholder="Institute Public Key"/>
+                        <div class="input-group {{TemplateVar.get "valid"}}">
+                            <span class="input-group-addon" id="basic-addon1"><i class="fa fa-university" aria-hidden="true"></i>
+                            </span>
+                            <input type="text" class="form-control" id="searchCertificateIssuer"
+                                   placeholder="Certificate Issuer"
+                                   aria-label="Certificate Issuer" aria-describedby="basic-addon1">
+                        </div>
                     {{/if}}
                 </div>
             </div>

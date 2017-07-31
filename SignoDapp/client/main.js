@@ -62,6 +62,7 @@ function getContract(certificateAddress) {
     catch (err) {
         console.log(err);
     }
+    return null;
 }
 
 function createCertificate(candidateName, candidateDOB, sundryData, idHash = "") {
@@ -111,7 +112,8 @@ function createCertificate(candidateName, candidateDOB, sundryData, idHash = "")
         catch (err) {
             console.log("There was an error creating your certificate: " + err);
         }
-    });
+    })
+        ;
 }
 
 function getCertificateFromBlockchain(certificateAddress, template) {
@@ -189,20 +191,32 @@ function JSONToArrayOfObjects(json) {
     return objectArray;
 }
 
+function isContractAddressValidStr(contractAddres) {
+
+
+    if (web3.isAddress(contractAddres)){
+        return "has-success";
+    }
+    return "has-danger";
+}
+
 function deleteCertificate(certificateAddress) {
     return new Promise((resolve) => {
         let myContract = getContract(certificateAddress);
         myContract.deleteCertificate(function (err, res) {
             if (!err) resolve(res);
         });
-    });
+    })
+        ;
 }
 
 function updateCertificate(oldCertificateAddress, candidateName = "", candidateDOB = "", sundryData = "") {
     return new Promise((result) => {
         myContract = getContract(oldCertificateAddress);
         myContract.idHash((err, res) => {
-            if (!err) {
+            if (
+                !err
+            ) {
                 let oldIdHash = res;
                 let newIdHash;
                 if (candidateName !== "") {
@@ -217,19 +231,26 @@ function updateCertificate(oldCertificateAddress, candidateName = "", candidateD
                 } else newIdHash = oldIdHash;
                 if (oldIdHash !== newIdHash) confirm("Are you sure you want to change this certificate, you have changed the owner.");
                 createCertificate(null, null, sundryData, newIdHash).then((newCertificateAddress) => {
-                    if (newCertificateAddress) {
-                        deleteCertificate(oldCertificateAddress).then((resolve) => {
-                            if (resolve) {
-                                console.log("Successfully updated the certificate.");
-                            } else console.log("Failed to delete certificate.")
-                        });
+                        if (newCertificateAddress) {
+                            deleteCertificate(oldCertificateAddress).then((resolve) => {
+                                    if (resolve) {
+                                        console.log("Successfully updated the certificate.");
+                                    } else console.log("Failed to delete certificate.")
+                                }
+                            )
+                            ;
+                        }
                     }
-                });
-            } else {
+                )
+                ;
+            }
+            else {
                 throw "Something went horribly wrong with updating, please refresh and try again.";
             }
-        });
-    });
+        })
+        ;
+    })
+        ;
 }
 
 function JSONToMap(json) {
@@ -266,10 +287,6 @@ function arrayToJSON(array) {
         json = json + newEntry.substring(1, newEntry.length - 1) + ",";
     }
     return json.substring(0, json.length - 1);
-    // }
-    // catch (err) {
-    //     console.log("Unable to parse JSON of data: " + err);
-    // }
 }
 
 Template.registerHelper("objectToPairs", function (object) {
@@ -308,7 +325,7 @@ Template.CandidateSearch.rendered = function () {
         maxViewMode: 3,
         clearBtn: true,
         autoclose: true,
-        defaultViewDate: { year: 1970, month: 0, day: 1 }
+        defaultViewDate: {year: 1970, month: 0, day: 1}
     });
 };
 
@@ -418,19 +435,41 @@ Template.UpdateCertificateForm.helpers({
 
 Template.CandidateSearch.events({
     "click #searchType": function (event) {
+        let template = Template.instance();
         Session.set("searchType", event.target.value);
         Session.set("certificateSearchResults", null);
+        TemplateVar.set(template, 'valid', "");
+    },
+    'change #searchCandidateIDHash': function (event) {
+        let template = Template.instance();
+        let idHash = document.getElementById("searchCandidateIDHash").value;
+        if (/[A-Fa-f0-9]{64}/.test(idHash)) {
+            TemplateVar.set(template, "idHashValid", "has-success");
+        } else {
+            TemplateVar.set(template, "idHashValid", "has-danger");
+        }
+    },
+
+    "change #searchCertificateIssuer": function () {
+        let certificateAddress = document.getElementById("searchCertificateIssuer").value;
+        let template = Template.instance();
+        TemplateVar.set(template, "certificateIssuerValid", isContractAddressValidStr(certificateAddress));
+    },
+    "change #searchCertificateAddress": function () {
+        let certificateAddress = document.getElementById("searchCertificateAddress").value;
+        let template = Template.instance();
+        TemplateVar.set(template, "searchCertificateAddress", isContractAddressValidStr(certificateAddress));
     },
 
     "submit .candidateSearch": function (event) {
-        var searchResults=[];
-        var commonMetaData;
-        var commonMetaDataText;
-        var idHash;
+        let searchResults = [];
+        let commonMetaData;
+        let commonMetaDataText;
+        let idHash;
         switch (Session.get("searchType")) {
             case "candidateNameDOB":
-                var candidateName =  document.getElementById("searchCandidateName").value;
-                var candidateDOB = document.getElementById("searchCandidateDOB").value;
+                let candidateName = document.getElementById("searchCandidateName").value;
+                let candidateDOB = document.getElementById("searchCandidateDOB").value;
                 if (candidateDOB !== null && candidateDOB !== undefined && candidateDOB !== "") {
                     var idHashFull =
                         "0x" +
@@ -465,7 +504,8 @@ Template.CandidateSearch.events({
                 }
                 break;
             case "candidateIdHash":
-                idHash = event.target.idHash.value;
+                idHash = document.getElementById("searchCandidateIDHash").value;
+                if (idHash.substr(0, 2) != "0x") idHash = "0x" + idHash;
                 searchResults = Certificates.find(
                     {idHash: idHash},
                     {sort: {timeStamp: -1}}
@@ -479,7 +519,7 @@ Template.CandidateSearch.events({
                 }
                 break;
             case "certificateAddress":
-                let certificateAddress = event.target.certificateAddress.value;
+                let certificateAddress = document.getElementById("searchCertificateAddress").value;
                 searchResults = Certificates.find(
                     {
                         certificateAddress: certificateAddress
@@ -491,7 +531,7 @@ Template.CandidateSearch.events({
                 }
                 break;
             case "certificateIssuer":
-                let certificateIssuer = event.target.certificateIssuer.value.toLowerCase();
+                let certificateIssuer = document.getElementById("searchCertificateIssuer").value;
                 searchResults = Certificates.find(
                     {
                         certificateIssuer: certificateIssuer
@@ -538,16 +578,12 @@ Template.DeleteCertificateForm.events({
         } catch (err) {
             console.log("Failed to delete certificate: " + err);
         }
-    event.preventDefault();
+        event.preventDefault();
     },
-    "change #deleteCertificateAddress": function(){
+    "change #deleteCertificateAddress": function () {
         let certificateAddress = document.getElementById("deleteCertificateAddress").value;
         let template = Template.instance();
-        if(web3.isAddress(certificateAddress)){
-            TemplateVar.set(template,"valid","has-success");
-        } else {
-            TemplateVar.set(template,"valid","has-danger");
-        }
+        TemplateVar.set(template, "valid", isContractAddressValidStr(certificateAddress));
     }
 });
 
@@ -574,14 +610,10 @@ Template.UpdateCertificateForm.events({
         }
         event.preventDefault();
     },
-    "change #updateCertificateForm": function(){
+    "change #updateCertificateForm": function () {
         let certificateAddress = document.getElementById("updateAddress").value;
         let template = Template.instance();
-        if(web3.isAddress(certificateAddress)){
-            TemplateVar.set(template,"valid","has-success");
-        } else {
-            TemplateVar.set(template,"valid","has-danger");
-        }
+        TemplateVar.set(template, "valid", isContractAddressValidStr(certificateAddress));
     }
 });
 
