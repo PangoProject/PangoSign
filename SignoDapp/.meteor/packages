@@ -1,3 +1,4 @@
+
 # Meteor packages used by this project, one per line.
 # Check this file (and the other files in this directory) into your repository.
 #
@@ -21,14 +22,20 @@ frozeman:template-var
 reactive-dict
 session
 sha
-momentjs:moment
+
 ethereum:web3
 underscore
 random
 fortawesome:fontawesome
-coursierprive:tether
-nahue:simple-line-icons
 fourseven:scss
 less
-jmsalash:chartjs
+
+#we messed with the order hard here. it MUST go: Jquery->tether->bootstrap & moment->chartsjs
+jquery
+
+momentjs:moment
+
+coursierprive:tether
 rajit:bootstrap3-datepicker
+twbs:bootstrap@4.0.0-alpha2
+em0ney:chartjs

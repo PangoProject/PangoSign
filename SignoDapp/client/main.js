@@ -132,6 +132,13 @@ function getCertificateFromBlockchain(certificateAddress, template) {
         });
         myContract.sundryData(function (err, res) {
             let mapOfJSON = JSONToMap(res);
+            if (mapOfJSON.Name===undefined){
+                TemplateVar.set(template,'anonymous',true);
+                TemplateVar.set(template,'name',"Anonymous Certificate");
+            } else {
+                TemplateVar.set(template,'name',mapOfJSON.Name);
+            }
+
             TemplateVar.set(template, "json", res);
             TemplateVar.set(template, "sundryData", mapOfJSON);
         });
@@ -192,9 +199,8 @@ function JSONToArrayOfObjects(json) {
 }
 
 function isContractAddressValidStr(contractAddres) {
-
-
-    if (web3.isAddress(contractAddres)){
+    if (contractAddres.length === 0) return "";
+    if (web3.isAddress(contractAddres)) {
         return "has-success";
     }
     return "has-danger";
@@ -264,9 +270,6 @@ function JSONToMap(json) {
         let key = Object.keys(dictPair)[0];
         map[key] = dictPair[key];
     }
-    if (map.Name == undefined) {
-        map["This is an Anonymous Certificate"] = "";
-    }
     return map;
 }
 
@@ -287,6 +290,17 @@ function arrayToJSON(array) {
         json = json + newEntry.substring(1, newEntry.length - 1) + ",";
     }
     return json.substring(0, json.length - 1);
+}
+
+function isValidSHAStr(idHash) {
+    if (idHash.length === 0) {
+        return "";
+        //  Check if valid SHA256 hash
+    } else if (/[A-Fa-f0-9]{64}/.test(idHash)) {
+        return "has-success";
+    } else {
+        return "has-danger";
+    }
 }
 
 Template.registerHelper("objectToPairs", function (object) {
@@ -317,19 +331,6 @@ Template.CandidateSearch.onCreated(function () {
     Session.set("commonMetaData", null);
 });
 
-Template.CandidateSearch.rendered = function () {
-    $('#searchCandidateDOB').datepicker({
-        format: "yyyy-mm-dd",
-        endDate: "today",
-        startView: 3,
-        maxViewMode: 3,
-        clearBtn: true,
-        autoclose: true,
-        defaultViewDate: {year: 1970, month: 0, day: 1}
-    });
-};
-
-
 Template.ChildCertificate.onCreated(function () {
     let template = Template.instance();
     let address = template.data.resultCertificateAddress;
@@ -350,6 +351,87 @@ Template.UpdateCertificateFormChildChild.onCreated(function () {
     Session.set("inputs", JSONToArrayOfObjects(json));
 });
 
+Template.candidateDetailsSearch.onCreated(function(){
+    Session.set('searchType', 'candidateNameDOB');
+});
+
+Template.candidateIdSearch.onCreated(function(){
+    Session.set('searchType', 'candidateIdHash');
+});
+
+Template.certificateAddressSearch.onCreated(function(){
+    Session.set('searchType', 'certificateAddress');
+});
+
+Template.issuerAddressSearch.onCreated(function(){
+    Session.set('searchType', 'certificateIssuer');
+});
+
+Template.createCertificate.onCreated(function () {
+
+    Session.set("certificatesTemplates", templates);
+    defaultInput = _.filter(templates, function (x) {
+        return x.id == 0;
+    })[0].template;
+    Session.set('inputs', defaultInput);
+});
+
+Template.candidateDetailsSearch.onRendered(function () {
+    $('#searchCandidateDOB').datepicker({
+        format: "yyyy-mm-dd",
+        endDate: "today",
+        startView: 3,
+        maxViewMode: 3,
+        clearBtn: true,
+        autoclose: true,
+        defaultViewDate: {year: 1970, month: 0, day: 1}
+    });
+});
+
+Template.anonymousCertificateIcon.onRendered (function() {
+    $('[data-toggle="popover"]').popover();
+    $('.popover-dismiss').popover({
+        trigger: 'focus'
+    })
+});
+
+Template.modal.onRendered (function() {
+    console.log("render");
+    $('#myModal').on('shown.bs.modal', function () {
+        $('#myInput').focus()
+    });
+});
+
+Template.WalletBallance.onRendered(function (){
+    try {
+        let template = Template.instance();
+        web3.eth.getAccounts(function (err, res) {
+            if (!err) {
+                Address = res[0];
+                TemplateVar.set(template, "walletAddress", Address);
+                web3.eth.getBalance(Address, function (err, res) {
+                    let ethBlance = Math.round(web3.fromWei(res, "ether")*10000)/10000;
+                    TemplateVar.set(template, "walletBallance", ethBlance);
+                });
+                console.log(Certificates.find().fetch());
+                numberOfCerts = Certificates.find({certificateIssuer: Address}).count();
+                TemplateVar.set(template, "numberOfCerts", numberOfCerts);
+            } else {
+                console.log("There was an error fetching wallet ballance: " + err);
+            }
+        });
+    } catch (err) {
+        console.log("There was an error retrieving web3.")
+    }
+});
+
+Template.CandidateSearch.onRendered(function () {
+    $('#myTab a').click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+    });
+});
+
 Template.UpdateCertificateFormChild.helpers({
     updateCheckboxAnonymous: function () {
         return Session.get("updateCheckboxAnonymous");
@@ -362,39 +444,12 @@ Template.UpdateCertificateFormChildChild.helpers({
     }
 });
 
-Template.UpdateCertificateFormChildChild.events({
-    'click #add-input': function () {
-        var inputs = Session.get('inputs');
-        var uniqid = Random.id(); // Give a unique ID so you can pull _this_ input when you click remove
-        inputs.push(
-            {
-                uniqid: uniqid,
-                keyValue: "",
-                value: ""
-            });
-        Session.set('inputs', inputs);
-    }
-});
-
-Template.WalletBallance.helpers({
-    getEthBallance: function () {
-        try {
-            let template = Template.instance();
-            web3.eth.getAccounts(function (err, res) {
-                if (!err) {
-                    Address = res[0];
-                    TemplateVar.set(template, "walletAddress", Address);
-                    web3.eth.getBalance(Address, function (err, res) {
-                        let ethBlance = web3.fromWei(res, "ether");
-                        TemplateVar.set(template, "walletBallance", ethBlance);
-                    });
-                } else {
-                    console.log("There was an error fetching wallet ballance: " + err);
-                }
-            });
-        } catch (err) {
-            console.log("There was an error retrieving web3.")
-        }
+Template.createCertificate.helpers({
+    inputs: function () {
+        return Session.get('inputs'); // reactively watches the Session variable, so when it changes, this result will change and our template will change
+    },
+    certificatesTemplates: function () {
+        return Session.get("certificatesTemplates");
     }
 });
 
@@ -433,6 +488,20 @@ Template.UpdateCertificateForm.helpers({
     }
 });
 
+Template.UpdateCertificateFormChildChild.events({
+    'click #add-input': function () {
+        var inputs = Session.get('inputs');
+        var uniqid = Random.id(); // Give a unique ID so you can pull _this_ input when you click remove
+        inputs.push(
+            {
+                uniqid: uniqid,
+                keyValue: "",
+                value: ""
+            });
+        Session.set('inputs', inputs);
+    }
+});
+
 Template.CandidateSearch.events({
     "click #searchType": function (event) {
         let template = Template.instance();
@@ -443,22 +512,18 @@ Template.CandidateSearch.events({
     'change #searchCandidateIDHash': function (event) {
         let template = Template.instance();
         let idHash = document.getElementById("searchCandidateIDHash").value;
-        if (/[A-Fa-f0-9]{64}/.test(idHash)) {
-            TemplateVar.set(template, "idHashValid", "has-success");
-        } else {
-            TemplateVar.set(template, "idHashValid", "has-danger");
-        }
+        TemplateVar.set(template, "valid", isValidSHAStr(idHash));
     },
 
     "change #searchCertificateIssuer": function () {
         let certificateAddress = document.getElementById("searchCertificateIssuer").value;
         let template = Template.instance();
-        TemplateVar.set(template, "certificateIssuerValid", isContractAddressValidStr(certificateAddress));
+        TemplateVar.set(template, "valid", isContractAddressValidStr(certificateAddress));
     },
     "change #searchCertificateAddress": function () {
         let certificateAddress = document.getElementById("searchCertificateAddress").value;
         let template = Template.instance();
-        TemplateVar.set(template, "searchCertificateAddress", isContractAddressValidStr(certificateAddress));
+        TemplateVar.set(template, "valid", isContractAddressValidStr(certificateAddress));
     },
 
     "submit .candidateSearch": function (event) {
@@ -647,24 +712,6 @@ Template.UpdateCertificateFormChild.events({
 
         }
         event.preventDefault();
-    }
-});
-
-Template.createCertificate.onCreated(function () {
-
-    Session.set("certificatesTemplates", templates);
-    defaultInput = _.filter(templates, function (x) {
-        return x.id == 0;
-    })[0].template;
-    Session.set('inputs', defaultInput);
-});
-
-Template.createCertificate.helpers({
-    inputs: function () {
-        return Session.get('inputs'); // reactively watches the Session variable, so when it changes, this result will change and our template will change
-    },
-    certificatesTemplates: function () {
-        return Session.get("certificatesTemplates");
     }
 });
 

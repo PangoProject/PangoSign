@@ -7,7 +7,7 @@
     <meta name="author" content="Signo">
     <meta name="keyword"
           content="Bootstrap,Admin,Template,Open,Source,AngularJS,Angular,Angular2,Angular 2,Angular4,Angular 4,jQuery,CSS,HTML,RWD,Dashboard,React,React.js,Vue,Vue.js">
-    <link rel="shortcut icon" href="img/favicon.png">
+    <link rel="shortcut icon" href="/images/favicon.png">
 
     <title>Signo</title>
 
@@ -24,7 +24,8 @@
         <li class="nav-item">
             <a class="nav-link navbar-toggler sidebar-toggler" href="#">☰</a>
         </li>
-
+    </ul>
+    <ul class="nav navbar-nav ml-auto">
     </ul>
 </header>
 
@@ -33,7 +34,7 @@
         <nav class="sidebar-nav">
             <ul class="nav">
                 <li class="nav-item">
-                    <a class="nav-link" href="main.html"><i class="fa fa-home"></i> Dashboard <span
+                    <a class="nav-link" href="main.html"><i class="fa fa-fw fa-home"></i> Dashboard <span
                             class="badge badge-info">NEW</span></a>
                 </li>
 
@@ -94,13 +95,15 @@
                     </div>
                 </div>
             </div>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-backdrop="static"
+                    data-keyboard="false" data-target="#myModal">
+                Launch demo modal
+            </button>
         </div>
-        <!-- /.conainer-fluid -->
 
+        {{>modal}}
 
     </main>
-
-
 </div>
 
 <footer class="app-footer">
@@ -109,146 +112,225 @@
         </span>
 </footer>
 
-
-<!-- GenesisUI main scripts -->
-
 <script src="/js/app.js"></script>
-
-
-<!-- Plugins and scripts required by this views -->
-
-<!-- Custom scripts required by this view -->
-<!--<script src="/js/views/views.js"></script>-->
 
 </body>
 
+<template name="modal">
+    <div class="modal show fadeIn" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <h5 class="modal-title bg-" id="exampleModalLabel">NO WEB3</h5>
+
+                </div>
+                <div class="modal-body center-block">
+                    PLZ LEAR TN VALTALIK
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary hideMyModal" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</template>
 
 <template name="WalletBallance">
     <div class="row">
-        <div class="col-sm-6">
+        <div class="col-md-4 col-sm-12">
             <div class="card card-inverse card-info">
                 <div class="card-block">
-                    <div class="h1 text-muted text-right mb-2">
-                        <i class="fa fa-address-card" aria-hidden="true"></i>
+                    <div class="row">
+                        <div class="col-8">
+                            <h6 class="text-muted text-uppercase font-weight-bold">
+                                Wallet Address
+                            </h6>
+                            <div class="h5 mb-0 addressTextWrap">
+                                {{TemplateVar.get "walletAddress"}}
+                            </div>
+                        </div>
+                        <div class="col-4 pull-right h1">
+                            <i class="fa fa-fw fa-address-book pull-right" aria-hidden="true"></i>
+                        </div>
                     </div>
-                    <div class="h4 mb-0">{{getEthBallance}} {{TemplateVar.get "walletAddress"}}</div>
-                    <small class="text-muted text-uppercase font-weight-bold">You Wallet Address</small>
+
                 </div>
             </div>
-        </div><!--/.col-->
-        <div class="col-sm-6">
+        </div>
+        <div class="col-md-4 col-sm-12">
             <div class="card card-inverse card-info">
                 <div class="card-block">
-                    <div class="h1 text-muted text-right mb-2">
-                        <i class="fa fa-money" aria-hidden="true"></i>
+                    <div class="row">
+                        <div class="col-8">
+                            <h6 class="text-muted text-uppercase font-weight-bold">
+                                Ether Ballance
+                            </h6>
+                            <div class="h5 mb-0 addressTextWrap">
+                                {{TemplateVar.get "walletBallance"}}
+                            </div>
+                        </div>
+                        <div class="col-4 pull-right h1">
+                            <i class="fa fa-fw fa-money pull-right" aria-hidden="true"></i>
+                        </div>
                     </div>
-                    <div class="h4 mb-0">{{getEthBallance}} {{TemplateVar.get "walletBallance"}}</div>
-                    <small class="text-muted text-uppercase font-weight-bold">Your Ether Balance</small>
+
                 </div>
             </div>
-        </div><!--/.col-->
+        </div>
+        <div class="col-md-4 col-sm-12">
+            <div class="card card-inverse card-info">
+                <div class="card-block">
+                    <div class="row">
+                        <div class="col-8">
+                            <h6 class="text-muted text-uppercase font-weight-bold">
+                                Certs published
+                            </h6>
+                            <div class="h5 mb-0 addressTextWrap">
+                                {{TemplateVar.get "numberOfCerts"}}
+                            </div>
+                        </div>
+                        <div class="col-4 pull-right h1">
+                            <i class="fa fa-fw fa-trophy pull-right" aria-hidden="true"></i>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <template name="CandidateSearch">
+    <form class="candidateSearch">
+        <div class="row">
+            <div class="col">
 
-
-    <div class="container-fluid">
-        <form class="candidateSearch">
-            <div class="row">
-                <div class="col">
-                    <div class="btn-group" data-toggle="buttons">
-                        <label class="btn btn-secondary {{#if compare searchType "candidateNameDOB"}}active{{/if}}">
-                            <input type="radio" id="searchType" name="searchType" class="custom-control custom-radio"
-                                   value="candidateNameDOB" autocomplete="off">Candidate Name and DOB
-                        </label>
-                        <label class="btn btn-secondary {{#if compare searchType "candidateIdHash"}}active{{/if}}">
-                            <input type="radio" id="searchType" name="searchType" class="custom-control custom-radio"
-                                   value="candidateIdHash" autocomplete="off">Candidate ID
-                        </label>
-                        <label class="btn btn-secondary {{#if compare searchType "certificateAddress"}}active{{/if}}">
-                            <input type="radio" id="searchType" name="searchType" class="custom-control custom-radio"
-                                   value="certificateAddress" autocomplete="off">Certificate Address
-                        </label>
-                        <label class="btn btn-secondary {{#if compare searchType "certificateIssuer"}}active{{/if}}">
-                            <input type="radio" id="searchType" name="searchType" class="custom-control custom-radio"
-                                   value="certificateIssuer" autocomplete="off">Certificate Issuer
-                        </label>
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#candidateDetailsSearch"
+                           role="tab" aria-controls="home" aria-expanded="true">Candidate details</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="profile-tab" data-toggle="tab" href="#candidateIdSearch" role="tab"
+                           aria-controls="profile">Candidate ID</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="profile-tab" data-toggle="tab" href="#certificateAddressSearch"
+                           role="tab" aria-controls="profile">Certificate Address</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="profile-tab" data-toggle="tab" href="#issuerAddressSearch"
+                           role="tab" aria-controls="profile">Issuer Address</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="candidateDetailsSearch" role="tabpanel"
+                         aria-labelledby="home-tab">
+                        {{>candidateDetailsSearch}}
+                    </div>
+                    <div class="tab-pane fade" id="candidateIdSearch" role="tabpanel" aria-labelledby="profile-tab">
+                        {{>candidateIdSearch}}
+                    </div>
+                    <div class="tab-pane fade" id="certificateAddressSearch" role="tabpanel"
+                         aria-labelledby="home-tab">
+                        {{>certificateAddressSearch}}
+                    </div>
+                    <div class="tab-pane fade" id="issuerAddressSearch" role="tabpanel"
+                         aria-labelledby="profile-tab">
+                        {{>issuerAddressSearch}}
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="row">
-                <div class="col">
-                    {{#if compare searchType "candidateNameDOB"}}
-                        <div class="input-group date">
-                            <span class="input-group-addon" id="basic-addon1"><i class="fa fa-user"
-                                                                                 aria-hidden="true"></i></span>
-                            <input type="text" class="form-control" id="searchCandidateName" name="candidateName"
-                                   placeholder="Name"
-                                   aria-label="Username" aria-describedby="basic-addon1">
-                            <input type="text" name="candidateDOB" id='searchCandidateDOB' class="form-control"><span
-                                class="input-group-addon" placeholder="Date of Birth"><i class="fa fa-calendar"
-                                                                                         aria-hidden="true"></i></span>
-                        </div>
-                    {{/if}}
-                    {{#if compare searchType "candidateIdHash"}}
-                        <div class="input-group {{TemplateVar.get "valid"}}">
-                            <span class="input-group-addon" id="basic-addon1"><i class="fa fa-id-card"
-                                                                                 aria-hidden="true"></i>
-                            </span>
-                            <input type="text" class="form-control" id="searchCandidateIDHash"
-                                   placeholder="ID"
-                                   aria-label="Candidate ID" aria-describedby="basic-addon1">
-
-                        </div>
-                    {{/if}}
-                    {{#if compare searchType "certificateAddress"}}
-                        <div class="input-group {{TemplateVar.get "valid"}}">
-                            <span class="input-group-addon" id="basic-addon1"><i class="fa fa-file-text"
-                                                                                 aria-hidden="true"></i>
-                            </span>
-                            <input type="text" class="form-control" id="searchCertificateAddress"
-                                   placeholder="Address"
-                                   aria-label="Certificate Address" aria-describedby="basic-addon1">
-                        </div>
-                    {{/if}}
-                    {{#if compare searchType "certificateIssuer"}}
-                        <div class="input-group {{TemplateVar.get "valid"}}">
-                            <span class="input-group-addon" id="basic-addon1"><i class="fa fa-university" aria-hidden="true"></i>
-                            </span>
-                            <input type="text" class="form-control" id="searchCertificateIssuer"
-                                   placeholder="Certificate Issuer"
-                                   aria-label="Certificate Issuer" aria-describedby="basic-addon1">
-                        </div>
-                    {{/if}}
-                </div>
+        <div class="row">
+            <div class="col">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-fw fa-search" aria-hidden="true"></i> Search
+                </button>
+                {{# if searchResults}}
+                    <strong class="pull-right">{{commonMetaDataText}}</strong>
+                {{/if}}
             </div>
-            <div class="row">
-                <div class="col">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fa fa-search" aria-hidden="true"></i> Search
-                    </button>
-                </div>
-            </div>
-        </form>
+        </div>
+    </form>
+    {{> searchResultsList searchResults=searchResults commonMetaData=commonMetaData commonMetaDataText=commonMetaDataText}}
+</template>
 
-        {{> searchResultsList searchResults=searchResults commonMetaData=commonMetaData commonMetaDataText=commonMetaDataText}}
+<template name="candidateDetailsSearch">
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-fw fa-user" aria-hidden="true"></i></span>
+                <input type="text" class="form-control" id="searchCandidateName" name="candidateName"
+                       placeholder="Name">
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="input-group date">
+                                        <span class="input-group-addon">
+                                            <i class="fa fa-fw fa-calendar" aria-hidden="true"></i>
+                                        </span>
+                <input type="text" name="candidateDOB" id='searchCandidateDOB'
+                       class="form-control" placeholder="Date of Birth">
+            </div>
+        </div>
+
     </div>
+</template>
 
+<template name="candidateIdSearch">
+    <div class="row">
+        <div class="col">
+            <div class="input-group {{TemplateVar.get "valid"}}">
+                            <span class="input-group-addon"><i class="fa fa-fw fa-id-card" aria-hidden="true"></i>
+                            </span>
+                <input type="text" class="form-control" id="searchCandidateIDHash"
+                       placeholder="ID"
+                       aria-label="Candidate ID" aria-describedby="basic-addon1">
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="certificateAddressSearch">
+    <div class="row">
+        <div class="col">
+            <div class="input-group {{TemplateVar.get "valid"}}">
+                            <span class="input-group-addon" id="basic-addon1"><i class="fa fa-fw fa-file-text"
+                                                                                 aria-hidden="true"></i>
+                            </span>
+                <input type="text" class="form-control" id="searchCertificateAddress"
+                       placeholder="Address"
+                       aria-label="Certificate Address" aria-describedby="basic-addon1">
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="issuerAddressSearch">
+    <div class="row">
+        <div class="col">
+            <div class="input-group {{TemplateVar.get "valid"}}">
+                            <span class="input-group-addon" id="basic-addon1"><i class="fa fa-fw fa-university"
+                                                                                 aria-hidden="true"></i>
+                            </span>
+                <input type="text" class="form-control" id="searchCertificateIssuer"
+                       placeholder="Certificate Issuer"
+                       aria-label="Certificate Issuer" aria-describedby="basic-addon1">
+            </div>
+        </div>
+    </div>
 </template>
 
 <template name="searchResultsList">
     {{#if searchResults}}
-        <div class="card">
-            <div class="card-header">This is a card
-                <span class="badge badge-pill badge-primary float-right">
-                    {{commonMetaDataText}}
-                </span>
-            </div>
-
-            {{#each result in searchResults}} {{#with
-                    result}} {{> ChildCertificate resultCertificateAddress=certificateAddress resultTimeStamp=timeStamp issuerMetaData=issuerMetaData}}
+        <div class="row">
+            {{#each result in searchResults}} {{#with result}}
+                {{> ChildCertificate resultCertificateAddress=certificateAddress resultTimeStamp=timeStamp issuerMetaData=issuerMetaData}}
             {{/with}} {{/each}}
         </div>
     {{/if}}
@@ -256,10 +338,31 @@
 
 <template name="ChildCertificate">
     {{#unless TemplateVar.get "isDeleted"}}
-        <div class="container-fluid">
-            <div class="card">
-                <div class="card-header"><h4>Certificate found:</h4></div>
-                <div class="card-block">
+        <div class="col-xl-4 col-lg-6">
+            <div class="card fadeIn">
+                <div class="card-header">
+                    <h5>{{TemplateVar.get "name"}}
+                        {{#if TemplateVar.get "anonymous"}}
+                            {{>anonymousCertificateIcon}}
+                        {{/if}}
+                    </h5>
+                </div>
+                <div class="card-block addressTextWrap">
+                    <div class="row">
+                        <div class="col">
+                            <table class="table">
+                                <tbody>
+                                {{#each objectToPairs (TemplateVar.get "sundryData")}}
+                                    <tr>
+                                        <td style="width:35%"><b>{{key}}</b></td>
+                                        <td>{{value}}</td>
+                                    </tr>
+                                {{/each}}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                     <p>Certificate public address: {{TemplateVar.get "certificateAddress"}}</p>
                     <p> Date created: {{formatDate resultTimeStamp}}</p>
                     <p>ID Hash: {{TemplateVar.get "idHash"}}</p>
@@ -267,23 +370,6 @@
                     {{#if TemplateVar.get "issuerMetaData"}}
                         <p># of certificates issued by issuer: {{TemplateVar.get "issuerMetaData"}}</p>
                     {{/if}}
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th scope="row" style="width:50%">Field</th>
-                            <th scope="row" style="width:50%">Value</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {{#each objectToPairs (TemplateVar.get "sundryData")}}
-                            <tr>
-                                <td>{{key}}</td>
-                                <td>{{value}}</td>
-                            </tr>
-                        {{/each}}
-                        </tbody>
-
-                    </table>
                 </div>
             </div>
         </div>
@@ -309,7 +395,7 @@
                                placeholder="0x0123456789abcdef012345679abcdef0123456"/>
                     </div>
                     <button type="submit" id="deleteCertificate" class="btn btn-danger">
-                        <i class="fa fa-trash" aria-hidden="true"></i> Delete
+                        <i class="fa fa-fw fa-trash" aria-hidden="true"></i> Delete
                     </button>
                 </form>
             </div>
@@ -341,7 +427,7 @@
                            placeholder="0x0123456789abcdef012345679abcdef0123456"/>
                 </div>
                 <button type="submit" id="findCertificate" class="btn btn-primary">
-                    <i class="fa fa-search" aria-hidden="true"></i> Find
+                    <i class="fa fa-fw fa-search" aria-hidden="true"></i> Find
                 </button>
             </form>
         </div>
@@ -358,7 +444,7 @@
     {{#if (TemplateVar.get "json")}}
         {{>UpdateCertificateFormChildChild json=(TemplateVar.get "json")}}
         <button type="submit" id="update" class="btn btn-primary">
-            <i class="fa fa-wrench" aria-hidden="true"></i> Update
+            <i class="fa fa-fw fa-wrench" aria-hidden="true"></i> Update
         </button>
     {{/if}}
 </template>
@@ -388,7 +474,7 @@
         <tr>
             <td colspan="2">
                 <button id='add-input' class="btn btn-secondary rounded">
-                    <i class="fa fa-plus" aria-hidden="true"></i>
+                    <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
                 </button>
                 <div class="pull-right" style="padding-top: 4px">
                     <strong class="text-muted">
@@ -405,33 +491,21 @@
         </tfoot>
     </table>
 </template>
+
 <template name="createCertificate">
     <div class="container-fluid">
         <div class="row">
             <div class="col">
+
+
+                <select name="certificatesTemplates" id="certificatesTemplates"
+                        class="form-control">
+                    {{#each template in certificatesTemplates}}
+                        <option value="{{template.id}}">{{template.name}}</option>
+                    {{/each}}
+                </select>
                 <table class="table">
-                    <thead>
-                    <tr>
-                        <th style="width:30%">
-                            <strong>
-                                Field
-                            </strong>
-                        </th>
-                        <th style="width:auto; padding-bottom: 11px">
-                            <strong>
-                                Value
-                            </strong>
-                            <div class="pull-right">
-                                <strong>Pick a template</strong>
-                                <select name="certificatesTemplates" id="certificatesTemplates" class="">
-                                    {{#each template in certificatesTemplates}}
-                                        <option value="{{template.id}}">{{template.name}}</option>
-                                    {{/each}}
-                                </select>
-                            </div>
-                        </th>
-                    </tr>
-                    </thead>
+
                     <tbody>
                     {{#each inputs}}
                         {{> inputFields}}
@@ -441,7 +515,7 @@
                     <tr>
                         <td colspan="2">
                             <button id='add-input' class="btn btn-secondary rounded">
-                                <i class="fa fa-plus" aria-hidden="true"></i>
+                                <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
                             </button>
                             <div class="pull-right" style="padding-top: 4px">
                                 <strong class="text-muted">
@@ -458,15 +532,16 @@
                     </tfoot>
                 </table>
                 <button type="submit" id="createCertificate" class="btn btn-primary">
-                    <i class="fa fa-pencil" aria-hidden="true"></i> Create
+                    <i class="fa fa-fw fa-pencil" aria-hidden="true"></i> Create
                 </button>
             </div>
         </div>
     </div>
 </template>
+
 <template name='inputFields'>
     <tr>
-        <td>
+        <td style="width: 30%">
             <input name='inputKey' class='form-control' type='text' uniqid="{{uniqid}}"
                    value="{{keyValue}}" {{readOnly}}>
         </td>
@@ -477,15 +552,27 @@
                     {{#if readOnly}}
                         <button id="remove-input" uniqid="{{uniqid}}" class="btn btn-link rounded"
                                 style="cursor: not-allowed" aria-disabled="true" disabled>
-                        <i class="fa fa-trash" aria-hidden="true"></i>
+                        <i class="fa fa-fw fa-trash" aria-hidden="true"></i>
                         </button>
                     {{/if}}
                     {{#unless readOnly}}
                         <button id="remove-input" uniqid="{{uniqid}}" class="btn btn-danger rounded">
-                        <i class="fa fa-trash" aria-hidden="true"></i></button>
+                        <i class="fa fa-fw fa-trash" aria-hidden="true"></i></button>
                     {{/unless}}
                 </span>
             </div>
         </td>
     </tr>
 </template>
+
+<template name="anonymousCertificateIcon">
+    <a tabindex="0" class="badge badge-default pull-right" role="button" data-toggle="popover" data-trigger="focus"
+       title="Anonymous Certificate"
+       data-content="This user chose to not have their information stored on the public Ethereum Blockchain.">
+        <h5 style="padding: 0px; margin: 0px">
+            <i class="fa fa-eye-slash" aria-hidden="true"></i>
+        </h5>
+
+    </a>
+</template>
+
