@@ -3,6 +3,9 @@
 // Copy variables from `_variables.scss` to this file to override default values
 // without modifying source files.
 
+@import "variables";
+@import "mixins/breakpoints";
+
 .row {
   margin-top: 1rem;
 }
@@ -14,4 +17,20 @@
 .addressTextWrap{
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.card-columns {
+  //Xl cards can't be controlled for some reason
+  //@include media-breakpoint-only(xl) {
+  //  column-count: 4;
+  //}
+  @include media-breakpoint-only(lg) {
+    column-count: 3;
+  }
+  @include media-breakpoint-only(md) {
+    column-count: 2;
+  }
+  @include media-breakpoint-only(sm) {
+    column-count: 1;
+  }
 }

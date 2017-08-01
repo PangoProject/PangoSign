@@ -47,13 +47,56 @@ const BYTE_CODE = "6060604052341561000f57600080fd5b6040516104b13803806104b183398
 
 let Address;
 
+let addressPromise = new Promise((address) => {
+    web3.eth.getAccounts(function (err, res) {
+        if (!err) {
+            Address = res[0];
+            address(res[0]);
+        }
+    });
+});
+
 Certificates = new Mongo.Collection("certificates");
-try {
-    Meteor.subscribe('theCertificates');
-}
-catch (err) {
-    console.log("Could not connect to DB: " + err);
-}
+
+Meteor.startup(function () {
+    try {
+        Meteor.subscribe('theCertificates');
+    }
+    catch (err) {
+        $('#catastrophicError').modal('show');
+        // console.log("Could not connect to DB: " + err);
+    }
+
+    sAlert.config({
+        effect: 'flip',
+        position: 'bottom',
+        timeout: 8000,
+        html: true,
+        onRouteClose: true,
+        stack: true,
+        // or you can pass an object:
+        // stack: {
+        //     spacing: 10 // in px
+        //     limit: 3 // when fourth alert appears all previous ones are cleared
+        // }
+        offset: 0, // in px - will be added to first alert (bottom or top - depends of the position in config)
+        beep: false,
+        // examples:
+        // beep: '/beep.mp3'  // or you can pass an object:
+        // beep: {
+        //     info: '/beep-info.mp3',
+        //     error: '/beep-error.mp3',
+        //     success: '/beep-success.mp3',
+        //     warning: '/beep-warning.mp3'
+        // }
+        onClose: _.noop //
+        // examples:
+        // onClose: function() {
+        //     /* Code here will be executed once the alert closes. */
+        // }
+    });
+
+});
 
 function getContract(certificateAddress) {
     try {
@@ -65,8 +108,21 @@ function getContract(certificateAddress) {
     return null;
 }
 
+function getNetwork(networkId) {
+    switch (networkId) {
+        case '1':
+            return 'Mainnet';
+        case '2':
+            return 'Morden';
+        case '3':
+            return 'Ropsten';
+        default:
+            return 'Unknown';
+    }
+}
+
 function createCertificate(candidateName, candidateDOB, sundryData, idHash = "") {
-    return new Promise((certificateAddress, error) => {
+    return new Promise((resolve, error) => {
         let hash;
         if (idHash === "") {
             hash =
@@ -90,27 +146,36 @@ function createCertificate(candidateName, candidateDOB, sundryData, idHash = "")
                     gas: "4000000"
                 },
                 function (e, contract) {
-                    console.log(e, contract);
+                    try{
+                        //must be contract.address as when function is called initially, it returns a null and later return another contract.
                     if (typeof contract.address !== "undefined") {
-                        console.log(
-                            "Contract mined! address: " +
-                            contract.address +
-                            " transactionHash: " +
-                            contract.transactionHash
-                        );
                         try {
                             Meteor.call('insertCertificate', contract.address);
-                            certificateAddress(contract.address);
+                            resolve({address:contract.address,txHash:contract.transactionHash});
                         }
                         catch (err) {
-                            console.log("DB Connection failed: " + err);
+                            sAlert.error("Failed to add the certificate to the DB.");
+                            error(err);
+                            // console.log("DB Connection failed: " + err);
                         }
+                    }
+                    } catch (e2) {
+                        $('#reminderToWaitForMining').modal('hide');
+                        sAlert.error("It looks like you cancelled the transaction!");
+                        error("Error");
+                    }
+                    if(e){
+                        $('#reminderToWaitForMining').modal('hide');
+                        sAlert.error("Oh-No! The certificate could not to be mined.");
+                        error("Error");
                     }
                 }
             );
         }
         catch (err) {
-            console.log("There was an error creating your certificate: " + err);
+            sAlert.error("Failed to create the certificate.");
+            error(err);
+            // console.log("There was an error creating your certificate: " + err);
         }
     })
         ;
@@ -132,11 +197,11 @@ function getCertificateFromBlockchain(certificateAddress, template) {
         });
         myContract.sundryData(function (err, res) {
             let mapOfJSON = JSONToMap(res);
-            if (mapOfJSON.Name===undefined){
-                TemplateVar.set(template,'anonymous',true);
-                TemplateVar.set(template,'name',"Anonymous Certificate");
+            if (mapOfJSON.Name === undefined) {
+                TemplateVar.set(template, 'anonymous', true);
+                TemplateVar.set(template, 'name', "Anonymous Certificate");
             } else {
-                TemplateVar.set(template,'name',mapOfJSON.Name);
+                TemplateVar.set(template, 'name', mapOfJSON.Name);
             }
 
             TemplateVar.set(template, "json", res);
@@ -174,18 +239,18 @@ function JSONToArrayOfObjects(json) {
         }
         if (key == "DOB") elem.type = "date"
         if (pair == 0 && key != "Name") {
-            alert("This is an anonymous certificate, so there is no name or DOB loaded. If you enter values here, you will transfer ownership of this certificate unless you enter the same name as before. You can choose to leave them blank and the previous owner will keep ownership.");
+            sAlert.info("This is an anonymous certificate. If you change Name or Date of Birth, the certificate owner may change.");
             Session.set("updateCheckboxAnonymous", "checked");
             objectArray = [
                 {
-                    uniqid: "Name",
+                    uniqid: Random.id(),
                     keyValue: "Name",
                     value: "",
                     readOnly: "readonly",
                     type: "text"
                 },
                 {
-                    uniqid: "DOB",
+                    uniqid: Random.id(),
                     keyValue: "DOB",
                     value: "",
                     readOnly: "readonly",
@@ -207,10 +272,10 @@ function isContractAddressValidStr(contractAddres) {
 }
 
 function deleteCertificate(certificateAddress) {
-    return new Promise((resolve) => {
+    return new Promise((error) => {
         let myContract = getContract(certificateAddress);
         myContract.deleteCertificate(function (err, res) {
-            if (!err) resolve(res);
+            error(err);
         });
     })
         ;
@@ -236,12 +301,12 @@ function updateCertificate(oldCertificateAddress, candidateName = "", candidateD
                             .toLowerCase();
                 } else newIdHash = oldIdHash;
                 if (oldIdHash !== newIdHash) confirm("Are you sure you want to change this certificate, you have changed the owner.");
-                createCertificate(null, null, sundryData, newIdHash).then((newCertificateAddress) => {
-                        if (newCertificateAddress) {
+                createCertificate(null, null, sundryData, newIdHash).then((newCertificate) => {
+                        if (newCertificate) {
                             deleteCertificate(oldCertificateAddress).then((resolve) => {
-                                    if (resolve) {
-                                        console.log("Successfully updated the certificate.");
-                                    } else console.log("Failed to delete certificate.")
+                                    if (!resolve) {
+                                        sAlert.warning("Soooo... A new certificate was created, but the old one has yet to be removed.");
+                                    } else sAlert.success("The certificate " + newCertificate.address + " has been changed! <strong><a href='https://ropsten.etherscan.io/tx/" + newCertificate.txHash + "' target='_blank'> Click here</a></strong> to view it on the blockchain.");
                                 }
                             )
                             ;
@@ -251,7 +316,7 @@ function updateCertificate(oldCertificateAddress, candidateName = "", candidateD
                 ;
             }
             else {
-                throw "Something went horribly wrong with updating, please refresh and try again.";
+                sAlert.warning("Oops! Something went wrong with updating.");
             }
         })
         ;
@@ -276,7 +341,7 @@ function JSONToMap(json) {
 function arrayToJSON(array) {
     // try {
     let json = "";
-
+    console.log(array)
 
     let isAnonymous = _.filter(array, function (x) {
         return x.keyValue == "Anonymous";
@@ -351,22 +416,6 @@ Template.UpdateCertificateFormChildChild.onCreated(function () {
     Session.set("inputs", JSONToArrayOfObjects(json));
 });
 
-Template.candidateDetailsSearch.onCreated(function(){
-    Session.set('searchType', 'candidateNameDOB');
-});
-
-Template.candidateIdSearch.onCreated(function(){
-    Session.set('searchType', 'candidateIdHash');
-});
-
-Template.certificateAddressSearch.onCreated(function(){
-    Session.set('searchType', 'certificateAddress');
-});
-
-Template.issuerAddressSearch.onCreated(function(){
-    Session.set('searchType', 'certificateIssuer');
-});
-
 Template.createCertificate.onCreated(function () {
 
     Session.set("certificatesTemplates", templates);
@@ -388,41 +437,100 @@ Template.candidateDetailsSearch.onRendered(function () {
     });
 });
 
-Template.anonymousCertificateIcon.onRendered (function() {
+Template.inputFields.onRendered(function (event) {
+    if(this.data.type=='date') {
+        $('#' + this.data.uniqid).datepicker({
+            format: "yyyy-mm-dd",
+            endDate: "today",
+            startView: 3,
+            maxViewMode: 3,
+            clearBtn: true,
+            autoclose: true,
+            defaultViewDate: {year: 1970, month: 0, day: 1}
+        });
+    }
+});
+
+Template.injectJqueryPopover.onRendered(function () {
     $('[data-toggle="popover"]').popover();
     $('.popover-dismiss').popover({
         trigger: 'focus'
     })
+    $(".pop").popover({ trigger: "manual" , html: true, animation:false})
+        .on("mouseenter", function () {
+            var _this = this;
+            $(this).popover("show");
+            $(".popover").on("mouseleave", function () {
+                $(_this).popover('hide');
+            });
+        }).on("mouseleave", function () {
+        var _this = this;
+        setTimeout(function () {
+            if (!$(".popover:hover").length) {
+                $(_this).popover("hide");
+            }
+        }, 300);
+    });
+
 });
 
-Template.modal.onRendered (function() {
-    console.log("render");
-    $('#myModal').on('shown.bs.modal', function () {
+Template.injectJqueryTooltip.onRendered(function () {
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+});
+
+Template.modal.onRendered(function () {
+    template = Template.instance();
+    $('#noWeb3Modal').on('shown.bs.modal', function () {
         $('#myInput').focus()
     });
-});
-
-Template.WalletBallance.onRendered(function (){
-    try {
-        let template = Template.instance();
-        web3.eth.getAccounts(function (err, res) {
-            if (!err) {
-                Address = res[0];
-                TemplateVar.set(template, "walletAddress", Address);
-                web3.eth.getBalance(Address, function (err, res) {
-                    let ethBlance = Math.round(web3.fromWei(res, "ether")*10000)/10000;
-                    TemplateVar.set(template, "walletBallance", ethBlance);
-                });
-                console.log(Certificates.find().fetch());
-                numberOfCerts = Certificates.find({certificateIssuer: Address}).count();
-                TemplateVar.set(template, "numberOfCerts", numberOfCerts);
+    if (!web3.isConnected()) {
+        $('#noWeb3Modal').modal('show');
+    } else {
+        let network;
+        web3.version.getNetwork((error, result) => {
+            network = getNetwork(result);
+            TemplateVar.set(template, "connectedNetwork", network);
+            if (network !== "Ropsten") {
+                $('#worngNetworkModal').modal('show');
             } else {
-                console.log("There was an error fetching wallet ballance: " + err);
+                addressPromise.then((address) => {
+                    if (address == undefined) {
+                        $('#accountsLockedModal').modal('show');
+                    }
+                });
             }
         });
-    } catch (err) {
-        console.log("There was an error retrieving web3.")
     }
+});
+
+Template.WalletBallance.onRendered(function () {
+    // try {
+
+    let template = Template.instance();
+    // web3.eth.getAccounts(function (err, res) {
+    //     if (!err) {
+    //         Address = res[0];
+    addressPromise.then((Address) => {
+        TemplateVar.set(template, "walletAddress", Address);
+        web3.eth.getBalance(Address, function (err, res) {
+            let ethBlance = Math.round(web3.fromWei(res, "ether") * 10000) / 10000;
+            TemplateVar.set(template, "walletBallance", ethBlance);
+        });
+        numberOfCerts = Certificates.find({certificateIssuer: Address}).count();
+        TemplateVar.set(template, "numberOfCerts", numberOfCerts);
+    })
+    ;
+
+
+    // } else {
+    //     console.log("There was an error fetching wallet ballance: " + err);
+    // }
+    //     });
+    // } catch (err) {
+    //     console.log("There was an error retrieving web3.")
+    // }
 });
 
 Template.CandidateSearch.onRendered(function () {
@@ -430,6 +538,11 @@ Template.CandidateSearch.onRendered(function () {
         e.preventDefault();
         $(this).tab('show');
     });
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        let activeTab = e.target.href.split('#')[1]; // newly activated tab
+        Session.set('searchType',activeTab);
+        console.log(activeTab)
+    })
 });
 
 Template.UpdateCertificateFormChild.helpers({
@@ -488,42 +601,62 @@ Template.UpdateCertificateForm.helpers({
     }
 });
 
-Template.UpdateCertificateFormChildChild.events({
-    'click #add-input': function () {
-        var inputs = Session.get('inputs');
-        var uniqid = Random.id(); // Give a unique ID so you can pull _this_ input when you click remove
-        inputs.push(
-            {
-                uniqid: uniqid,
-                keyValue: "",
-                value: ""
-            });
-        Session.set('inputs', inputs);
+Template.modal.events({
+    "click #modalDeleteButtonConfirm": function () {
+        $('#deleteConfirmModal').modal('hide');
+        $("#deleteCertificateForm").submit();
     }
 });
 
-Template.CandidateSearch.events({
-    "click #searchType": function (event) {
-        let template = Template.instance();
-        Session.set("searchType", event.target.value);
-        Session.set("certificateSearchResults", null);
-        TemplateVar.set(template, 'valid', "");
-    },
+Template.UpdateCertificateFormChildChild.events({
+    'click #add-input': function () {
+        template = Template.instance();
+        var inputs = Session.get('inputs');
+        if (inputs.length >= 10) {
+            TemplateVar.set(template, "addNewFieldButtonStatus", "disabled");
+        } else {
+            TemplateVar.set(template, "addNewFieldButtonStatus", "");
+            var uniqid = Random.id(); // Give a unique ID so you can pull _this_ input when you click remove
+            inputs.push(
+                {
+                    uniqid: uniqid,
+                    keyValue: "",
+                    value: ""
+                });
+            Session.set('inputs', inputs);
+        }
+    }
+});
+
+Template.candidateIdSearch.events({
     'change #searchCandidateIDHash': function (event) {
         let template = Template.instance();
         let idHash = document.getElementById("searchCandidateIDHash").value;
         TemplateVar.set(template, "valid", isValidSHAStr(idHash));
-    },
+    }
+});
 
-    "change #searchCertificateIssuer": function () {
-        let certificateAddress = document.getElementById("searchCertificateIssuer").value;
+Template.issuerAddressSearch.events({
+"change #searchCertificateIssuer": function () {
+    let certificateAddress = document.getElementById("searchCertificateIssuer").value;
+    let template = Template.instance();
+    TemplateVar.set(template, "valid", isContractAddressValidStr(certificateAddress));
+}});
+
+Template.certificateAddressSearch.events({
+"change #searchCertificateAddress": function () {
+    let certificateAddress = document.getElementById("searchCertificateAddress").value;
+    let template = Template.instance();
+    console.log(isContractAddressValidStr(certificateAddress));
+    TemplateVar.set(template, "valid", isContractAddressValidStr(certificateAddress));
+}});
+
+Template.CandidateSearch.events({
+    "click #myTab": function (event) {
         let template = Template.instance();
-        TemplateVar.set(template, "valid", isContractAddressValidStr(certificateAddress));
-    },
-    "change #searchCertificateAddress": function () {
-        let certificateAddress = document.getElementById("searchCertificateAddress").value;
-        let template = Template.instance();
-        TemplateVar.set(template, "valid", isContractAddressValidStr(certificateAddress));
+        Session.set("searchType", event.target.value);
+        Session.set("certificateSearchResults", null);
+        TemplateVar.set(template, 'valid', "");
     },
 
     "submit .candidateSearch": function (event) {
@@ -532,7 +665,7 @@ Template.CandidateSearch.events({
         let commonMetaDataText;
         let idHash;
         switch (Session.get("searchType")) {
-            case "candidateNameDOB":
+            case "candidateDetailsSearch":
                 let candidateName = document.getElementById("searchCandidateName").value;
                 let candidateDOB = document.getElementById("searchCandidateDOB").value;
                 if (candidateDOB !== null && candidateDOB !== undefined && candidateDOB !== "") {
@@ -568,7 +701,7 @@ Template.CandidateSearch.events({
                     searchResults[result]["issuerMetaData"] = count;
                 }
                 break;
-            case "candidateIdHash":
+            case "candidateIdSearch":
                 idHash = document.getElementById("searchCandidateIDHash").value;
                 if (idHash.substr(0, 2) != "0x") idHash = "0x" + idHash;
                 searchResults = Certificates.find(
@@ -583,7 +716,7 @@ Template.CandidateSearch.events({
                     searchResults[result]["issuerMetaData"] = count;
                 }
                 break;
-            case "certificateAddress":
+            case "certificateAddressSearch":
                 let certificateAddress = document.getElementById("searchCertificateAddress").value;
                 searchResults = Certificates.find(
                     {
@@ -595,7 +728,7 @@ Template.CandidateSearch.events({
                     searchResults[result]["issuerMetaData"] = count;
                 }
                 break;
-            case "certificateIssuer":
+            case "issuerAddressSearch":
                 let certificateIssuer = document.getElementById("searchCertificateIssuer").value;
                 searchResults = Certificates.find(
                     {
@@ -609,21 +742,41 @@ Template.CandidateSearch.events({
                 break;
 
         }
+        if(searchResults.length == 0){
+            sAlert.info("There were no certificates found for your search criteria.")
+        }
         Session.set("certificateSearchResults", searchResults);
         Session.set("commonMetaData", commonMetaData);
         Session.set("commonMetaDataText", commonMetaDataText);
         event.preventDefault();
-    },
-
-    "click #resetSearch": function () {
-        Session.set("certificateSearchResults", null);
     }
 });
 
 Template.DeleteCertificateForm.events({
-    "submit #deleteCertificateForm": function (event) {
-        let certificateAddress = event.target.certificateAddress.value;
+    "click #deleteCertificateButton": function (event) {
+        try {
+            let certificateAddress = $("#deleteCertificateAddress").val();
+            let searchResults = Certificates.find(
+                {
+                    certificateAddress: certificateAddress
+                }
+            ).fetch();
+            if (searchResults.length !== 0) {
+                if (searchResults[0].certificateIssuer === Address) {
+                    $('#deleteConfirmModal').modal('show');
+                } else {
+                    sAlert.error("<strong>You did not create this certificate and thus, cannot delete it.</strong>");
+                }
+            } else {
+                sAlert.warning("<strong >No certificates with this address were found.</strong>");
+            }
+        } catch (err) {
+            sAlert.error("Oops! Failed to delete this certificate.")
+            // console.log("Failed to delete certificate: " + err);
+        }
+    },
 
+    "submit #deleteCertificateForm": function (event) {
         try {
             let certificateAddress = event.target.certificateAddress.value;
             let searchResults = Certificates.find(
@@ -633,15 +786,20 @@ Template.DeleteCertificateForm.events({
             ).fetch();
             if (searchResults.length !== 0) {
                 if (searchResults[0].certificateIssuer === Address) {
-                    deleteCertificate(certificateAddress);
+                    deleteCertificate(certificateAddress).then((error)=>{
+                       if(!error) sAlert.success('Certificate successfully deleted.');
+                       else sAlert.error('Failed to delete certificate');
+
+                    });
                 } else {
-                    alert("You did not create this certificate and thus, cannot delete it.");
+                    sAlert.error("<strong>You did not create this certificate and thus, cannot delete it.</strong>");
                 }
             } else {
-                alert("No certificates with this address were found.");
+                sAlert.warning("<strong >No certificates with this address were found.</strong>");
             }
         } catch (err) {
-            console.log("Failed to delete certificate: " + err);
+            sAlert.error("Oops! Failed to delete this certificate.")
+            // console.log("Failed to delete certificate: " + err);
         }
         event.preventDefault();
     },
@@ -665,13 +823,14 @@ Template.UpdateCertificateForm.events({
                 if (searchResults[0].certificateIssuer === Address) {
                     Session.set("updateCertificateSearchResults", searchResults);
                 } else {
-                    alert("You did not create this certificate and thus, cannot edit it.");
+                    sAlert.error("You did not create this certificate and thus, cannot edit it.");
                 }
             } else {
                 alert("No certificates with this address were found.");
             }
         } catch (err) {
-            console.log("Failed to update certificate: " + err);
+            sAlert.error("Oops! Your certificate has failed to be updated.");
+            // console.log("Failed to update certificate: " + err);
         }
         event.preventDefault();
     },
@@ -701,13 +860,16 @@ Template.UpdateCertificateFormChild.events({
         let candidateDOB = _.filter(inputs, function (x) {
             return x.keyValue == "DOB";
         })[0].value;
-        console.log(document.getElementById("anonymousUpdate").checked);
         if ((candidateName === "" || candidateName === undefined) && !document.getElementById("anonymousUpdate").checked) {
-            alert("Please enter a name as the certificate is NOT anonymous.")
+            sAlert.warning("Please enter a name as the certificate is NOT anonymous.")
         } else {
+            inputs = _.filter(inputs, function (x) {
+                return ((x.keyValue != "" && x.value != "") || x.keyValue == "Anonymous");
+            });
             let json = arrayToJSON(inputs);
             let searchResults = template.data.updateCertificateSearchResults;
             let certificateAddressOld = searchResults[0].certificateAddress;
+            $('#reminderToWaitForMining').modal('show');
             updateCertificate(certificateAddressOld, candidateName, candidateDOB, json);
 
         }
@@ -717,28 +879,37 @@ Template.UpdateCertificateFormChild.events({
 
 Template.createCertificate.events({
     'click #add-input': function () {
+        template = Template.instance();
         var inputs = Session.get('inputs');
-        var uniqid = Random.id(); // Give a unique ID so you can pull _this_ input when you click remove
-        inputs.push(
-            {
-                uniqid: uniqid,
-                keyValue: "",
-                value: "",
-                readOnly: "",
-                type: "text"
-            });
-        Session.set('inputs', inputs);
+        if (inputs.length >= 10) {
+            TemplateVar.set(template, "addNewFieldButtonStatus", "disabled");
+        } else {
+            TemplateVar.set(template, "addNewFieldButtonStatus", "");
+            var uniqid = Random.id(); // Give a unique ID so you can pull _this_ input when you click remove
+            inputs.push(
+                {
+                    uniqid: uniqid,
+                    keyValue: "",
+                    value: "",
+                    readOnly: "",
+                    type: "text"
+                });
+            Session.set('inputs', inputs);
+        }
     },
     'click #createCertificate': function (event) {
         sundryData = Session.get('inputs');
         candidateName = _.filter(sundryData, function (x) {
             return x.keyValue == "Name";
         })[0]["value"];
-        candidateDOB = _.filter(sundryData, function (x) {
-            return x.keyValue == "DOB";
-        })[0]["value"];
+        try {
+            candidateDOB = _.filter(sundryData, function (x) {
+                return x.keyValue == "DOB";
+            })[0]["value"];
+        } catch(e){
+        }
         if (candidateName == "") {
-            alert("Please enter at least the name to identify the certificate.")
+            sAlert.warning("Please enter at least the name to identify the certificate.")
         } else {
             elem =
                 {
@@ -749,8 +920,19 @@ Template.createCertificate.events({
                     type: "checkbox"
                 };
             sundryData.push(elem);
+            sundryData = _.filter(sundryData, function (x) {
+                return ((x.keyValue != "" && x.value != "") || x.keyValue == "Anonymous");
+            });
+            console.log(sundryData);
             json = arrayToJSON(sundryData);
-            createCertificate(candidateName, candidateDOB, json);
+            $('#reminderToWaitForMining').modal('show');
+            createCertificate(candidateName, candidateDOB, json).then((resolve,err)=>{
+                $('#reminderToWaitForMining').modal('hide');
+                console.log(resolve,err);
+                if(resolve){
+                    sAlert.success("<strong> Certificate added, with address" + resolve.address + ".</strong> <a href='https://ropsten.etherscan.io/tx/" + resolve.txHash + "' target='_blank'> Click here</a> to view it on the blockchain.")
+                }
+            });
 
             event.preventDefault();
         }
@@ -780,7 +962,6 @@ Template.inputFields.events({
         index = inputs.findIndex(function (x) {
             return x.uniqid == uniqid;
         });
-        console.log($input.context);
         if ($input.context.name == "inputKey") inputs[index].keyValue = $input.val();
         if ($input.context.name == "inputValue") inputs[index].value = $input.val();
         Session.set('inputs', inputs);

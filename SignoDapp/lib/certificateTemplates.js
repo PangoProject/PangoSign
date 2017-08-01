@@ -4,14 +4,14 @@ templates = [
         name: "Blank",
         template: [
             {
-                uniqid: "Name",
+                uniqid: Random.id(),
                 keyValue: "Name",
                 value: "",
                 readOnly: "readonly",
                 type: "text"
             },
             {
-                uniqid: "DOB",
+                uniqid: Random.id(),
                 keyValue: "DOB",
                 value: "",
                 readOnly: "readonly",
@@ -24,14 +24,14 @@ templates = [
         name: "University",
         template: [
             {
-                uniqid: "Name",
+                uniqid: Random.id(),
                 keyValue: "Name",
                 value: "",
                 readOnly: "readonly",
                 type: "text"
             },
             {
-                uniqid: "DOB",
+                uniqid: Random.id(),
                 keyValue: "DOB",
                 value: "",
                 readOnly: "readonly",
@@ -93,14 +93,14 @@ templates = [
         name: "School",
         template: [
             {
-                uniqid: "Name",
+                uniqid: Random.id(),
                 keyValue: "Name",
                 value: "",
                 readOnly: "readonly",
                 type: "text"
             },
             {
-                uniqid: "DOB",
+                uniqid: Random.id(),
                 keyValue: "DOB",
                 value: "",
                 readOnly: "readonly",

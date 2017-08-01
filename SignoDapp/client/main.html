@@ -44,7 +44,7 @@
 
     <!-- Main content -->
     <main class="main">
-        <div class="container-fluid animated fadeIn">
+        <div class="container animated fadeIn">
             <div class="row">
                 <div class="col">
                     <div class="card">
@@ -95,13 +95,10 @@
                     </div>
                 </div>
             </div>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-backdrop="static"
-                    data-keyboard="false" data-target="#myModal">
-                Launch demo modal
-            </button>
         </div>
 
         {{>modal}}
+        {{> sAlert}}
 
     </main>
 </div>
@@ -117,20 +114,204 @@
 </body>
 
 <template name="modal">
-    <div class="modal show fadeIn" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    <!--This is the modal for a catastrophic Error-->
+    <div class="modal show fadeIn" data-backdrop="static" data-keyboard="false" id="catastrophicError" tabindex="-1"
+         role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="modal-title" id="exampleModalLabel">Abandon Ship!</h3>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-body center-block">
+                    <div class="row text-center">
+                        <div class="col">
+                            <h1><i class="fa fa-5x fa-ship" aria-hidden="true"></i></h1></div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            Sorry, something has gone really wrong!
+                            Please let us know what happened.
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a type="button" class="btn btn-secondary" target="_blank" href="mailto:signo.eth@gmail.com">Drop Us a Mail!</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--This is the modal for confirming the user wants to delete a certificate-->
+    <div class="modal show fadeIn" data-backdrop="static" data-keyboard="false" id="deleteConfirmModal" tabindex="-1"
+         role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="modal-title" id="exampleModalLabel">Are you sure?</h3>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-body center-block">
+                    <div class="row text-center">
+                        <div class="col">
+                            <h1><i class="fa fa-5x fa-trash" aria-hidden="true"></i></h1></div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            Are you sure you want to delete this certificate? It cannot be undone!
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" >No</button>
+                    <button type="button" class="btn btn-primary" target="_blank" id="modalDeleteButtonConfirm" >Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--This is the modal for reminding the user not to close their browser-->
+    <div class="modal show fadeIn" id="reminderToWaitForMining" tabindex="-1"
+         role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="modal-title" id="exampleModalLabel">Just a sec...</h3>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-body center-block">
+                    <div class="row text-center">
+                        <div class="col">
+                            <h1><i class="fa fa-fw fa-5x fa-refresh fa-spin" aria-hidden="true"></i></h1></div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            Please don't close your browser until your certificate has been mined. We'll let you know when this happens.
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" target="_blank" >Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--This is the modal for No Web 3 injection-->
+    <div class="modal show fadeIn" data-backdrop="static" data-keyboard="false" id="noWeb3Modal" tabindex="-1"
+         role="dialog" aria-labelledby="exampleModalLabel"
          aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header bg-danger">
-                    <h5 class="modal-title bg-" id="exampleModalLabel">NO WEB3</h5>
+                    <div class="row text-center">
+                        <div class="col">
+                            <h3 class="modal-title" id="exampleModalLabel">It appears that you don't have a Web3
+                                Client.</h3>
+                        </div>
+                    </div>
 
                 </div>
                 <div class="modal-body center-block">
-                    PLZ LEAR TN VALTALIK
+                    <div class="row text-center">
+                        <div class="col">
+                            <h1><i class="fa fa-5x fa-ban" aria-hidden="true"></i></h1></div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            As this is a distributed app, you need a tool for interacting with the Ethereum Blockchain.
+                            Have you tried MetaMask? We highly recommend it!
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary hideMyModal" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+
+                    <a type="button" class="btn btn-secondary" target="_blank" href="https://metamask.io/">Try
+                        MetaMask<img src="https://metamask.io/img/metamask.png" class="pull-right"
+                                     style=" padding-left:0.75em; height: 1.5em"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--This is the modal for being connected to the wrong network-->
+    <div class="modal show fadeIn" data-backdrop="static" data-keyboard="false" id="worngNetworkModal" tabindex="-1"
+         role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-warning">
+                    <div class="row text-center">
+                        <div class="col">
+                            <h3 class="modal-title" id="exampleModalLabel">We see that you are connected
+                                to {{TemplateVar.get "connectedNetwork"}}. We use Ropsten.</h3>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-body center-block">
+                    <div class="row text-center">
+                        <div class="col">
+                            <h1><i class="fa fa-5x fa-sitemap" aria-hidden="true"></i></h1></div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            As we are still in the early stages of development, we are still running on Ropsten testnet.
+                            Please change to this network through your Web3 Provider.
+                        </div>
+                    </div>
+                </div>
+                <!--<div class="modal-footer">-->
+                <!--<button type="button" id="lockModalCloseButton" class="btn btn-primary" data-dismiss="modal">Continue</button>-->
+                <!--</div>-->
+            </div>
+        </div>
+    </div>
+
+    <!--This is the modal for web 3 accounts locked injection-->
+    <div class="modal show fadeIn" data-backdrop="static" data-keyboard="false" id="accountsLockedModal" tabindex="-1"
+         role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <div class="row text-center">
+                        <div class="col">
+                            <h3 class="modal-title" id="exampleModalLabel">It appears that your Ethereum account is
+                                locked</h3>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-body center-block">
+                    <div class="row text-center">
+                        <div class="col">
+                            <h1><i class="fa fa-5x fa-lock" aria-hidden="true"></i></h1></div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            Your Web 3 client is running, but your account is locked. You will not be able to create or
+                            update certificates, but you can view them. If you want to this functionality, please unlock
+                            your account.
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="lockModalCloseButton" class="btn btn-primary" data-dismiss="modal">
+                        Continue
+                    </button>
                 </div>
             </div>
         </div>
@@ -257,7 +438,11 @@
             </div>
         </div>
     </form>
-    {{> searchResultsList searchResults=searchResults commonMetaData=commonMetaData commonMetaDataText=commonMetaDataText}}
+    <div class="row">
+        <div class="col">
+            {{> searchResultsList searchResults=searchResults commonMetaData=commonMetaData commonMetaDataText=commonMetaDataText}}
+        </div>
+    </div>
 </template>
 
 <template name="candidateDetailsSearch">
@@ -328,7 +513,7 @@
 
 <template name="searchResultsList">
     {{#if searchResults}}
-        <div class="row">
+        <div class="card-columns">
             {{#each result in searchResults}} {{#with result}}
                 {{> ChildCertificate resultCertificateAddress=certificateAddress resultTimeStamp=timeStamp issuerMetaData=issuerMetaData}}
             {{/with}} {{/each}}
@@ -338,41 +523,94 @@
 
 <template name="ChildCertificate">
     {{#unless TemplateVar.get "isDeleted"}}
-        <div class="col-xl-4 col-lg-6">
-            <div class="card fadeIn">
-                <div class="card-header">
-                    <h5>{{TemplateVar.get "name"}}
-                        {{#if TemplateVar.get "anonymous"}}
-                            {{>anonymousCertificateIcon}}
-                        {{/if}}
-                    </h5>
+        <!--<div class="col-xl-4 col-lg-6">-->
+        <div class="card">
+            <div class="card-header">
+                <h5>{{TemplateVar.get "name"}}
+                    {{#if TemplateVar.get "anonymous"}}
+                        {{>injectJqueryTooltip}}
+                        <a tabindex="0" class="badge badge-default pull-right" data-toggle="tooltip"
+                           data-placement="top"
+                           title="This user chose not to have their information displayed.">
+                            <h5 style="padding: 0px; margin: 0px">
+                                <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                            </h5>
+                        </a>
+                    {{/if}}
+                </h5>
+            </div>
+            <div class="card-block addressTextWrap">
+                <div class="row">
+                    <div class="col">
+                        <table class="table">
+                            <tbody>
+                            {{#each objectToPairs (TemplateVar.get "sundryData")}}
+                                <tr>
+                                    <td style="width:35%"><b>{{key}}</b></td>
+                                    <td>{{value}}</td>
+                                </tr>
+                            {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="card-block addressTextWrap">
-                    <div class="row">
-                        <div class="col">
-                            <table class="table">
-                                <tbody>
-                                {{#each objectToPairs (TemplateVar.get "sundryData")}}
-                                    <tr>
-                                        <td style="width:35%"><b>{{key}}</b></td>
-                                        <td>{{value}}</td>
-                                    </tr>
-                                {{/each}}
-                                </tbody>
-                            </table>
-                        </div>
+
+
+            </div>
+            <div class="card-footer pl-8 pr-8" style="padding-top: 8px; padding-bottom: 8px">
+                <div class="row pt-1 mt-0">
+                    <div class="col pull-left">
+                        <small class="text-muted pull-left">Added: <strong><br> {{formatDate resultTimeStamp}}</strong>
+                        </small>
+                    </div>
+                    {{>injectJqueryPopover}}
+
+                    <div class="col-2">
+                        {{#if TemplateVar.get "issuerMetaData"}}
+                            <a tabindex="0" class="badge badge-default pop pull-right" data-toggle="popover"
+                               data-placement="bottom"
+                               title="Number of certificates issued by issuer"
+                               data-content="{{TemplateVar.get "issuerMetaData"}}">
+                                <h5 style="padding: 0px; margin: 0px">
+                                    <i class="fa fa-fw fa-hashtag" aria-hidden="true"></i>
+                                </h5>
+                            </a>
+                        {{/if}}
                     </div>
 
-                    <p>Certificate public address: {{TemplateVar.get "certificateAddress"}}</p>
-                    <p> Date created: {{formatDate resultTimeStamp}}</p>
-                    <p>ID Hash: {{TemplateVar.get "idHash"}}</p>
-                    <p>Certificate issuer address: {{TemplateVar.get "certificateIssuer"}}</p>
-                    {{#if TemplateVar.get "issuerMetaData"}}
-                        <p># of certificates issued by issuer: {{TemplateVar.get "issuerMetaData"}}</p>
-                    {{/if}}
+                    <div class="col-2">
+                        <a tabindex="0" class="badge badge-default pop pull-right" data-toggle="popover"
+                           data-placement="bottom"
+                           title="Certificate public address"
+                           data-content="{{TemplateVar.get "certificateAddress"}}">
+                            <h5 style="padding: 0px; margin: 0px">
+                                <i class="fa fa-fw fa-certificate" aria-hidden="true"></i>
+                            </h5>
+                        </a>
+                    </div>
+                    <div class="col-2">
+                        <a tabindex="0" class="badge badge-default pop pull-right" data-toggle="popover"
+                           data-placement="bottom"
+                           title="Candidate ID" data-content="{{TemplateVar.get "idHash"}}">
+                            <h5 style="padding: 0px; margin: 0px">
+                                <i class="fa fa-fw fa-id-card" aria-hidden="true"></i>
+                            </h5>
+                        </a>
+                    </div>
+                    <div class="col-2">
+                        <a tabindex="0" class="badge badge-default pop pull-right" data-toggle="popover"
+                           data-placement="bottom"
+                           title="Issuer Address" data-content="{{TemplateVar.get "certificateIssuer"}}">
+                            <h5 style="padding: 0px; margin: 0px">
+                                <i class="fa fa-fw fa-university" aria-hidden="true"></i>
+                            </h5>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!--</div>-->
     {{/unless}}
 </template>
 
@@ -381,37 +619,26 @@
 </template>
 
 <template name="DeleteCertificateForm">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col">
-                <form id="deleteCertificateForm">
-
-                    <div class="form-group {{TemplateVar.get "valid"}}">
-                        <label class="form-control-label" for="deleteCertificateAddress">
-                            Input Certificate address
-                        </label>
-                        <input type="text" class="form-control form-control-success" id="deleteCertificateAddress"
-                               name="certificateAddress"
-                               placeholder="0x0123456789abcdef012345679abcdef0123456"/>
-                    </div>
-                    <button type="submit" id="deleteCertificate" class="btn btn-danger">
-                        <i class="fa fa-fw fa-trash" aria-hidden="true"></i> Delete
-                    </button>
-                </form>
-            </div>
+    <form id="deleteCertificateForm">
+        <div class="form-group {{TemplateVar.get "valid"}}">
+            <label class="form-control-label" for="deleteCertificateAddress">
+                Input Certificate address
+            </label>
+            <input type="text" class="form-control form-control-success" id="deleteCertificateAddress"
+                   name="certificateAddress"
+                   placeholder="0x0123456789abcdef012345679abcdef0123456"/>
         </div>
-    </div>
+        <button type="button" id="deleteCertificateButton" class="btn btn-danger">
+            <i class="fa fa-fw fa-trash" aria-hidden="true"></i> Remove
+        </button>
+    </form>
 
 </template>
 
 <template name="UpdateCertificate">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col">
-                {{> UpdateCertificateForm}}
-            </div>
-        </div>
-    </div>
+
+    {{> UpdateCertificateForm}}
+
 </template>
 
 <template name="UpdateCertificateForm">
@@ -433,18 +660,19 @@
         </div>
     </div>
     <div class="row">
-        {{#if updateCertificateSearchResults}}
-            {{>UpdateCertificateFormChild updateCertificateSearchResults=updateCertificateSearchResults}}
-        {{/if}}
+        <div class="col">
+            {{#if updateCertificateSearchResults}}
+                {{>UpdateCertificateFormChild updateCertificateSearchResults=updateCertificateSearchResults}}
+            {{/if}}
+        </div>
     </div>
-
 </template>
 
 <template name="UpdateCertificateFormChild">
     {{#if (TemplateVar.get "json")}}
         {{>UpdateCertificateFormChildChild json=(TemplateVar.get "json")}}
         <button type="submit" id="update" class="btn btn-primary">
-            <i class="fa fa-fw fa-wrench" aria-hidden="true"></i> Update
+            <i class="fa fa-fw fa-wrench" aria-hidden="true"></i> Change
         </button>
     {{/if}}
 </template>
@@ -473,7 +701,7 @@
         <tfoot>
         <tr>
             <td colspan="2">
-                <button id='add-input' class="btn btn-secondary rounded">
+                <button id='add-input' class="btn btn-secondary rounded" {{TemplateVar.get "addNewFieldButtonStatus"}}>
                     <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
                 </button>
                 <div class="pull-right" style="padding-top: 4px">
@@ -493,61 +721,54 @@
 </template>
 
 <template name="createCertificate">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col">
+    <select name="certificatesTemplates" id="certificatesTemplates"
+            class="form-control">
+        {{#each template in certificatesTemplates}}
+            <option value="{{template.id}}">{{template.name}}</option>
+        {{/each}}
+    </select>
+    <table class="table">
 
-
-                <select name="certificatesTemplates" id="certificatesTemplates"
-                        class="form-control">
-                    {{#each template in certificatesTemplates}}
-                        <option value="{{template.id}}">{{template.name}}</option>
-                    {{/each}}
-                </select>
-                <table class="table">
-
-                    <tbody>
-                    {{#each inputs}}
-                        {{> inputFields}}
-                    {{/each}}
-                    </tbody>
-                    <tfoot>
-                    <tr>
-                        <td colspan="2">
-                            <button id='add-input' class="btn btn-secondary rounded">
-                                <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
-                            </button>
-                            <div class="pull-right" style="padding-top: 4px">
-                                <strong class="text-muted">
-                                    Anonymous certificate
-                                </strong>
-                                <label class="switch switch-text switch-pill switch-secondary">
-                                    <input type="checkbox" class="switch-input" id="anonymousCreate">
-                                    <span class="switch-label" data-on="On" data-off="Off"></span>
-                                    <span class="switch-handle"></span>
-                                </label>
-                            </div>
-                        </td>
-                    </tr>
-                    </tfoot>
-                </table>
-                <button type="submit" id="createCertificate" class="btn btn-primary">
-                    <i class="fa fa-fw fa-pencil" aria-hidden="true"></i> Create
+        <tbody>
+        {{#each inputs}}
+            {{> inputFields}}
+        {{/each}}
+        </tbody>
+        <tfoot>
+        <tr>
+            <td colspan="2">
+                <button id='add-input' class="btn btn-secondary rounded" {{TemplateVar.get "addNewFieldButtonStatus"}}>
+                    <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
                 </button>
-            </div>
-        </div>
-    </div>
+                <div class="pull-right" style="padding-top: 4px">
+                    <strong class="text-muted">
+                        Anonymous certificate
+                    </strong>
+                    <label class="switch switch-text switch-pill switch-secondary">
+                        <input type="checkbox" class="switch-input" id="anonymousCreate">
+                        <span class="switch-label" data-on="On" data-off="Off"></span>
+                        <span class="switch-handle"></span>
+                    </label>
+                </div>
+            </td>
+        </tr>
+        </tfoot>
+    </table>
+    <button type="submit" id="createCertificate" class="btn btn-primary">
+        <i class="fa fa-fw fa-pencil" aria-hidden="true"></i> Create
+    </button>
 </template>
 
 <template name='inputFields'>
     <tr>
         <td style="width: 30%">
-            <input name='inputKey' class='form-control' type='text' uniqid="{{uniqid}}"
+            <input name='inputKey' class='form-control' type='text' uniqid="{{uniqid}}" maxlength="60"
                    value="{{keyValue}}" {{readOnly}}>
         </td>
         <td>
-            <div class="input-group">
-                <input name='inputValue' class='form-control' type='{{type}}' uniqid="{{uniqid}}" value="{{value}}">
+            <div class="input-group {{type}}">
+                <input name='inputValue' class='form-control' type='text' uniqid="{{uniqid}}" id="{{uniqid}}"
+                       value="{{value}}" maxlength="140">
                 <span class="input-group-btn">
                     {{#if readOnly}}
                         <button id="remove-input" uniqid="{{uniqid}}" class="btn btn-link rounded"
@@ -565,14 +786,10 @@
     </tr>
 </template>
 
-<template name="anonymousCertificateIcon">
-    <a tabindex="0" class="badge badge-default pull-right" role="button" data-toggle="popover" data-trigger="focus"
-       title="Anonymous Certificate"
-       data-content="This user chose to not have their information stored on the public Ethereum Blockchain.">
-        <h5 style="padding: 0px; margin: 0px">
-            <i class="fa fa-eye-slash" aria-hidden="true"></i>
-        </h5>
+<template name="injectJqueryPopover">
 
-    </a>
 </template>
 
+<template name="injectJqueryTooltip">
+
+</template>
