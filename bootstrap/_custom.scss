@@ -1,0 +1,16 @@
+// Bootstrap overrides
+//
+// Copy variables from `_variables.scss` to this file to override default values
+// without modifying source files.
+
+.row {
+  margin-top: 1rem;
+}
+
+.card-block{
+  padding-top: 0rem;
+  padding-bottom: 1rem;
+}
+.addressTextWrap{
+  word-wrap: break-word;
+}

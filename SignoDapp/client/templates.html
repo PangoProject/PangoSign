@@ -129,9 +129,9 @@
                 </div>
                 <div class="modal-footer">
 
-                    <a type="button" class="btn btn-secondary" target="_blank" href="https://metamask.io/">Try
+                    <button type="button" class="btn btn-secondary" target="_blank" href="https://metamask.io/">Try
                         MetaMask<img src="https://metamask.io/img/metamask.png" class="pull-right"
-                                     style=" padding-left:0.75em; height: 1.5em"></a>
+                                     style=" padding-left:0.75em; height: 1.5em"></button>
                 </div>
             </div>
         </div>
@@ -148,7 +148,7 @@
                     <div class="row text-center">
                         <div class="col">
                             <h3 class="modal-title" id="exampleModalLabel">We see that you are connected
-                                to {{TemplateVar.get "connectedNetwork"}}. We use Ropsten.</h3>
+                                to {{connectedNetwork}}. We use Ropsten.</h3>
                         </div>
                     </div>
 
@@ -226,11 +226,11 @@
                                         Wallet Address
                                     </h6>
                                     <div class="h5 mb-0 addressTextWrap">
-                                        {{TemplateVar.get "walletAddress"}}
+                                        {{walletAddressWidget}}
                                     </div>
                                 </div>
                                 <div class="col-4 pull-right h1">
-                                    <i class="fa fa-fw fa-address-book pull-right" aria-hidden="true"></i>
+                                    <i class="icon-wallet pull-right" aria-hidden="true"></i>
                                 </div>
                             </div>
 
@@ -246,11 +246,11 @@
                                         Ether Ballance
                                     </h6>
                                     <div class="h5 mb-0 addressTextWrap">
-                                        {{TemplateVar.get "walletBallance"}}
+                                        {{walletBallanceWidget}}
                                     </div>
                                 </div>
                                 <div class="col-4 pull-right h1">
-                                    <i class="fa fa-fw fa-money pull-right" aria-hidden="true"></i>
+                                    <i class="icon-rocket pull-right" aria-hidden="true"></i>
                                 </div>
                             </div>
 
@@ -266,11 +266,11 @@
                                         Certs published
                                     </h6>
                                     <div class="h5 mb-0 addressTextWrap">
-                                        {{TemplateVar.get "numberOfCerts"}}
+                                        {{numberOfCertsWidget}}
                                     </div>
                                 </div>
                                 <div class="col-4 pull-right h1">
-                                    <i class="fa fa-fw fa-trophy pull-right" aria-hidden="true"></i>
+                                    <i class="icon-badge pull-right" aria-hidden="true"></i>
                                 </div>
                             </div>
 
@@ -431,20 +431,29 @@
     {{#unless TemplateVar.get "isDeleted"}}
         <!--<div class="col-xl-4 col-lg-6">-->
         <div class="card animated fadeInUpBig">
-            <div class="card-header">
-                <h5>{{TemplateVar.get "name"}}
-                    {{>injectJqueryTooltip}}
-                    {{#if TemplateVar.get "anonymous"}}
-                        <a tabindex="0" id="searchResultCard" class="badge badge-default pull-right"
-                           data-toggle="tooltip"
-                           data-placement="top"
-                           title="This user chose not to have their information displayed.">
-                            <h5 style="padding: 0px; margin: 0px">
-                                <i class="fa fa-eye-slash" aria-hidden="true"></i>
-                            </h5>
-                        </a>
-                    {{/if}}
-                </h5>
+            <div class="card-header" style="padding-top: 8px; padding-bottom: 8px">
+                <div class="row pt-1 mt-0">
+                    <div class="col">
+                        <h5>
+                            {{TemplateVar.get "name"}}
+                        </h5>
+                    </div>
+                    <div class="col-2">
+
+                        {{>injectJqueryTooltip}}
+                        {{#if TemplateVar.get "anonymous"}}
+                            <a id="searchResultCard" class="pull-right"
+                               data-toggle="tooltip"
+                               data-placement="top"
+                               title="This user chose not to have their information displayed.">
+                                <h4 style="padding: 0px; margin: 0px">
+                                    <i class="icon-ghost nav-link text-muted pull-right p-t-0 p-b-0 m-t-0 m-b-0" aria-hidden="true"></i>
+                                </h4>
+                            </a>
+                        {{/if}}
+                    </div>
+                </div>
+
             </div>
             <div class="card-block addressTextWrap">
                 <div class="row">
@@ -476,41 +485,41 @@
                     <div class="col-2">
                         {{>injectJqueryPopover}}
                         {{#if TemplateVar.get "issuerMetaData"}}
-                            <a tabindex="0" class="badge badge-default pop pull-right" data-toggle="popover"
+                            <a class="pop pull-right" data-toggle="popover"
                                data-placement="bottom"
                                title="Number of certificates issued by issuer"
-                               data-content="{{TemplateVar.get "issuerMetaData"}}">
+                               data-content="{{TemplateVar.get "issuerMetaData"}} ">
                                 <h5 style="padding: 0px; margin: 0px">
-                                    <i class="fa fa-fw fa-hashtag" aria-hidden="true"></i>
+                                    <i class="icon-trophy nav-link text-muted" aria-hidden="true"></i>
                                 </h5>
                             </a>
                         {{/if}}
                     </div>
                     <div class="col-2">
-                        <a tabindex="0" class="badge badge-default pop pull-right" data-toggle="popover"
+                        <a class="pop pull-right" data-toggle="popover"
                            data-placement="bottom"
                            title="Certificate public address"
-                           data-content="{{TemplateVar.get "certificateAddress"}}">
+                           data-content="{{TemplateVar.get "certificateAddress"}} ">
                             <h5 style="padding: 0px; margin: 0px">
-                                <i class="fa fa-fw fa-certificate" aria-hidden="true"></i>
+                                <i class="icon-badge nav-link text-muted" aria-hidden="true"></i>
                             </h5>
                         </a>
                     </div>
                     <div class="col-2">
-                        <a tabindex="0" class="badge badge-default pop pull-right" data-toggle="popover"
+                        <a class="pop pull-right" data-toggle="popover"
                            data-placement="bottom"
-                           title="Candidate ID" data-content="{{TemplateVar.get "idHash"}}">
+                           title="Candidate ID" data-content="{{TemplateVar.get "idHash"}} ">
                             <h5 style="padding: 0px; margin: 0px">
-                                <i class="fa fa-fw fa-id-card" aria-hidden="true"></i>
+                                <i class="icon-user nav-link text-muted" aria-hidden="true"></i>
                             </h5>
                         </a>
                     </div>
                     <div class="col-2">
-                        <a tabindex="0" class="badge badge-default pop pull-right" data-toggle="popover"
+                        <a class="pop pull-right" data-toggle="popover"
                            data-placement="bottom"
-                           title="Issuer Address" data-content="{{TemplateVar.get "certificateIssuer"}}">
+                           title="Issuer Address" data-content="{{TemplateVar.get "certificateIssuer"}} ">
                             <h5 style="padding: 0px; margin: 0px">
-                                <i class="fa fa-fw fa-university" aria-hidden="true"></i>
+                                <i class="icon-graduation nav-link text-muted" aria-hidden="true"></i>
                             </h5>
                         </a>
                     </div>

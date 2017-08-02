@@ -49,19 +49,24 @@ const BYTE_CODE = "6060604052341561000f57600080fd5b6040516104b13803806104b183398
 
 let Address;
 
-let addressPromise = new Promise((address) => {
-    web3.eth.getAccounts(function (err, res) {
-        if (!err) {
-            Address = res[0];
-            address(res[0]);
-        }
-    });
-});
+// let addressPromise = new Promise((address) => {
+//     web3.eth.getAccounts(function (err, res) {
+//         if (!err) {
+//             Address = res[0];
+//             console.log(Address);
+//             address(res[0]);
+//         }
+//     });
+// });
 
 Certificates = new Mongo.Collection("certificates");
 
 Meteor.startup(function () {
     Session.set("updateCertificateSearchResults", null);
+    Session.set("accountLocked",false);
+    Session.set("Address", "0x");
+    Session.set("walletBallance", 0);
+    Session.set("numberOfCerts", 0);
     try {
         Meteor.subscribe('theCertificates');
     }
@@ -106,7 +111,7 @@ function getContract(certificateAddress) {
         return web3.eth.contract(ABI_ARRAY).at(certificateAddress);
     }
     catch (err) {
-        console.log(err);
+        sAlert.error("Something went wrong with your web3 client.");
     }
     return null;
 }
@@ -119,6 +124,10 @@ function getNetwork(networkId) {
             return 'Morden';
         case '3':
             return 'Ropsten';
+        case '4':
+            return 'Rinkeby';
+        case '42':
+            return 'Kovan';
         default:
             return 'Unknown';
     }
@@ -149,25 +158,25 @@ function createCertificate(candidateName, candidateDOB, sundryData, idHash = "")
                     gas: "4000000"
                 },
                 function (e, contract) {
-                    try{
+                    try {
                         //must be contract.address as when function is called initially, it returns a null and later return another contract.
-                    if (typeof contract.address !== "undefined") {
-                        try {
-                            Meteor.call('insertCertificate', contract.address);
-                            resolve({address:contract.address,txHash:contract.transactionHash});
+                        if (typeof contract.address !== "undefined") {
+                            try {
+                                Meteor.call('insertCertificate', contract.address);
+                                resolve({address: contract.address, txHash: contract.transactionHash});
+                            }
+                            catch (err) {
+                                sAlert.error("Failed to add the certificate to the DB.");
+                                error(err);
+                                // console.log("DB Connection failed: " + err);
+                            }
                         }
-                        catch (err) {
-                            sAlert.error("Failed to add the certificate to the DB.");
-                            error(err);
-                            // console.log("DB Connection failed: " + err);
-                        }
-                    }
                     } catch (e2) {
                         $('#reminderToWaitForMining').modal('hide');
                         sAlert.error("It looks like you cancelled the transaction!");
                         error("Error");
                     }
-                    if(e){
+                    if (e) {
                         $('#reminderToWaitForMining').modal('hide');
                         sAlert.error("Oh-No! The certificate could not to be mined.");
                         error("Error");
@@ -216,7 +225,7 @@ function getCertificateFromBlockchain(certificateAddress, template) {
 
     }
     catch (err) {
-        console.log("Unable to retrieve certificate from Blockchain: " + err);
+        sAlert.error("Unable to retrieve certificate from Blockchain.");
     }
 }
 
@@ -344,8 +353,6 @@ function JSONToMap(json) {
 function arrayToJSON(array) {
     // try {
     let json = "";
-    console.log(array)
-
     let isAnonymous = _.filter(array, function (x) {
         return x.keyValue == "Anonymous";
     })[0]["value"];
@@ -370,6 +377,51 @@ function isValidSHAStr(idHash) {
         return "has-danger";
     }
 }
+
+function checkWeb3Status() {
+    $('#noWeb3Modal').on('shown.bs.modal', function () {
+        $('#myInput').focus()
+    });
+    if (!web3.isConnected()) {
+        $('#noWeb3Modal').modal('show');
+    } else {
+        let network;
+        web3.version.getNetwork((error, result) => {
+            network = getNetwork(result);
+            Session.set("connectedNetwork", network);
+            if (network !== "Ropsten") {
+                $('#worngNetworkModal').modal('show');
+            } else {
+                web3.eth.getAccounts(function (err, res) {
+                    if (!err) {
+                        Address = res[0];
+                        if (Address == undefined) {
+                            if (!Session.get("accountLocked")) {
+                                $('#accountsLockedModal').modal('show');
+                                Session.set("accountLocked",true);
+                                Session.set("Address", "0x");
+                                Session.set("walletBallance", 0);
+                                Session.set("numberOfCerts", 0);
+                            }
+                        } else {
+                            Session.set("Address", Address);
+                            $('#accountsLockedModal').modal('hide');
+                            Session.set("accountLocked",false);
+                            web3.eth.getBalance(Address, function (err, res) {
+                                let ethBlance = Math.round(web3.fromWei(res, "ether") * 10000) / 10000;
+                                Session.set("walletBallance", ethBlance);
+                            });
+                            numberOfCerts = Certificates.find({certificateIssuer: Address}).count();
+                            Session.set("numberOfCerts", numberOfCerts);
+                        }
+                    }
+                });
+            }
+        });
+    }
+};
+
+Meteor.setInterval(checkWeb3Status, 1000);
 
 Template.registerHelper("objectToPairs", function (object) {
     return _.map(object, function (value, key) {
@@ -441,7 +493,7 @@ Template.candidateDetailsSearch.onRendered(function () {
 });
 
 Template.inputFields.onRendered(function (event) {
-    if(this.data.type=='date') {
+    if (this.data.type == 'date') {
         $('#' + this.data.uniqid).datepicker({
             format: "yyyy-mm-dd",
             endDate: "today",
@@ -459,7 +511,7 @@ Template.injectJqueryPopover.onRendered(function () {
     $('.popover-dismiss').popover({
         trigger: 'focus'
     })
-    $(".pop").popover({ trigger: "manual" , html: true, animation:false})
+    $(".pop").popover({trigger: "manual", html: true, animation: false})
         .on("mouseenter", function () {
             var _this = this;
             $(this).popover("show");
@@ -483,57 +535,43 @@ Template.injectJqueryTooltip.onRendered(function () {
     })
 });
 
-Template.modal.onRendered(function () {
-    template = Template.instance();
-    $('#noWeb3Modal').on('shown.bs.modal', function () {
-        $('#myInput').focus()
-    });
-    if (!web3.isConnected()) {
-        $('#noWeb3Modal').modal('show');
-    } else {
-        let network;
-        web3.version.getNetwork((error, result) => {
-            network = getNetwork(result);
-            TemplateVar.set(template, "connectedNetwork", network);
-            if (network !== "Ropsten") {
-                $('#worngNetworkModal').modal('show');
-            } else {
-                addressPromise.then((address) => {
-                    if (address == undefined) {
-                        $('#accountsLockedModal').modal('show');
-                    }
-                });
-            }
-        });
+
+Template.WalletBallance.helpers({
+    walletAddressWidget: function () {
+        return Session.get("Address");
+    },
+    walletBallanceWidget: function () {
+        return Session.get("walletBallance");
+    },
+    numberOfCertsWidget: function () {
+        return Session.get("numberOfCerts");
     }
 });
 
-Template.WalletBallance.onRendered(function () {
-    // try {
+Template.modal.helpers({
+    connectedNetwork: function(){
+        return Session.get("connectedNetwork");
+    }
+});
 
-    let template = Template.instance();
-    // web3.eth.getAccounts(function (err, res) {
-    //     if (!err) {
-    //         Address = res[0];
-    addressPromise.then((Address) => {
-        TemplateVar.set(template, "walletAddress", Address);
-        web3.eth.getBalance(Address, function (err, res) {
-            let ethBlance = Math.round(web3.fromWei(res, "ether") * 10000) / 10000;
-            TemplateVar.set(template, "walletBallance", ethBlance);
-        });
-        numberOfCerts = Certificates.find({certificateIssuer: Address}).count();
-        TemplateVar.set(template, "numberOfCerts", numberOfCerts);
-    })
-    ;
-
-
-    // } else {
-    //     console.log("There was an error fetching wallet ballance: " + err);
-    // }
-    //     });
-    // } catch (err) {
-    //     console.log("There was an error retrieving web3.")
-    // }
+Template.main.helpers({
+    accountLockedStatus: function(){
+        if (Session.get("accountLocked")) return "icon-lock";
+        return "icon-lock-open";
+    },
+    walletAddressWidget: function () {
+        return Session.get("Address");
+    },
+    walletBallanceWidget: function () {
+        return Session.get("walletBallance");
+    },
+    numberOfCertsWidget: function () {
+        return Session.get("numberOfCerts");
+    },
+    accountLockWidget: function () {
+        if (Session.get("accountLocked")) return "The account is locked. Please unlock to edit or create new certificates.";
+        return "The account is unlocked.";
+    }
 });
 
 Template.CandidateSearch.onRendered(function () {
@@ -543,8 +581,7 @@ Template.CandidateSearch.onRendered(function () {
     });
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         let activeTab = e.target.href.split('#')[1]; // newly activated tab
-        Session.set('searchType',activeTab);
-        console.log(activeTab)
+        Session.set('searchType', activeTab);
     })
 });
 
@@ -640,19 +677,20 @@ Template.candidateIdSearch.events({
 });
 
 Template.issuerAddressSearch.events({
-"change #searchCertificateIssuer": function () {
-    let certificateAddress = document.getElementById("searchCertificateIssuer").value;
-    let template = Template.instance();
-    TemplateVar.set(template, "valid", isContractAddressValidStr(certificateAddress));
-}});
+    "change #searchCertificateIssuer": function () {
+        let certificateAddress = document.getElementById("searchCertificateIssuer").value;
+        let template = Template.instance();
+        TemplateVar.set(template, "valid", isContractAddressValidStr(certificateAddress));
+    }
+});
 
 Template.certificateAddressSearch.events({
-"change #searchCertificateAddress": function () {
-    let certificateAddress = document.getElementById("searchCertificateAddress").value;
-    let template = Template.instance();
-    console.log(isContractAddressValidStr(certificateAddress));
-    TemplateVar.set(template, "valid", isContractAddressValidStr(certificateAddress));
-}});
+    "change #searchCertificateAddress": function () {
+        let certificateAddress = document.getElementById("searchCertificateAddress").value;
+        let template = Template.instance();
+        TemplateVar.set(template, "valid", isContractAddressValidStr(certificateAddress));
+    }
+});
 
 Template.CandidateSearch.events({
     "click #myTab": function (event) {
@@ -745,7 +783,7 @@ Template.CandidateSearch.events({
                 break;
 
         }
-        if(searchResults.length == 0){
+        if (searchResults.length == 0) {
             sAlert.info("There were no certificates found for your search criteria.")
         }
         Session.set("certificateSearchResults", searchResults);
@@ -790,9 +828,9 @@ Template.DeleteCertificateForm.events({
             ).fetch();
             if (searchResults.length !== 0) {
                 if (searchResults[0].certificateIssuer === Address) {
-                    deleteCertificate(certificateAddress).then((error)=>{
-                       if(!error) sAlert.success('Certificate successfully deleted.');
-                       else sAlert.error('Failed to delete certificate');
+                    deleteCertificate(certificateAddress).then((error) => {
+                        if (!error) sAlert.success('Certificate successfully deleted.');
+                        else sAlert.error('Failed to delete certificate');
 
                     });
                 } else {
@@ -911,7 +949,7 @@ Template.createCertificate.events({
             candidateDOB = _.filter(sundryData, function (x) {
                 return x.keyValue == "DOB";
             })[0]["value"];
-        } catch(e){
+        } catch (e) {
         }
         if (candidateName == "") {
             sAlert.warning("Please enter at least the name to identify the certificate.")
@@ -928,13 +966,11 @@ Template.createCertificate.events({
             sundryData = _.filter(sundryData, function (x) {
                 return ((x.keyValue != "" && x.value != "") || x.keyValue == "Anonymous");
             });
-            console.log(sundryData);
             json = arrayToJSON(sundryData);
             $('#reminderToWaitForMining').modal('show');
-            createCertificate(candidateName, candidateDOB, json).then((resolve,err)=>{
+            createCertificate(candidateName, candidateDOB, json).then((resolve, err) => {
                 $('#reminderToWaitForMining').modal('hide');
-                console.log(resolve,err);
-                if(resolve){
+                if (resolve) {
                     sAlert.success("<strong> Certificate added, with address" + resolve.address + ".</strong> <a href='https://ropsten.etherscan.io/tx/" + resolve.txHash + "' target='_blank'> Click here</a> to view it on the blockchain.")
                 }
             });

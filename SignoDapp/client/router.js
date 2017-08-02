@@ -1,3 +1,7 @@
+Router.route('/', function () {
+    this.render('WalletBallance');
+});
+
 Router.route('WalletBallance', function () {
     this.render('WalletBallance');
 });
