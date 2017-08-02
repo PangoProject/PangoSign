@@ -2,6 +2,8 @@ import {Template} from "meteor/templating";
 import {Session} from "meteor/session";
 
 import "./main.html";
+import "./templates.html";
+import "./router.js";
 
 const ABI_ARRAY = [{
     "constant": true,
@@ -59,6 +61,7 @@ let addressPromise = new Promise((address) => {
 Certificates = new Mongo.Collection("certificates");
 
 Meteor.startup(function () {
+    Session.set("updateCertificateSearchResults", null);
     try {
         Meteor.subscribe('theCertificates');
     }
@@ -769,6 +772,7 @@ Template.DeleteCertificateForm.events({
                 }
             } else {
                 sAlert.warning("<strong >No certificates with this address were found.</strong>");
+
             }
         } catch (err) {
             sAlert.error("Oops! Failed to delete this certificate.")
@@ -826,7 +830,8 @@ Template.UpdateCertificateForm.events({
                     sAlert.error("You did not create this certificate and thus, cannot edit it.");
                 }
             } else {
-                alert("No certificates with this address were found.");
+                sAlert.info("No certificates with this address were found.");
+                Session.set("updateCertificateSearchResults", null);
             }
         } catch (err) {
             sAlert.error("Oops! Your certificate has failed to be updated.");

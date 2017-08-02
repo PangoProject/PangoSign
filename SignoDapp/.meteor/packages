@@ -41,3 +41,6 @@ twbs:bootstrap@4.0.0-alpha2
 em0ney:chartjs
 juliancwirko:s-alert
 juliancwirko:s-alert-flip
+iron:router
+zimme:active-route
+natestrauser:animate-css
