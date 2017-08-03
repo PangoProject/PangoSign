@@ -38,7 +38,7 @@
                        class="pop icon-wallet nav-link"></i>
                 </h3>
             </li>
-            <li class="nav-item">
+            <li>
                 <h3>
                     <i data-toggle="popover"
                        data-placement="bottom"
@@ -72,27 +72,27 @@
         <div class="sidebar">
             <nav class="sidebar-nav">
                 <ul class="nav animated fadeInLeft">
-                    <li class="nav-item"><a class="nav-link {{isActiveRoute 'WalletBallance'}}"
-                                            href="{{pathFor route="WalletBallance"}}"><i
+                    <li class="nav-item"><a class="nav-link {{isActiveRoute 'home'}}"
+                                            href="{{pathFor route="home"}}"><i
                             class="fa fa-fw fa-home"></i>Home</a>
                     </li>
-                    <li class="nav-item"><a class="nav-link {{isActiveRoute 'CandidateSearch'}}"
-                                            href="{{pathFor route="CandidateSearch"}}"><i
+                    <li class="nav-item"><a class="nav-link {{isActiveRoute regex='search(.*)'}}"
+                                            href="{{pathFor route="search"}}"><i
                             class="fa fa-w fa-search"></i>
                         Search</a>
                     </li>
-                    <li class="nav-item"><a class="nav-link {{isActiveRoute 'createCertificate'}}"
-                                            href="{{pathFor route="createCertificate"}}"><i
+                    <li class="nav-item"><a class="nav-link {{isActiveRoute 'create'}}"
+                                            href="{{pathFor route="create"}}"><i
                             class="fa fa-fw fa-pencil"></i>
                         Create</a>
                     </li>
-                    <li class="nav-item"><a class="nav-link {{isActiveRoute 'UpdateCertificate'}}"
-                                            href="{{pathFor route="UpdateCertificate"}}"><i
+                    <li class="nav-item"><a class="nav-link {{isActiveRoute 'change'}}"
+                                            href="{{pathFor route="change"}}"><i
                             class="fa fa-fw fa-wrench"></i>
                         Change</a>
                     </li>
-                    <li class="nav-item"><a class="nav-link {{isActiveRoute 'DeleteCertificate'}}"
-                                            href="{{pathFor route="DeleteCertificate"}}"><i
+                    <li class="nav-item"><a class="nav-link {{isActiveRoute 'remove'}}"
+                                            href="{{pathFor route="remove"}}"><i
                             class="fa fa-fw fa-trash"></i> Remove</a>
                     </li>
                     <li class="nav-item"><a class="nav-link" href="#" target='_blank'><i

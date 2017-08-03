@@ -63,7 +63,7 @@ Certificates = new Mongo.Collection("certificates");
 
 Meteor.startup(function () {
     Session.set("updateCertificateSearchResults", null);
-    Session.set("accountLocked",false);
+    Session.set("accountLocked", false);
     Session.set("Address", "0x");
     Session.set("walletBallance", 0);
     Session.set("numberOfCerts", 0);
@@ -379,9 +379,9 @@ function isValidSHAStr(idHash) {
 }
 
 function checkWeb3Status() {
-    $('#noWeb3Modal').on('shown.bs.modal', function () {
-        $('#myInput').focus()
-    });
+    // $('#noWeb3Modal').on('shown.bs.modal', function () {
+    //     $('#myInput').focus()
+    // });
     if (!web3.isConnected()) {
         $('#noWeb3Modal').modal('show');
     } else {
@@ -398,7 +398,7 @@ function checkWeb3Status() {
                         if (Address == undefined) {
                             if (!Session.get("accountLocked")) {
                                 $('#accountsLockedModal').modal('show');
-                                Session.set("accountLocked",true);
+                                Session.set("accountLocked", true);
                                 Session.set("Address", "0x");
                                 Session.set("walletBallance", 0);
                                 Session.set("numberOfCerts", 0);
@@ -406,7 +406,7 @@ function checkWeb3Status() {
                         } else {
                             Session.set("Address", Address);
                             $('#accountsLockedModal').modal('hide');
-                            Session.set("accountLocked",false);
+                            Session.set("accountLocked", false);
                             web3.eth.getBalance(Address, function (err, res) {
                                 let ethBlance = Math.round(web3.fromWei(res, "ether") * 10000) / 10000;
                                 Session.set("walletBallance", ethBlance);
@@ -420,6 +420,14 @@ function checkWeb3Status() {
         });
     }
 };
+
+function generateQRCode(qrId, text) {
+    $(qrId).qrcode({
+        size: 150,
+        render: 'canvas',
+        text: text
+    });
+}
 
 Meteor.setInterval(checkWeb3Status, 1000);
 
@@ -512,7 +520,7 @@ Template.injectJqueryPopover.onRendered(function () {
         trigger: 'focus'
     })
     $(".pop").popover({trigger: "manual", html: true, animation: false})
-        .on("mouseenter", function () {
+        .on("mouseover", function () {
             var _this = this;
             $(this).popover("show");
             $(".popover").on("mouseleave", function () {
@@ -524,17 +532,17 @@ Template.injectJqueryPopover.onRendered(function () {
             if (!$(".popover:hover").length) {
                 $(_this).popover("hide");
             }
-        }, 300);
+        }, 1000);
     });
 
 });
 
 Template.injectJqueryTooltip.onRendered(function () {
     $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
+        //$('[data-toggle="tooltip"]').tooltip()
+        $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
     })
 });
-
 
 Template.WalletBallance.helpers({
     walletAddressWidget: function () {
@@ -549,13 +557,13 @@ Template.WalletBallance.helpers({
 });
 
 Template.modal.helpers({
-    connectedNetwork: function(){
+    connectedNetwork: function () {
         return Session.get("connectedNetwork");
     }
 });
 
 Template.main.helpers({
-    accountLockedStatus: function(){
+    accountLockedStatus: function () {
         if (Session.get("accountLocked")) return "icon-lock";
         return "icon-lock-open";
     },
@@ -641,6 +649,16 @@ Template.UpdateCertificateForm.helpers({
     }
 });
 
+Template.ChildCertificate.events({
+    'click #shareCert': function () {
+        let template = Template.instance();
+        let certificateAddress = TemplateVar.get(template, "certificateAddress");
+        Session.set('shareCertificateAddress', certificateAddress);
+        $('#shareCertificateModal').modal('show');
+        generateQRCode('#shareCertificateQR','http://localhost:3000/search/ca/'+certificateAddress);
+    }
+});
+
 Template.modal.events({
     "click #modalDeleteButtonConfirm": function () {
         $('#deleteConfirmModal').modal('hide');
@@ -693,7 +711,7 @@ Template.certificateAddressSearch.events({
 });
 
 Template.CandidateSearch.events({
-    "click #myTab": function (event) {
+    "click #searchTab": function (event) {
         let template = Template.instance();
         Session.set("searchType", event.target.value);
         Session.set("certificateSearchResults", null);
@@ -705,6 +723,7 @@ Template.CandidateSearch.events({
         let commonMetaData;
         let commonMetaDataText;
         let idHash;
+        let searchQuery;
         switch (Session.get("searchType")) {
             case "candidateDetailsSearch":
                 let candidateName = document.getElementById("searchCandidateName").value;
@@ -723,6 +742,7 @@ Template.CandidateSearch.events({
                         {sort: {timeStamp: -1}}
                     ).fetch();
                 }
+                searchQuery = idHashFull;
                 var idHashShort =
                     "0x" +
                     SHA256(
@@ -743,8 +763,9 @@ Template.CandidateSearch.events({
                 }
                 break;
             case "candidateIdSearch":
-                idHash = document.getElementById("searchCandidateIDHash").value;
+                idHash = document.getElementById("searchCandidateIDHash").value.toLowerCase();
                 if (idHash.substr(0, 2) != "0x") idHash = "0x" + idHash;
+                searchQuery = idHash;
                 searchResults = Certificates.find(
                     {idHash: idHash},
                     {sort: {timeStamp: -1}}
@@ -758,7 +779,8 @@ Template.CandidateSearch.events({
                 }
                 break;
             case "certificateAddressSearch":
-                let certificateAddress = document.getElementById("searchCertificateAddress").value;
+                let certificateAddress = document.getElementById("searchCertificateAddress").value.toLowerCase();
+                searchQuery = certificateAddress;
                 searchResults = Certificates.find(
                     {
                         certificateAddress: certificateAddress
@@ -770,7 +792,8 @@ Template.CandidateSearch.events({
                 }
                 break;
             case "issuerAddressSearch":
-                let certificateIssuer = document.getElementById("searchCertificateIssuer").value;
+                let certificateIssuer = document.getElementById("searchCertificateIssuer").value.toLowerCase();
+                searchQuery = certificateIssuer;
                 searchResults = Certificates.find(
                     {
                         certificateIssuer: certificateIssuer
@@ -781,7 +804,6 @@ Template.CandidateSearch.events({
                 commonMetaDataText =
                     "Number of certificates issued by institution: " + commonMetaData;
                 break;
-
         }
         if (searchResults.length == 0) {
             sAlert.info("There were no certificates found for your search criteria.")
@@ -789,6 +811,13 @@ Template.CandidateSearch.events({
         Session.set("certificateSearchResults", searchResults);
         Session.set("commonMetaData", commonMetaData);
         Session.set("commonMetaDataText", commonMetaDataText);
+        let searchTypeDict = {
+            candidateDetailsSearch: "cd",
+            candidateIdSearch: "id",
+            certificateAddressSearch: "ca",
+            issuerAddressSearch: "ia"
+        };
+        window.history.pushState('', '', '/search/' + searchTypeDict[Session.get("searchType")] + "/" + searchQuery);
         event.preventDefault();
     }
 });
@@ -1008,3 +1037,13 @@ Template.inputFields.events({
         Session.set('inputs', inputs);
     }
 });
+
+// Template.QRCode.onRendered(function () {
+//     $('#QRCode').qrcode({
+//         size: 150,
+//         render: 'canvas',
+//         text: "penispenispenispenispenispenispenispenispenispenispenispenispenispenispenispenispenis"
+//     });
+//     $('#QRCode')[0].width(100);
+// });
+

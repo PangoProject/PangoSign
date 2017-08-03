@@ -110,7 +110,7 @@
                     <div class="row text-center">
                         <div class="col">
                             <h3 class="modal-title" id="exampleModalLabel">It appears that you don't have a Web3
-                                Client.</h3>
+                                Client!</h3>
                         </div>
                     </div>
 
@@ -210,6 +210,48 @@
         </div>
     </div>
 
+    <!--This is the modal for sharing a certificate-->
+    <div class="modal show animated fadeInUpBig" data-backdrop="static" data-keyboard="false" id="shareCertificateModal"
+         tabindex="-1"
+         role="dialog"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-success">
+                    <div class="row text-center">
+                        <div class="col">
+                            <h3 class="modal-title" id="exampleModalLabel">Share this certificate</h3>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-body center-block">
+                    <div class="row text-center">
+                        <div class="col">
+                            <div id="shareCertificateQR"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <a role="button" class="nav-link text-muted button fa fa-5x fa-linkedin-square" style="color: #4875b4"></a>
+                        </div>
+                        <div class="col">
+                            <a role="button" class="nav-link text-muted button fa fa-5x fa-twitter-square" style="color: #00aced"></a>
+                        </div>
+                        <div class="col">
+                                <a role='button' class="nav-link text-muted button fa fa-5x fa-facebook-square" style="color: #3b5998"></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="lockModalCloseButton" class="btn btn-primary" data-dismiss="modal">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </template>
 
 <template name="WalletBallance">
@@ -289,8 +331,7 @@
             <form class="candidateSearch">
                 <div class="row">
                     <div class="col">
-
-                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <ul class="nav nav-tabs" id="searchTab" role="tablist">
                             <li class="nav-item">
                                 <a class="nav-link active" id="home-tab" data-toggle="tab"
                                    href="#candidateDetailsSearch"
@@ -433,24 +474,32 @@
         <div class="card animated fadeInUpBig">
             <div class="card-header" style="padding-top: 8px; padding-bottom: 8px">
                 <div class="row pt-1 mt-0">
-                    <div class="col">
+                    <div class="col p-l-1 p-r-0">
                         <h5>
                             {{TemplateVar.get "name"}}
                         </h5>
                     </div>
-                    <div class="col-2">
-
-                        {{>injectJqueryTooltip}}
-                        {{#if TemplateVar.get "anonymous"}}
-                            <a id="searchResultCard" class="pull-right"
-                               data-toggle="tooltip"
-                               data-placement="top"
-                               title="This user chose not to have their information displayed.">
-                                <h4 style="padding: 0px; margin: 0px">
-                                    <i class="icon-ghost nav-link text-muted pull-right p-t-0 p-b-0 m-t-0 m-b-0" aria-hidden="true"></i>
-                                </h4>
-                            </a>
-                        {{/if}}
+                    <div class="col-1 p-l-0 p-r-0">
+                        <h4 style="padding: 0px; margin: 0px">
+                            {{>injectJqueryTooltip}}
+                            {{#if TemplateVar.get "anonymous"}}
+                                <a id="searchResultCard" class="pull-right"
+                                   data-toggle="tooltip"
+                                   data-placement="top"
+                                   title="This user chose not to have their information displayed.">
+                                    <i class="icon-ghost nav-link text-muted pull-right p-t-0 p-b-0 m-t-0 m-b-0"
+                                       aria-hidden="true" style="padding:0"></i>
+                                </a>
+                            {{/if}}
+                        </h4>
+                    </div>
+                    <div class="col-2 p-l-0 p-r-1">
+                        <h4 style="padding: 0px; margin: 0px">
+                            <a role="button" id="shareCert"
+                               class="icon-share nav-link text-muted pull-right p-t-0 p-b-0 m-t-0 m-b-0 button"
+                               style="padding:0"
+                               aria-hidden="true"></a>
+                        </h4>
                     </div>
                 </div>
 
@@ -551,6 +600,7 @@
                     <input type="text" class="form-control form-control-success" id="deleteCertificateAddress"
                            name="certificateAddress"
                            placeholder="0x0123456789abcdef012345679abcdef0123456"/>
+
                 </div>
                 <button type="button" id="deleteCertificateButton" class="btn btn-danger">
                     <i class="fa fa-fw fa-trash" aria-hidden="true"></i> Remove
@@ -726,4 +776,12 @@
 
 <template name="injectJqueryTooltip">
 
+</template>
+
+<template name="QRCode">
+    <div class="row">
+        <div class="col">
+            <div width="304" height="236" class="img-rounded" id="QRCode"></div>
+        </div>
+    </div>
 </template>
