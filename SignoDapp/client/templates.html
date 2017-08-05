@@ -211,7 +211,7 @@
     </div>
 
     <!--This is the modal for sharing a certificate-->
-    <div class="modal show animated fadeInUpBig" data-backdrop="static" data-keyboard="false" id="shareCertificateModal"
+    <div class="modal animated fadeInUpBig" id="shareCertificateModal"
          tabindex="-1"
          role="dialog"
          aria-hidden="true">
@@ -231,16 +231,13 @@
                             <div id="shareCertificateQR"></div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col">
-                            <a role="button" class="nav-link text-muted button fa fa-5x fa-linkedin-square" style="color: #4875b4"></a>
-                        </div>
-                        <div class="col">
-                            <a role="button" class="nav-link text-muted button fa fa-5x fa-twitter-square" style="color: #00aced"></a>
-                        </div>
-                        <div class="col">
-                                <a role='button' class="nav-link text-muted button fa fa-5x fa-facebook-square" style="color: #3b5998"></a>
-                        </div>
+                    <div class="row social-icons icon-rounded icon-zoom">
+                        <div class="col"><a href="#"><i class="fa fa-linkedin"></i></a></div>
+                        <div class="col"><a href="#"><i class="fa fa-facebook"></i></a></div>
+                        <div class="col"><a href="#"><i class="fa fa-twitter"></i></a></div>
+                        <div class="col"><a href="#"><i class="fa fa-pinterest"></i></a></div>
+                        <div class="col"><a href="#"><i class="fa fa-github"></i></a></div>
+                        <div class="col"><a href="#"><i class="fa fa-instagram"></i></a></div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -333,21 +330,21 @@
                     <div class="col">
                         <ul class="nav nav-tabs" id="searchTab" role="tablist">
                             <li class="nav-item">
-                                <a class="nav-link active" id="home-tab" data-toggle="tab"
+                                <a class="nav-link active grow-small" id="home-tab" data-toggle="tab"
                                    href="#candidateDetailsSearch"
                                    role="tab" aria-controls="home" aria-expanded="true">Candidate details</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#candidateIdSearch"
+                                <a class="nav-link grow-small" id="profile-tab" data-toggle="tab" href="#candidateIdSearch"
                                    role="tab"
                                    aria-controls="profile">Candidate ID</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#certificateAddressSearch"
+                                <a class="nav-link grow-small" id="profile-tab" data-toggle="tab" href="#certificateAddressSearch"
                                    role="tab" aria-controls="profile">Certificate Address</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#issuerAddressSearch"
+                                <a class="nav-link grow-small" id="profile-tab" data-toggle="tab" href="#issuerAddressSearch"
                                    role="tab" aria-controls="profile">Issuer Address</a>
                             </li>
                         </ul>
@@ -487,7 +484,7 @@
                                    data-toggle="tooltip"
                                    data-placement="top"
                                    title="This user chose not to have their information displayed.">
-                                    <i class="icon-ghost nav-link text-muted pull-right p-t-0 p-b-0 m-t-0 m-b-0"
+                                    <i class="icon-ghost grey-out nav-link text-muted pull-right p-t-0 p-b-0 m-t-0 m-b-0"
                                        aria-hidden="true" style="padding:0"></i>
                                 </a>
                             {{/if}}
@@ -496,7 +493,7 @@
                     <div class="col-2 p-l-0 p-r-1">
                         <h4 style="padding: 0px; margin: 0px">
                             <a role="button" id="shareCert"
-                               class="icon-share nav-link text-muted pull-right p-t-0 p-b-0 m-t-0 m-b-0 button"
+                               class="icon-share grey-out nav-link text-muted pull-right p-t-0 p-b-0 m-t-0 m-b-0 button"
                                style="padding:0"
                                aria-hidden="true"></a>
                         </h4>
@@ -539,7 +536,7 @@
                                title="Number of certificates issued by issuer"
                                data-content="{{TemplateVar.get "issuerMetaData"}} ">
                                 <h5 style="padding: 0px; margin: 0px">
-                                    <i class="icon-trophy nav-link text-muted" aria-hidden="true"></i>
+                                    <i class="icon-trophy grey-out nav-link text-muted" aria-hidden="true"></i>
                                 </h5>
                             </a>
                         {{/if}}
@@ -550,7 +547,7 @@
                            title="Certificate public address"
                            data-content="{{TemplateVar.get "certificateAddress"}} ">
                             <h5 style="padding: 0px; margin: 0px">
-                                <i class="icon-badge nav-link text-muted" aria-hidden="true"></i>
+                                <i class="icon-badge grey-out nav-link text-muted" aria-hidden="true"></i>
                             </h5>
                         </a>
                     </div>
@@ -559,7 +556,7 @@
                            data-placement="bottom"
                            title="Candidate ID" data-content="{{TemplateVar.get "idHash"}} ">
                             <h5 style="padding: 0px; margin: 0px">
-                                <i class="icon-user nav-link text-muted" aria-hidden="true"></i>
+                                <i class="icon-user grey-out nav-link text-muted" aria-hidden="true"></i>
                             </h5>
                         </a>
                     </div>
@@ -568,7 +565,7 @@
                            data-placement="bottom"
                            title="Issuer Address" data-content="{{TemplateVar.get "certificateIssuer"}} ">
                             <h5 style="padding: 0px; margin: 0px">
-                                <i class="icon-graduation nav-link text-muted" aria-hidden="true"></i>
+                                <i class="icon-graduation grey-out nav-link text-muted" aria-hidden="true"></i>
                             </h5>
                         </a>
                     </div>

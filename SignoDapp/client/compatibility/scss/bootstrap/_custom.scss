@@ -2,7 +2,6 @@
 //
 // Copy variables from `_variables.scss` to this file to override default values
 // without modifying source files.
-
 @import "variables";
 @import "mixins/breakpoints";
 
@@ -10,11 +9,12 @@
   margin-top: 1rem;
 }
 
-.card-block{
+.card-block {
   padding-top: 0rem;
   padding-bottom: 1rem;
 }
-.addressTextWrap{
+
+.addressTextWrap {
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -33,4 +33,28 @@
   @include media-breakpoint-only(sm) {
     column-count: 1;
   }
+}
+
+.grow {
+  transition: all .2s ease-in-out;
+}
+
+.grow:hover {
+  transform: scale(1.2);
+}
+
+.grow-small {
+  transition: all .2s ease-in-out;
+}
+
+.grow-small:hover {
+  transform: scale(1.05);
+}
+
+.grey-out {
+  transition: all .2s ease-in-out;
+}
+
+.grey-out:hover {
+  color: grey !important;
 }

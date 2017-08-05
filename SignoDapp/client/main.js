@@ -422,9 +422,10 @@ function checkWeb3Status() {
 };
 
 function generateQRCode(qrId, text) {
+    $(qrId).empty();
     $(qrId).qrcode({
         size: 150,
-        render: 'canvas',
+        render: 'image',
         text: text
     });
 }
@@ -519,7 +520,7 @@ Template.injectJqueryPopover.onRendered(function () {
     $('.popover-dismiss').popover({
         trigger: 'focus'
     })
-    $(".pop").popover({trigger: "manual", html: true, animation: false})
+    $(".popover-hover").popover({trigger: "manual", html: true, animation: false})
         .on("mouseover", function () {
             var _this = this;
             $(this).popover("show");
@@ -1037,13 +1038,3 @@ Template.inputFields.events({
         Session.set('inputs', inputs);
     }
 });
-
-// Template.QRCode.onRendered(function () {
-//     $('#QRCode').qrcode({
-//         size: 150,
-//         render: 'canvas',
-//         text: "penispenispenispenispenispenispenispenispenispenispenispenispenispenispenispenispenis"
-//     });
-//     $('#QRCode')[0].width(100);
-// });
-
