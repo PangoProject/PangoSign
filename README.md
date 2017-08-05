@@ -1,1 +1,1 @@
-# Signo
+# Pango
