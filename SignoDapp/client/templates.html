@@ -335,16 +335,19 @@
                                    role="tab" aria-controls="home" aria-expanded="true">Candidate details</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link grow-small" id="profile-tab" data-toggle="tab" href="#candidateIdSearch"
+                                <a class="nav-link grow-small" id="profile-tab" data-toggle="tab"
+                                   href="#candidateIdSearch"
                                    role="tab"
                                    aria-controls="profile">Candidate ID</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link grow-small" id="profile-tab" data-toggle="tab" href="#certificateAddressSearch"
+                                <a class="nav-link grow-small" id="profile-tab" data-toggle="tab"
+                                   href="#certificateAddressSearch"
                                    role="tab" aria-controls="profile">Certificate Address</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link grow-small" id="profile-tab" data-toggle="tab" href="#issuerAddressSearch"
+                                <a class="nav-link grow-small" id="profile-tab" data-toggle="tab"
+                                   href="#issuerAddressSearch"
                                    role="tab" aria-controls="profile">Issuer Address</a>
                             </li>
                         </ul>
@@ -467,7 +470,6 @@
 
 <template name="ChildCertificate">
     {{#unless TemplateVar.get "isDeleted"}}
-        <!--<div class="col-xl-4 col-lg-6">-->
         <div class="card animated fadeInUpBig">
             <div class="card-header" style="padding-top: 8px; padding-bottom: 8px">
                 <div class="row pt-1 mt-0">
@@ -493,13 +495,15 @@
                     <div class="col-2 p-l-0 p-r-1">
                         <h4 style="padding: 0px; margin: 0px">
                             <a role="button" id="shareCert"
+                               data-toggle="tooltip"
+                               data-placement="top"
+                               title="Share This certificate."
                                class="icon-share grey-out nav-link text-muted pull-right p-t-0 p-b-0 m-t-0 m-b-0 button"
                                style="padding:0"
                                aria-hidden="true"></a>
                         </h4>
                     </div>
                 </div>
-
             </div>
             <div class="card-block addressTextWrap">
                 <div class="row">
@@ -514,9 +518,38 @@
                             {{/each}}
                             </tbody>
                         </table>
+                        {{#if compare Address (TemplateVar.get "certificateIssuer")}}
+                            <hr>
+                            <div class="row">
+                                <div class="col-8">
+                                    <strong>You created this certificate:</strong>
+                                </div>
+                                <div class="col-2">
+                                    <h4>
+                                        <a role="button"
+                                           data-toggle="tooltip"
+                                           data-placement="top"
+                                           title="Edit"
+                                           href="/change/{{TemplateVar.get "certificateAddress"}}"
+                                           class="icon-pencil grey-out nav-link text-muted pull-right p-t-0 p-b-0 m-t-0 m-b-0 button"
+                                           aria-hidden="true"></a>
+                                    </h4>
+                                </div>
+                                <div class="col-2">
+                                    <h4>
+                                        <a role="button"
+                                           data-toggle="tooltip"
+                                           data-placement="top"
+                                           title="Remove"
+                                           href="/remove/{{TemplateVar.get "certificateAddress"}}"
+                                           class="icon-trash grey-out nav-link text-muted pull-right p-t-0 p-b-0 m-t-0 m-b-0 button"
+                                           aria-hidden="true"></a>
+                                    </h4>
+                                </div>
+                            </div>
+                        {{/if}}
                     </div>
                 </div>
-
 
             </div>
             <div class="card-footer pl-8 pr-8" style="padding-top: 8px; padding-bottom: 8px">
@@ -527,11 +560,11 @@
                         </small>
                     </div>
 
-
                     <div class="col-2">
                         {{>injectJqueryPopover}}
                         {{#if TemplateVar.get "issuerMetaData"}}
-                            <a class="pop pull-right" data-toggle="popover"
+                            <a class="popover-hover pull-right"
+                               data-toggle="popover"
                                data-placement="bottom"
                                title="Number of certificates issued by issuer"
                                data-content="{{TemplateVar.get "issuerMetaData"}} ">
@@ -542,38 +575,43 @@
                         {{/if}}
                     </div>
                     <div class="col-2">
-                        <a class="pop pull-right" data-toggle="popover"
+                        <a class="popover-hover pull-right"
+                           data-toggle="popover"
                            data-placement="bottom"
                            title="Certificate public address"
                            data-content="{{TemplateVar.get "certificateAddress"}} ">
                             <h5 style="padding: 0px; margin: 0px">
-                                <i class="icon-badge grey-out nav-link text-muted" aria-hidden="true"></i>
+                                <i class="icon-badge grey-out nav-link text-muted"
+                                   aria-hidden="true"></i>
                             </h5>
                         </a>
                     </div>
                     <div class="col-2">
-                        <a class="pop pull-right" data-toggle="popover"
+                        <a class="popover-hover pull-right"
+                           data-toggle="popover"
                            data-placement="bottom"
-                           title="Candidate ID" data-content="{{TemplateVar.get "idHash"}} ">
+                           title="Candidate ID"
+                           data-content="{{TemplateVar.get "idHash"}} <br> <a href='/search/id/{{TemplateVar.get "idHash"}}' title='test add link'>View all certificates issued to this candidate</a>">
                             <h5 style="padding: 0px; margin: 0px">
                                 <i class="icon-user grey-out nav-link text-muted" aria-hidden="true"></i>
                             </h5>
                         </a>
                     </div>
                     <div class="col-2">
-                        <a class="pop pull-right" data-toggle="popover"
+                        <a class="popover-hover pull-right"
+                           data-toggle="popover"
                            data-placement="bottom"
-                           title="Issuer Address" data-content="{{TemplateVar.get "certificateIssuer"}} ">
+                           title="Issuer Address"
+                           data-content="{{TemplateVar.get "certificateIssuer"}} <br> <a href='/search/ia/{{TemplateVar.get "certificateIssuer"}}' title='test add link'>View all certificates generated by this issuer address</a>">
                             <h5 style="padding: 0px; margin: 0px">
-                                <i class="icon-graduation grey-out nav-link text-muted" aria-hidden="true"></i>
+                                <i class="icon-graduation grey-out nav-link text-muted"
+                                   aria-hidden="true"></i>
                             </h5>
                         </a>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!--</div>-->
     {{/unless}}
 </template>
 
@@ -684,7 +722,7 @@
                         Anonymous certificate
                     </strong>
                     <label class="switch switch-text switch-pill switch-secondary">
-                        <input type="checkbox" class="switch-input" id="anonymousUpdate" {{updateCheckboxAnonymous}}>
+                        <input type="checkbox" class="switch-input" id="anonymousUpdate">
                         <span class="switch-label" data-on="On" data-off="Off"></span>
                         <span class="switch-handle"></span>
                     </label>
@@ -768,17 +806,32 @@
 </template>
 
 <template name="injectJqueryPopover">
-
 </template>
 
 <template name="injectJqueryTooltip">
-
 </template>
 
 <template name="QRCode">
     <div class="row">
         <div class="col">
             <div width="304" height="236" class="img-rounded" id="QRCode"></div>
+        </div>
+    </div>
+</template>
+
+<template name="loading">
+</template>
+
+<template name="notFound">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="clearfix">
+                    <h1 class="float-left display-3 mr-4">404</h1>
+                    <h4 class="pt-3">Oops! You're lost.</h4>
+                    <p class="text-muted">The page you are looking for was not found.</p>
+                </div>
+            </div>
         </div>
     </div>
 </template>

@@ -252,7 +252,9 @@ function JSONToArrayOfObjects(json) {
         if (key == "DOB") elem.type = "date"
         if (pair == 0 && key != "Name") {
             sAlert.info("This is an anonymous certificate. If you change Name or Date of Birth, the certificate owner may change.");
-            Session.set("updateCheckboxAnonymous", "checked");
+            Meteor.defer(function () {
+                $('#anonymousUpdate').prop('checked', true);
+            });
             objectArray = [
                 {
                     uniqid: Random.id(),
@@ -516,7 +518,8 @@ Template.inputFields.onRendered(function (event) {
 });
 
 Template.injectJqueryPopover.onRendered(function () {
-    $('[data-toggle="popover"]').popover();
+    //html:true enabled to put buttons within the popover content
+    $('[data-toggle="popover"]').popover({html: true});
     $('.popover-dismiss').popover({
         trigger: 'focus'
     })
@@ -533,7 +536,7 @@ Template.injectJqueryPopover.onRendered(function () {
             if (!$(".popover:hover").length) {
                 $(_this).popover("hide");
             }
-        }, 1000);
+        }, 500);
     });
 
 });
@@ -594,15 +597,9 @@ Template.CandidateSearch.onRendered(function () {
     })
 });
 
-Template.UpdateCertificateFormChild.helpers({
-    updateCheckboxAnonymous: function () {
-        return Session.get("updateCheckboxAnonymous");
-    }
-});
-
 Template.UpdateCertificateFormChildChild.helpers({
     inputs: function () {
-        return Session.get('inputs'); // reactively watches the Session variable, so when it changes, this result will change and our template will change
+        return Session.get('inputs');
     }
 });
 
@@ -641,6 +638,10 @@ Template.ChildCertificate.helpers({
                 value: value
             };
         });
+    },
+    Address: function () {
+        return Session.get("Address");
+
     }
 });
 
@@ -656,7 +657,7 @@ Template.ChildCertificate.events({
         let certificateAddress = TemplateVar.get(template, "certificateAddress");
         Session.set('shareCertificateAddress', certificateAddress);
         $('#shareCertificateModal').modal('show');
-        generateQRCode('#shareCertificateQR','http://localhost:3000/search/ca/'+certificateAddress);
+        generateQRCode('#shareCertificateQR', 'http://localhost:3000/search/ca/' + certificateAddress);
     }
 });
 
@@ -934,7 +935,7 @@ Template.UpdateCertificateFormChild.events({
             return x.keyValue == "DOB";
         })[0].value;
         if ((candidateName === "" || candidateName === undefined) && !document.getElementById("anonymousUpdate").checked) {
-            sAlert.warning("Please enter a name as the certificate is NOT anonymous.")
+            sAlert.warning("Please enter a name as the certificate is not anonymous. Alternatively, you can choose to make the certificate anonymous.")
         } else {
             inputs = _.filter(inputs, function (x) {
                 return ((x.keyValue != "" && x.value != "") || x.keyValue == "Anonymous");
@@ -1038,3 +1039,22 @@ Template.inputFields.events({
         Session.set('inputs', inputs);
     }
 });
+
+Template.loading.rendered = function () {
+    var message = '<p class="loading-message">Pango is loading...</p>';
+    var spinner = '<div class="sk-spinner sk-spinner-rotating-plane"></div>';
+    if (!Session.get('loadingSplash')) {
+        this.loading = window.pleaseWait({
+            logo: '/images/Ethereum-Icon-small.png',
+            backgroundColor: '#3c7f8d',
+            loadingHtml: message + spinner
+        });
+        Session.set('loadingSplash', true); // just show loading splash once
+    }
+};
+
+Template.loading.destroyed = function () {
+    if (this.loading) {
+        this.loading.finish();
+    }
+};

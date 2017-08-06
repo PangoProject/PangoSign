@@ -40,7 +40,7 @@
 }
 
 .grow:hover {
-  transform: scale(1.2);
+  transform: scale(1.1);
 }
 
 .grow-small {
@@ -58,3 +58,32 @@
 .grey-out:hover {
   color: grey !important;
 }
+
+.loading-message {
+  color: #fff;
+  font-size: 25px;
+  font-weight: 300;
+  font-family: sans-serif;
+}
+
+.sk-spinner-rotating-plane.sk-spinner {
+  background-color: #fff;
+}
+.popover-title {
+  width: auto;
+  font-size: 20px;
+  font-weight: 300;
+  font-family: sans-serif;
+  background: #DCDDDF;
+}
+.popover-content {
+  width: auto;
+}
+.popover{
+  max-width: 100%;
+}
+.card-header{
+  background: #DCDDDF;
+}
+
+

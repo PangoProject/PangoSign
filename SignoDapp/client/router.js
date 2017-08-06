@@ -18,54 +18,44 @@ Router.route('change', function () {
     this.render('UpdateCertificate');
 });
 
-// Router.route('/change/:searchQuery', {
-//     data: function () {
-//         let searchQuery = this.params.searchQuery;
-//         console.log(searchQuery);
-//         $('#updateAddress').val(searchQuery);
-//         this.render('UpdateCertificate');
-//     }
-// });
+Router.route('/change/:changeQuery', {
+    data: function () {
+        let changeQuery = this.params.changeQuery;
 
-// Router.route('/remove/:searchQuery', {
-//     data: function() {
-//         let searchQuery = this.params.searchQuery;
-//         console.log(searchQuery);
-//
-//
-//
-//         this.render('DeleteCertificate');
-//         $('#deleteCertificateAddress').val("hello");
-//         console.log(document.getElementById('deleteCertificateAddress'));
-//     }
-// });
-
-// Router.route('/remove/:searchType/:searchQuery', {
-//     data: function(){
-//         this.render('DeleteCertificate');
-//     }
-// });
-
-Router.configure({
-    layoutTemplate: 'main'
+        this.render('UpdateCertificate');
+        Meteor.defer(function () {
+            $('#updateAddress').val(changeQuery);
+            setTimeout(function () {
+                $('#updateCertificateForm').submit();
+            }, 1000);
+        });
+    }
 });
 
+Router.route('/remove/:removeQuery', {
+    data: function () {
+        let removeQuery = this.params.removeQuery;
 
+        this.render('DeleteCertificate');
+        Meteor.defer(function () {
+            $('#deleteCertificateAddress').val(removeQuery);
+        });
+    }
+});
 
 Router.route('remove', function () {
     this.render('DeleteCertificate');
 });
 
 Router.route('/search/:searchType/:searchQuery', {
-    data: function(){
-        $('#deleteCertificateAddress').val("hello");
+    data: function () {
         let searchQuery = this.params.searchQuery;
         let searchType = this.params.searchType;
         let searchResults = [];
         let commonMetaData;
         let commonMetaDataText;
         let idHash;
-        switch (searchType){
+        switch (searchType) {
             case "cd":
                 searchResults = Certificates.find(
                     {idHash: searchQuery},
@@ -80,8 +70,10 @@ Router.route('/search/:searchType/:searchQuery', {
                 }
                 break;
             case "id":
-                $('#searchTab a[href="#candidateIdSearch"]').tab('show');
-                $('#candidateIdSearch').val(searchQuery);
+                Meteor.defer(function () {
+                    $('#searchTab a[href="#candidateIdSearch"]').tab('show');
+                    $('#searchCandidateIDHash').val(searchQuery);
+                });
                 searchResults = Certificates.find(
                     {idHash: searchQuery},
                     {sort: {timeStamp: -1}}
@@ -95,8 +87,10 @@ Router.route('/search/:searchType/:searchQuery', {
                 }
                 break;
             case "ca":
-                $('#searchTab a[href="#certificateAddressSearch"]').tab('show');
-                $('#certificateAddressSearch').val(searchQuery);
+                Meteor.defer(function () {
+                    $('#searchTab a[href="#certificateAddressSearch"]').tab('show');
+                    $('#certificateAddressSearch').val(searchQuery);
+                });
                 searchResults = Certificates.find(
                     {
                         certificateAddress: searchQuery
@@ -108,8 +102,10 @@ Router.route('/search/:searchType/:searchQuery', {
                 }
                 break;
             case "ia":
-                $('#searchTab a[href="#issuerAddressSearch"]').tab('show');
-                $('#searchCertificateIssuer').val(searchQuery);
+                Meteor.defer(function () {
+                    $('#searchTab a[href="#issuerAddressSearch"]').tab('show');
+                    $('#searchCertificateIssuer').val(searchQuery);
+                });
                 searchResults = Certificates.find(
                     {
                         certificateIssuer: searchQuery
@@ -123,7 +119,7 @@ Router.route('/search/:searchType/:searchQuery', {
             default:
                 console.log("other");
         }
-        if (searchResults.length == 0 && Session.get("Address")!="0x") {
+        if (searchResults.length == 0 && Session.get("Address") != "0x") {
             sAlert.info("There were no certificates found for your search criteria.")
         }
         Session.set("certificateSearchResults", searchResults);
@@ -134,6 +130,8 @@ Router.route('/search/:searchType/:searchQuery', {
 });
 
 Router.configure({
-    layoutTemplate: 'main'
+    layoutTemplate: 'main',
+    loadingTemplate: 'loading',
+    notFoundTemplate: 'notFound',
 });
 
