@@ -128,10 +128,10 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-
-                    <button type="button" class="btn btn-secondary" target="_blank" href="https://metamask.io/">Try
-                        MetaMask<img src="https://metamask.io/img/metamask.png" class="pull-right"
-                                     style=" padding-left:0.75em; height: 1.5em"></button>
+                    <img src="/images/metamask.png" class="pull-right"
+                         style=" padding-left:0.75em; height: 1.5em">
+                    <button type="button" class="btn btn-secondary pull-left" target="_blank" href="https://metamask.io/">Try
+                        MetaMask</button>
                 </div>
             </div>
         </div>
@@ -660,7 +660,7 @@
             <form id="updateCertificateForm">
                 <div class="form-group {{TemplateVar.get "valid"}}">
                     <label class="form-control-label" for="updateAddress">
-                        Input Certificate address
+                        Input certificate address
                     </label>
                     <input type="text" class="form-control form-control-success" id="updateAddress"
                            name="certificateAddress"
@@ -817,9 +817,6 @@
             <div width="304" height="236" class="img-rounded" id="QRCode"></div>
         </div>
     </div>
-</template>
-
-<template name="loading">
 </template>
 
 <template name="notFound">

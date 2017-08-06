@@ -469,6 +469,10 @@ Template.ChildCertificate.onCreated(function () {
     getCertificateFromBlockchain(address, template);
 });
 
+Template.UpdateCertificate.onCreated(function () {
+    Session.set("updateCertificateSearchResults", null);
+});
+
 Template.UpdateCertificateFormChild.onCreated(function () {
     let template = Template.instance();
     let searchResults = template.data.updateCertificateSearchResults;
@@ -1039,22 +1043,3 @@ Template.inputFields.events({
         Session.set('inputs', inputs);
     }
 });
-
-Template.loading.rendered = function () {
-    var message = '<p class="loading-message">Pango is loading...</p>';
-    var spinner = '<div class="sk-spinner sk-spinner-rotating-plane"></div>';
-    if (!Session.get('loadingSplash')) {
-        this.loading = window.pleaseWait({
-            logo: '/images/Ethereum-Icon-small.png',
-            backgroundColor: '#3c7f8d',
-            loadingHtml: message + spinner
-        });
-        Session.set('loadingSplash', true); // just show loading splash once
-    }
-};
-
-Template.loading.destroyed = function () {
-    if (this.loading) {
-        this.loading.finish();
-    }
-};

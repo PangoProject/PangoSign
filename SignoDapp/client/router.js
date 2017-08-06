@@ -21,7 +21,6 @@ Router.route('change', function () {
 Router.route('/change/:changeQuery', {
     data: function () {
         let changeQuery = this.params.changeQuery;
-
         this.render('UpdateCertificate');
         Meteor.defer(function () {
             $('#updateAddress').val(changeQuery);
@@ -125,13 +124,15 @@ Router.route('/search/:searchType/:searchQuery', {
         Session.set("certificateSearchResults", searchResults);
         Session.set("commonMetaData", commonMetaData);
         Session.set("commonMetaDataText", commonMetaDataText);
+    },
+    action: function () {
         this.render('CandidateSearch');
-    }
+    },
+    loadingTemplate: 'loading',
 });
 
 Router.configure({
     layoutTemplate: 'main',
-    loadingTemplate: 'loading',
     notFoundTemplate: 'notFound',
 });
 
