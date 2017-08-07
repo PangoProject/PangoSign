@@ -124,11 +124,8 @@ Router.route('/search/:searchType/:searchQuery', {
         Session.set("certificateSearchResults", searchResults);
         Session.set("commonMetaData", commonMetaData);
         Session.set("commonMetaDataText", commonMetaDataText);
-    },
-    action: function () {
         this.render('CandidateSearch');
-    },
-    loadingTemplate: 'loading',
+    }
 });
 
 Router.configure({

@@ -1,9 +1,23 @@
-import {Meteor} from 'meteor/meteor';
+import {Meteor} from "meteor/meteor";
 
 var Web3 = require('web3');
 var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:30305"));
 
 Certificates = new Mongo.Collection('certificates');
+
+CertificatesProducedData = new Mongo.Collection('certificatesProducedData');
+
+CertificatesProducedGraph = new Mongo.Collection('certificatesProducedGraph');
+
+UniqueIssuerData = new Mongo.Collection('uniqueIssuerData');
+
+UniqueIssuerGraph = new Mongo.Collection('uniqueIssuerGraph');
+
+UniqueRecipientData = new Mongo.Collection('uniqueRecipientData');
+
+UniqueRecipientGraph = new Mongo.Collection('uniqueRecipientGraph');
+
+NumberOfPageHits = new Mongo.Collection('numberOfPageHits');
 
 const ABI_ARRAY = [{
     "constant": true,
@@ -59,6 +73,18 @@ Meteor.publish('theCertificates', function () {
     return Certificates.find();
 });
 
+Meteor.publish('certificatesProducedGraph', function () {
+    return CertificatesProducedGraph.find();
+});
+
+Meteor.publish('uniqueIssuerGraph', function () {
+    return UniqueIssuerGraph.find();
+});
+
+Meteor.publish('uniqueRecipientGraph', function () {
+    return UniqueRecipientGraph.find();
+});
+
 Meteor.methods({
     'insertCertificate': function (certificateAddress) {
         if (BYTE_CODE.includes(web3.eth.getCode(certificateAddress).substr(2))) {
@@ -79,6 +105,13 @@ Meteor.methods({
         } else {
             console.log("Byte Codes Don't Match, it looks like you are doing something fishy");
         }
+    },
+    'pageLoadCount': function (clientInfomation) {
+        console.log(clientInfomation);
+        // generateCertificatesProducedData();
+        // generateUniqueIssuerData();
+        // generateUniqueRecipientData();
+        // generateDashboardUsageGraph();
     }
 });
 
@@ -112,4 +145,190 @@ function getCertificateFromBlockchain(certificateAddress) {
         });
 
     });
+}
+
+function generateCertificatesProducedData() {
+    Certificates.aggregate([
+        {
+            "$group": {
+                "_id": {
+                    "$dateToString": {
+                        "format": "%Y-%m-%d",
+                        "date": {
+                            "$add": [
+                                new Date(0),
+                                {"$multiply": [1000, "$timeStamp"]}
+                            ]
+                        }
+                    }
+                },
+                "count": {"$sum": 1}
+            }
+        }, {$sort: {"_id": 1}},
+        {$out: "certificatesProducedData"}
+    ]);
+}
+
+function generateUniqueIssuerData() {
+    //First, select the new issuer addresses with their timeStamps. only take the min as this is first
+    Certificates.aggregate([
+        {
+            "$group": {
+                "_id": "$certificateIssuer",
+                "dateFirstAdded": {$min: "$timeStamp"}
+            }
+        },
+        {$sort: {"dateFirstAdded": 1}},
+        {$out: "uniqueIssuerData"}
+    ]);
+    //second, sum based on days added to generate the graph data
+    UniqueIssuerData.aggregate([
+        {
+            "$group": {
+                "_id": {
+                    "$dateToString": {
+                        "format": "%Y-%m-%d",
+                        "date": {
+                            "$add": [
+                                new Date(0),
+                                {"$multiply": [1000, "$dateFirstAdded"]}
+                            ]
+                        }
+                    }
+                },
+                "count": {"$sum": 1}
+            }
+        }, {$sort: {"_id": 1}},
+        {$out: "uniqueIssuerData"}
+    ]);
+}
+function generateUniqueRecipientData() {
+    //First, select the new issuer addresses with their timeStamps. only take the min as this is first
+    Certificates.aggregate([
+        {
+            "$group": {
+                "_id": "$idHash",
+                "dateFirstAdded": {$min: "$timeStamp"}
+            }
+        },
+        {$sort: {"dateFirstAdded": 1}},
+        {$out: "uniqueRecipientData"}
+    ]);
+    //second, sum based on days added to generate the graph data
+    UniqueRecipientData.aggregate([
+        {
+            "$group": {
+                "_id": {
+                    "$dateToString": {
+                        "format": "%Y-%m-%d",
+                        "date": {
+                            "$add": [
+                                new Date(0),
+                                {"$multiply": [1000, "$dateFirstAdded"]}
+                            ]
+                        }
+                    }
+                },
+                "count": {"$sum": 1}
+            }
+        }, {$sort: {"_id": 1}},
+        {$out: "uniqueRecipientData"}
+    ]);
+}
+
+function generateDashboardUsageGraph() {
+    //First, we pull the required data from the above queries
+    let dateLabelsProduced = _.pluck(CertificatesProducedData.find().fetch(), "_id");
+    let dateValuesProduced = _.pluck(CertificatesProducedData.find().fetch(), "count");
+
+    let dateLabelsIssuer = _.pluck(UniqueIssuerData.find().fetch(), "_id");
+    let dateValuesIssuer = _.pluck(UniqueIssuerData.find().fetch(), "count");
+
+    let dateLabelsRecipient = _.pluck(UniqueRecipientData.find().fetch(), "_id");
+    let dateValuesRecipient = _.pluck(UniqueRecipientData.find().fetch(), "count");
+
+    var endDateMilliseconds = +new Date(dateLabelsProduced[dateLabelsProduced.length - 1]);
+
+    var step = 24 * 60 * 60 * 1000; // milliseconds of one day
+
+    var mapProduced = {};
+    var mapIssuer = {};
+    var mapRecipient = {};
+
+    //the loops for Issuer and Recipient can be included in produced as you will ALWAYS produce a certificate to get an
+    // entry into one of the other two collections. However, the inverse is not always true to the !=undefined check
+    for (var i in dateLabelsProduced) {
+        mapProduced[+new Date(dateLabelsProduced[i])] = {
+            "_id": moment.unix((+new Date(dateLabelsProduced[i])) / 1000).format("YYYY/MM/DD"),
+            "count": dateValuesProduced[i]
+        };
+        if (dateLabelsIssuer[i] != undefined) {
+            mapIssuer[+new Date(dateLabelsIssuer[i])] = {
+                "_id": moment.unix((+new Date(dateLabelsIssuer[i])) / 1000).format("YYYY/MM/DD"),
+                "count": dateValuesIssuer[i]
+            };
+        }
+        if (dateLabelsRecipient[i] != undefined) {
+            mapRecipient[+new Date(dateLabelsRecipient[i])] = {
+                "_id": moment.unix((+new Date(dateLabelsRecipient[i])) / 1000).format("YYYY/MM/DD"),
+                "count": dateValuesRecipient[i]
+            };
+        }
+    }
+
+    //x is the number of days for the period; 30 day chart. this checks if the map is missing the associated day.
+    // if so, fill it in
+    for (let ms = endDateMilliseconds, x = 1; x < 30; x++) {
+        if (!( ms in mapProduced )) {
+            mapProduced[ms] = {"_id": moment.unix((+new Date(ms)) / 1000).format("YYYY/MM/DD"), "count": 0};
+        }
+        if (!( ms in mapIssuer )) {
+            mapIssuer[ms] = {"_id": moment.unix((+new Date(ms)) / 1000).format("YYYY/MM/DD"), "count": 0};
+        }
+        if (!( ms in mapRecipient )) {
+            mapRecipient[ms] = {"_id": moment.unix((+new Date(ms)) / 1000).format("YYYY/MM/DD"), "count": 0};
+        }
+        ms -= step; //Decrement by 1 day
+    }
+
+    //last step is to write this to the collection for the client.
+    //As this code rebuilds the entire set from scratch, we first need to drop the tables
+    CertificatesProducedGraph.remove({});
+    UniqueRecipientGraph.remove({});
+    UniqueIssuerGraph.remove({});
+
+    //write the approprate values into the collections
+
+    var finalResultProduced = [];
+    var finalResultIssuer = [];
+    var finalResultRecipient = [];
+
+    for (var x in mapProduced) {
+
+        finalResultProduced.push(mapProduced[x]);
+        finalResultIssuer.push(mapIssuer[x]);
+        finalResultRecipient.push(mapRecipient[x]);
+    }
+    finalResultProduced.sort(sortResult);
+    finalResultIssuer.sort(sortResult);
+    finalResultRecipient.sort(sortResult);
+
+    //as we are using a batch insert command, we don't need to iterate through the ordered list at this point
+    CertificatesProducedGraph.batchInsert(finalResultProduced);
+    UniqueIssuerGraph.batchInsert(finalResultIssuer);
+    UniqueRecipientGraph.batchInsert(finalResultRecipient);
+    console.log("BUILD DONE");
+}
+
+function sortResult(x, y) {
+    //function to sort by day entered
+    var t1 = x._id;
+    var t2 = y._id;
+    if (t1 < t2) {
+        return -1;
+    } else if (t1 == t2) {
+        return 0;
+    } else {
+        return 1;
+    }
 }

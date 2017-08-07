@@ -1,9 +1,11 @@
 import {Template} from "meteor/templating";
 import {Session} from "meteor/session";
+import {Chart} from "chart.js";
 
 import "./main.html";
 import "./templates.html";
 import "./router.js";
+
 
 const ABI_ARRAY = [{
     "constant": true,
@@ -67,6 +69,7 @@ Meteor.startup(function () {
     Session.set("Address", "0x");
     Session.set("walletBallance", 0);
     Session.set("numberOfCerts", 0);
+
     try {
         Meteor.subscribe('theCertificates');
     }
@@ -82,26 +85,9 @@ Meteor.startup(function () {
         html: true,
         onRouteClose: true,
         stack: true,
-        // or you can pass an object:
-        // stack: {
-        //     spacing: 10 // in px
-        //     limit: 3 // when fourth alert appears all previous ones are cleared
-        // }
-        offset: 0, // in px - will be added to first alert (bottom or top - depends of the position in config)
+        offset: 0,
         beep: false,
-        // examples:
-        // beep: '/beep.mp3'  // or you can pass an object:
-        // beep: {
-        //     info: '/beep-info.mp3',
-        //     error: '/beep-error.mp3',
-        //     success: '/beep-success.mp3',
-        //     warning: '/beep-warning.mp3'
-        // }
-        onClose: _.noop //
-        // examples:
-        // onClose: function() {
-        //     /* Code here will be executed once the alert closes. */
-        // }
+        onClose: _.noop
     });
 
 });
@@ -299,9 +285,7 @@ function updateCertificate(oldCertificateAddress, candidateName = "", candidateD
     return new Promise((result) => {
         myContract = getContract(oldCertificateAddress);
         myContract.idHash((err, res) => {
-            if (
-                !err
-            ) {
+            if (!err) {
                 let oldIdHash = res;
                 let newIdHash;
                 if (candidateName !== "") {
@@ -309,33 +293,26 @@ function updateCertificate(oldCertificateAddress, candidateName = "", candidateD
                         "0x" +
                         SHA256(
                             candidateName.toString().toLowerCase() +
-                            candidateDOB.toString().toLowerCase()
-                        )
+                            candidateDOB.toString().toLowerCase())
                             .toString()
                             .toLowerCase();
                 } else newIdHash = oldIdHash;
                 if (oldIdHash !== newIdHash) confirm("Are you sure you want to change this certificate, you have changed the owner.");
                 createCertificate(null, null, sundryData, newIdHash).then((newCertificate) => {
-                        if (newCertificate) {
-                            deleteCertificate(oldCertificateAddress).then((resolve) => {
-                                    if (!resolve) {
-                                        sAlert.warning("Soooo... A new certificate was created, but the old one has yet to be removed.");
-                                    } else sAlert.success("The certificate " + newCertificate.address + " has been changed! <strong><a href='https://ropsten.etherscan.io/tx/" + newCertificate.txHash + "' target='_blank'> Click here</a></strong> to view it on the blockchain.");
-                                }
-                            )
-                            ;
-                        }
+                    if (newCertificate) {
+                        deleteCertificate(oldCertificateAddress).then((resolve) => {
+                            if (!resolve) {
+                                sAlert.warning("Error. A new certificate was created, but the old one has yet to be removed.");
+                            } else sAlert.success("The certificate " + newCertificate.address + " has been changed! <strong><a href='https://ropsten.etherscan.io/tx/" + newCertificate.txHash + "' target='_blank'> Click here</a></strong> to view it on the blockchain.");
+                        });
                     }
-                )
-                ;
+                });
             }
             else {
                 sAlert.warning("Oops! Something went wrong with updating.");
             }
-        })
-        ;
-    })
-        ;
+        });
+    });
 }
 
 function JSONToMap(json) {
@@ -506,6 +483,87 @@ Template.candidateDetailsSearch.onRendered(function () {
         defaultViewDate: {year: 1970, month: 0, day: 1}
     });
 });
+
+Template.WalletBallance.onRendered(function () {
+    Meteor.call('pageLoadCount', "IP");
+    //we need all the subscriptions to be loaded before we can populate the respective graphs
+    let loadSubCount = 0;
+    let subscriptionCount = 3;
+    Meteor.subscribe('certificatesProducedGraph', {
+        onReady: function () {
+            loadSubCount = loadSubCount + 1;
+            if (loadSubCount === subscriptionCount) {
+                buildTimeGraph();
+            }
+        }
+    });
+    Meteor.subscribe('uniqueIssuerGraph', {
+        onReady: function () {
+            loadSubCount = loadSubCount + 1;
+            if (loadSubCount === subscriptionCount) {
+                buildTimeGraph();
+            }
+        }
+    });
+    Meteor.subscribe('uniqueRecipientGraph', {
+        onReady: function () {
+            loadSubCount = loadSubCount + 1;
+            if (loadSubCount === subscriptionCount) {
+                buildTimeGraph();
+            }
+        }
+    });
+});
+
+function buildTimeGraph() {
+    CertificatesProducedGraph = new Mongo.Collection("certificatesProducedGraph");
+    let dateLabelsProduced = _.pluck(CertificatesProducedGraph.find().fetch(), "_id");
+    let dateValuesProduced = _.pluck(CertificatesProducedGraph.find().fetch(), "count");
+
+    UniqueIssuerGraph = new Mongo.Collection("uniqueIssuerGraph");
+    let dateValuesIssuer = _.pluck(UniqueIssuerGraph.find().fetch(), "count");
+
+    UniqueRecipientGraph = new Mongo.Collection("uniqueRecipientGraph");
+    let dateValuesRecipient = _.pluck(UniqueRecipientGraph.find().fetch(), "count");
+
+    let lineChartData = {
+        labels: dateLabelsProduced,
+        datasets: [
+            {
+                label: 'Certificates',
+                backgroundColor: 'rgba(220,220,220,0.2)',
+                borderColor: 'rgba(220,220,220,1)',
+                pointBackgroundColor: 'rgba(220,220,220,1)',
+                pointBorderColor: '#fff',
+                data: dateValuesProduced
+            },
+            {
+                label: 'Unique Issuers',
+                backgroundColor: 'rgba(151,187,205,0.2)',
+                borderColor: 'rgba(151,187,205,1)',
+                pointBackgroundColor: 'rgba(151,187,205,1)',
+                pointBorderColor: '#fff',
+                data: dateValuesIssuer
+            },
+            {
+                label: 'Unique Recipients',
+                backgroundColor: 'rgba(205,196,151,0.2)',
+                borderColor: 'rgba(205,196,151,1)',
+                pointBackgroundColor: 'rgba(205,196,151,1)',
+                pointBorderColor: '#fff',
+                data: dateValuesRecipient
+            }
+        ]
+    };
+    let ctx = document.getElementById('timeGraph');
+    var chart = new Chart(ctx, {
+        type: 'line',
+        data: lineChartData,
+        options: {
+            responsive: true
+        }
+    });
+}
 
 Template.inputFields.onRendered(function (event) {
     if (this.data.type == 'date') {
