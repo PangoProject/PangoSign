@@ -522,6 +522,7 @@ function buildTimeGraph(timeframe, template) {
     let dateObject = new Date();
     let currentWeek = dateObject.getWeek();
     let currentMonth = monthNames[dateObject.getMonth()];
+    let past3Month = monthNames[dateObject.getMonth()-3];
     let currentYear = dateObject.getFullYear();
     let returnString;
 
@@ -535,7 +536,7 @@ function buildTimeGraph(timeframe, template) {
             TemplateVar.set(template, "currentTimeFrame", returnString);
             break;
         case 90:
-            returnString = (currentYear);
+            returnString = (past3Month + " to " + currentMonth+ " " +currentYear);
             TemplateVar.set(template, "currentTimeFrame", returnString);
             break;
     }
