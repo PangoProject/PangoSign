@@ -74,7 +74,7 @@
                             class="fa fa-fw fa-home"></i>Home</a>
                     </li>
                     <li class="nav-item "><a class="nav-link grow {{isActiveRoute regex='search(.*)'}}"
-                                            href="{{pathFor route="search"}}"><i
+                                             href="{{pathFor route="search"}}"><i
                             class="fa fa-w fa-search"></i>
                         Search</a>
                     </li>
@@ -99,6 +99,10 @@
                     <li class="nav-item"><a class="nav-link grow" href="#" target='_blank'><i
                             class="fa fa-fw fa-comments-o "></i>
                         Contact</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link grow {{isActiveRoute 'metrics'}}"
+                                            href="{{pathFor route="metrics"}}"><i
+                            class="fa fa-fw fa-line-chart"></i>Usage Metrics</a>
                     </li>
                     <li class="nav-item"><a class="nav-link grow" href="https://github.com/SignoCert/Signo/issues"
                                             target='_blank'><i class="fa fa-fw fa-bug"></i> Report Bug</a>
@@ -128,7 +132,8 @@
 
     <footer class="app-footer text-muted">
         Created by <a href="signo.com">Signo</a>
-        <span class="float-right">Powered by <a href="http://ethereum.org">Ethereum<img src="./images/Ethereum-Icon-small.png" style="height: 2em; opacity: 0.6"/></a>
+        <span class="float-right">Powered by <a href="http://ethereum.org">Ethereum<img
+                src="./images/Ethereum-Icon-small.png" style="height: 2em; opacity: 0.6"/></a>
         </span>
     </footer>
 

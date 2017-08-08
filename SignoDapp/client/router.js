@@ -18,6 +18,10 @@ Router.route('change', function () {
     this.render('UpdateCertificate');
 });
 
+Router.route('metrics', function () {
+    this.render('UsageMetrics');
+})
+
 Router.route('/change/:changeQuery', {
     data: function () {
         let changeQuery = this.params.changeQuery;

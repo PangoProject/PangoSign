@@ -321,6 +321,44 @@
             </div>
         </div>
     </div>
+    {{>HomeCards}}
+</template>
+
+<template name="HomeCards">
+    <div class="row">
+        <div class="col-md-6">
+            <a href="{{pathFor route="search"}}">
+                <div class="card card-inverse card-info animated fadeIn">
+                    <div class="card-header">
+                        <h3>
+                            Find a certificate
+                        </h3>
+                    </div>
+                    <div class="card-block text-xs-center">
+                        <h1><i class="fa fa-5x fa-search "></i></h1>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a href="{{pathFor route="create"}}">
+                <div class="card card-inverse card-success animated fadeIn">
+                    <div class="card-header">
+                        <h3>
+                            Create a certificate
+                        </h3>
+                    </div>
+                    <div class="card-block text-xs-center">
+                        <h1><i class="fa fa-5x fa-pencil"></i></h1>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</template>
+
+
+<template name="UsageMetrics">
     <div class="card">
         <div class="card-block">
             <div class="row">
@@ -398,6 +436,7 @@
         </div>
     </div>
 </template>
+
 
 <template name="CandidateSearch">
     <div class="card animated fadeIn">
@@ -481,11 +520,11 @@
         </div>
         <div class="col-lg-6">
             <div class="input-group date">
-                                        <span class="input-group-addon">
-                                            <i class="fa fa-fw fa-calendar" aria-hidden="true"></i>
-                                        </span>
-                <input type="text" name="candidateDOB" id='searchCandidateDOB'
-                       class="form-control" placeholder="Date of Birth">
+                <span class="input-group-addon">
+                    <i class="fa fa-fw fa-calendar" aria-hidden="true"></i>
+                </span>
+                <input type="text" id='searchCandidateDOB'
+                       class="form-control date" placeholder="Date of Birth">
             </div>
         </div>
 

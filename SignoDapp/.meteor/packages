@@ -36,7 +36,6 @@ jquery
 momentjs:moment
 
 coursierprive:tether
-rajit:bootstrap3-datepicker
 twbs:bootstrap@4.0.0-alpha2
 juliancwirko:s-alert
 juliancwirko:s-alert-flip
@@ -50,3 +49,4 @@ pcel:loading
 webdeb:app-loader
 meteorhacks:aggregate
 mikowals:batch-insert
+rajit:bootstrap3-datepicker

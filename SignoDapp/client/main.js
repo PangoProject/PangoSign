@@ -403,113 +403,6 @@ function generateQRCode(qrId, text) {
     });
 }
 
-Meteor.setInterval(checkWeb3Status, 1000);
-
-Template.registerHelper("objectToPairs", function (object) {
-    return _.map(object, function (value, key) {
-        return {
-            key: key,
-            value: value
-        };
-    });
-});
-
-Template.registerHelper("compare", function (v1, v2) {
-    if (typeof v1 === "object" && typeof v2 === "object") {
-        return _.isEqual(v1, v2);
-    } else {
-        return v1 === v2;
-    }
-});
-
-Template.registerHelper("formatDate", function (date) {
-    const timeStamp = new Date(date * 1000);
-    return moment(timeStamp).format("YYYY-MM-DD");
-});
-
-Template.CandidateSearch.onCreated(function () {
-    Session.set("certificateSearchResults", null);
-    Session.set("searchType", "candidateNameDOB");
-    Session.set("commonMetaData", null);
-});
-
-Template.ChildCertificate.onCreated(function () {
-    let template = Template.instance();
-    let address = template.data.resultCertificateAddress;
-    TemplateVar.set(template, "issuerMetaData", template.data.issuerMetaData);
-    getCertificateFromBlockchain(address, template);
-});
-
-Template.UpdateCertificate.onCreated(function () {
-    Session.set("updateCertificateSearchResults", null);
-});
-
-Template.UpdateCertificateFormChild.onCreated(function () {
-    let template = Template.instance();
-    let searchResults = template.data.updateCertificateSearchResults;
-    let address = searchResults[0].certificateAddress;
-    getCertificateFromBlockchain(address, template);
-});
-
-Template.UpdateCertificateFormChildChild.onCreated(function () {
-    let template = Template.instance();
-    let json = template.data.json;
-    Session.set("inputs", JSONToArrayOfObjects(json));
-});
-
-Template.createCertificate.onCreated(function () {
-
-    Session.set("certificatesTemplates", templates);
-    defaultInput = _.filter(templates, function (x) {
-        return x.id == 0;
-    })[0].template;
-    Session.set('inputs', defaultInput);
-});
-
-Template.candidateDetailsSearch.onRendered(function () {
-    $('#searchCandidateDOB').datepicker({
-        format: "yyyy-mm-dd",
-        endDate: "today",
-        startView: 3,
-        maxViewMode: 3,
-        clearBtn: true,
-        autoclose: true,
-        defaultViewDate: {year: 1970, month: 0, day: 1}
-    });
-});
-
-Template.WalletBallance.onRendered(function () {
-    Meteor.call('pageLoadCount', "IP");
-    template = Template.instance();
-    //we need all the subscriptions to be loaded before we can populate the respective graphs
-    let loadSubCount = 0;
-    let subscriptionCount = 3; //number of subscriptions required to process the request
-    Meteor.subscribe('certificatesProducedGraph', {
-        onReady: function () {
-            loadSubCount = loadSubCount + 1;
-            if (loadSubCount === subscriptionCount) {
-                buildTimeGraph(30, template);
-            }
-        }
-    });
-    Meteor.subscribe('uniqueIssuerGraph', {
-        onReady: function () {
-            loadSubCount = loadSubCount + 1;
-            if (loadSubCount === subscriptionCount) {
-                buildTimeGraph(30, template);
-            }
-        }
-    });
-    Meteor.subscribe('uniqueRecipientGraph', {
-        onReady: function () {
-            loadSubCount = loadSubCount + 1;
-            if (loadSubCount === subscriptionCount) {
-                buildTimeGraph(30, template);
-            }
-        }
-    });
-});
-
 function buildTimeGraph(timeframe, template) {
     Date.prototype.getWeek = function () {
         var onejan = new Date(this.getFullYear(), 0, 1);
@@ -580,12 +473,120 @@ function buildTimeGraph(timeframe, template) {
     });
 }
 
+Meteor.setInterval(checkWeb3Status, 1000);
+
+Template.registerHelper("objectToPairs", function (object) {
+    return _.map(object, function (value, key) {
+        return {
+            key: key,
+            value: value
+        };
+    });
+});
+
+Template.registerHelper("compare", function (v1, v2) {
+    if (typeof v1 === "object" && typeof v2 === "object") {
+        return _.isEqual(v1, v2);
+    } else {
+        return v1 === v2;
+    }
+});
+
+Template.registerHelper("formatDate", function (date) {
+    const timeStamp = new Date(date * 1000);
+    return moment(timeStamp).format("YYYY-MM-DD");
+});
+
+Template.CandidateSearch.onCreated(function () {
+    Session.set("certificateSearchResults", null);
+    Session.set("searchType", "candidateNameDOB");
+    Session.set("commonMetaData", null);
+});
+
+Template.ChildCertificate.onCreated(function () {
+    let template = Template.instance();
+    let address = template.data.resultCertificateAddress;
+    TemplateVar.set(template, "issuerMetaData", template.data.issuerMetaData);
+    getCertificateFromBlockchain(address, template);
+});
+
+Template.UpdateCertificate.onCreated(function () {
+    Session.set("updateCertificateSearchResults", null);
+});
+
+Template.UpdateCertificateFormChild.onCreated(function () {
+    let template = Template.instance();
+    let searchResults = template.data.updateCertificateSearchResults;
+    let address = searchResults[0].certificateAddress;
+    getCertificateFromBlockchain(address, template);
+});
+
+Template.UpdateCertificateFormChildChild.onCreated(function () {
+    let template = Template.instance();
+    let json = template.data.json;
+    Session.set("inputs", JSONToArrayOfObjects(json));
+});
+
+Template.createCertificate.onCreated(function () {
+
+    Session.set("certificatesTemplates", templates);
+    defaultInput = _.filter(templates, function (x) {
+        return x.id == 0;
+    })[0].template;
+    Session.set('inputs', defaultInput);
+});
+
+Template.candidateDetailsSearch.onRendered(function () {
+    $('#searchCandidateDOB').datepicker({
+        format: "yyyy-mm-dd",
+        endDate: "today",
+        container: 'html',
+        startView: 3,
+        maxViewMode: 3,
+        clearBtn: true,
+        autoclose: true,
+        defaultViewDate: {year: 1970, month: 0, day: 1}
+    });
+});
+
+Template.UsageMetrics.onRendered(function () {
+    Meteor.call('pageLoadCount', "IP");
+    template = Template.instance();
+    //we need all the subscriptions to be loaded before we can populate the respective graphs
+    let loadSubCount = 0;
+    let subscriptionCount = 3; //number of subscriptions required to process the request
+    Meteor.subscribe('certificatesProducedGraph', {
+        onReady: function () {
+            loadSubCount = loadSubCount + 1;
+            if (loadSubCount === subscriptionCount) {
+                buildTimeGraph(30, template);
+            }
+        }
+    });
+    Meteor.subscribe('uniqueIssuerGraph', {
+        onReady: function () {
+            loadSubCount = loadSubCount + 1;
+            if (loadSubCount === subscriptionCount) {
+                buildTimeGraph(30, template);
+            }
+        }
+    });
+    Meteor.subscribe('uniqueRecipientGraph', {
+        onReady: function () {
+            loadSubCount = loadSubCount + 1;
+            if (loadSubCount === subscriptionCount) {
+                buildTimeGraph(30, template);
+            }
+        }
+    });
+});
 
 Template.inputFields.onRendered(function (event) {
     if (this.data.type == 'date') {
         $('#' + this.data.uniqid).datepicker({
             format: "yyyy-mm-dd",
             endDate: "today",
+            container: 'html',
             startView: 3,
             maxViewMode: 3,
             clearBtn: true,
