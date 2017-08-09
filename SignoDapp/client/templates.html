@@ -67,6 +67,37 @@
         </div>
     </div>
 
+    <!--This is the modal for informing the user that a certificate has already been deleted when updating-->
+    <div class="modal show animated fadeInUpBig" id="infromDeletedOnUpdate" tabindex="-1"
+         role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="modal-title" id="exampleModalLabel">FYI:</h3>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-body center-block">
+                    <div class="row text-center">
+                        <div class="col">
+                            <h1><i class="fa fa-fw fa-5x fa-info-circle" aria-hidden="true"></i></h1></div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            Just so you know, this certificate has been deleted previously. This could mean that it has been updated before too. If you want to know more, check out the FAQs.
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" target="_blank">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!--This is the modal for reminding the user not to close their browser-->
     <div class="modal show animated fadeInUpBig" id="reminderToWaitForMining" tabindex="-1"
          role="dialog" aria-hidden="true">
