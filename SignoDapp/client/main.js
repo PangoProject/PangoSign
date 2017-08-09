@@ -649,7 +649,6 @@ Template.injectJqueryPopover.onRendered(function () {
 
 Template.injectJqueryTooltip.onRendered(function () {
     $(function () {
-        //$('[data-toggle="tooltip"]').tooltip()
         $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
     })
 });
@@ -1029,12 +1028,13 @@ Template.UpdateCertificateForm.events({
             if (searchResults.length !== 0) {
                 if (searchResults[0].certificateIssuer === Address) {
                     Session.set("updateCertificateSearchResults", searchResults);
+                    window.history.pushState('', '', '/change/' + certificateAddress);
                     getContract(searchResults[0].certificateAddress).isDeleted((err, res) => {
-                        if (!err&&res) {
+                        if (!err && res) {
                             $("#infromDeletedOnUpdate").modal('show');
                         }
                     });
-                } else {
+                } else if(!Address===undefined){ //check whether user is logged in before shouting at them
                     sAlert.error("You did not create this certificate and thus, cannot edit it.");
                 }
             } else {
