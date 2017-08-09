@@ -19,6 +19,8 @@ UniqueRecipientGraph = new Mongo.Collection('uniqueRecipientGraph');
 
 NumberOfPageHits = new Mongo.Collection('numberOfPageHits');
 
+CertificateTemplates = new Mongo.Collection('certificateTemplates');
+
 const ABI_ARRAY = [{
     "constant": true,
     "inputs": [],
@@ -298,6 +300,10 @@ Meteor.publish('uniqueRecipientGraph', function () {
     return UniqueRecipientGraph.find();
 });
 
+Meteor.publish('certificateTemplates', function(){
+    return CertificateTemplates.find();
+});
+
 Meteor.methods({
     'insertCertificate': function (certificateAddress) {
         if (BYTE_CODE.includes(web3.eth.getCode(certificateAddress).substr(2))) {
@@ -325,12 +331,3 @@ Meteor.methods({
         // buildChart();
     }
 });
-
-// Meteor.users.find({ "status.online": true }).observe({
-//     added: function(id) {
-//         console.log("new User!");
-//     },
-//     removed: function(id) {
-//         console.log("User left");
-//     }
-// });

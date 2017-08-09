@@ -56,6 +56,7 @@ Certificates = new Mongo.Collection("certificates");
 CertificatesProducedGraph = new Mongo.Collection("certificatesProducedGraph");
 UniqueIssuerGraph = new Mongo.Collection("uniqueIssuerGraph");
 UniqueRecipientGraph = new Mongo.Collection("uniqueRecipientGraph");
+CertificateTemplates = new Mongo.Collection('certificateTemplates');
 
 Meteor.startup(function () {
     Session.set("updateCertificateSearchResults", null);
@@ -195,7 +196,10 @@ function getCertificateFromBlockchain(certificateAddress, template) {
             } else {
                 TemplateVar.set(template, 'name', mapOfJSON.Name);
             }
-
+                        if(mapOfJSON.logoURL!==undefined){
+                TemplateVar.set(template,"logoURL",mapOfJSON.logoURL);
+                delete mapOfJSON.logoURL;
+            }
             TemplateVar.set(template, "json", res);
             TemplateVar.set(template, "sundryData", mapOfJSON);
         });
@@ -415,7 +419,7 @@ function buildTimeGraph(timeframe, template) {
     let dateObject = new Date();
     let currentWeek = dateObject.getWeek();
     let currentMonth = monthNames[dateObject.getMonth()];
-    let past3Month = monthNames[dateObject.getMonth()-3];
+    let past3Month = monthNames[dateObject.getMonth() - 3];
     let currentYear = dateObject.getFullYear();
     let returnString;
 
@@ -429,7 +433,7 @@ function buildTimeGraph(timeframe, template) {
             TemplateVar.set(template, "currentTimeFrame", returnString);
             break;
         case 90:
-            returnString = (past3Month + " to " + currentMonth+ " " +currentYear);
+            returnString = (past3Month + " to " + currentMonth + " " + currentYear);
             TemplateVar.set(template, "currentTimeFrame", returnString);
             break;
     }
@@ -472,6 +476,22 @@ function buildTimeGraph(timeframe, template) {
         }
     });
 }
+
+function getShortUrl(url, callback){
+    var accessToken = 'R_009e941b1ab944f79cef629c07d36afc';
+    var url = 'https://api-ssl.bitly.com/v3/shorten?access_token=' + accessToken + '&longUrl=' + encodeURIComponent(url);
+
+    $.getJSON(
+        url,
+        {},
+        function(response)
+        {
+            if(callback)
+                callback(response.data.url);
+        }
+    );
+}
+
 
 Meteor.setInterval(checkWeb3Status, 1000);
 
@@ -528,12 +548,16 @@ Template.UpdateCertificateFormChildChild.onCreated(function () {
 });
 
 Template.createCertificate.onCreated(function () {
-
-    Session.set("certificatesTemplates", templates);
-    defaultInput = _.filter(templates, function (x) {
-        return x.id == 0;
-    })[0].template;
-    Session.set('inputs', defaultInput);
+    Meteor.subscribe('certificateTemplates', {
+        onReady: function () {
+            let templates = CertificateTemplates.find().fetch();
+            Session.set("certificatesTemplates", templates);
+            defaultInput = _.filter(templates, function (x) {
+                return x.id == 0;
+            })[0].template;
+            Session.set('inputs', defaultInput);
+        }
+    });
 });
 
 Template.candidateDetailsSearch.onRendered(function () {
@@ -730,7 +754,7 @@ Template.UpdateCertificateForm.helpers({
     }
 });
 
-Template.WalletBallance.events({
+Template.UsageMetrics.events({
     'change': function (event) {
         template = Template.instance();
         switch (event.target.outerText) {
@@ -744,8 +768,6 @@ Template.WalletBallance.events({
                 buildTimeGraph(90, template);
                 break;
         }
-
-
     }
 });
 
@@ -1083,6 +1105,20 @@ Template.createCertificate.events({
         if (candidateName == "") {
             sAlert.warning("Please enter at least the name to identify the certificate.")
         } else {
+            //later, we will want to minify this URL.
+            let universityLogoURL = $('#universityLogoURL').val();
+            let elem;
+            if (universityLogoURL != "") {
+                elem =
+                    {
+                        uniqid: "logoURL",
+                        keyValue: "logoURL",
+                        value: universityLogoURL,
+                        readOnly: "readonly",
+                        type: "text"
+                    };
+                sundryData.push(elem);
+            }
             elem =
                 {
                     uniqid: "isAnonymous",
@@ -1103,7 +1139,6 @@ Template.createCertificate.events({
                     sAlert.success("<strong> Certificate added, with address" + resolve.address + ".</strong> <a href='https://ropsten.etherscan.io/tx/" + resolve.txHash + "' target='_blank'> Click here</a> to view it on the blockchain.")
                 }
             });
-
             event.preventDefault();
         }
     },
@@ -1113,6 +1148,10 @@ Template.createCertificate.events({
         })[0].template;
         Session.set("inputs", inputs);
 
+    },
+    'click #universityLogo': function () {
+        template = Template.instance();
+        TemplateVar.set(template, "universityLogoURL", $('#universityLogoURL').val());
     }
 });
 

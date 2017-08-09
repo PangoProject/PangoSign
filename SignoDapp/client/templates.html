@@ -254,32 +254,37 @@
 </template>
 
 <template name="WalletBallance">
-    <div class="card animated fadeIn">
-        <h3 class="card-header">Wallet</h3>
-        <div class="card-block">
-            <div class="row">
-                <div class="col-md-4 col-sm-12">
-                    <div class="card card-inverse card-info">
-                        <div class="card-block">
-                            <div class="row">
-                                <div class="col-8">
-                                    <h6 class="text-muted text-uppercase font-weight-bold">
-                                        Wallet Address
-                                    </h6>
-                                    <div class="h5 mb-0 addressTextWrap">
-                                        {{walletAddressWidget}}
-                                    </div>
-                                </div>
-                                <div class="col-4 pull-right h1">
-                                    <i class="icon-wallet pull-right" aria-hidden="true"></i>
+
+    <div class="animated fadeIn">
+        <div class="row">
+            <div class="col-md-4 col-sm-12">
+                <!--<a href="http://ropsten.etherscan.io/address/{{walletAddressWidget}}" target="_blank"-->
+                <!--class="a-no-hover">-->
+                <div class="card card-inverse card-info">
+                    <div class="card-block">
+                        <div class="row">
+                            <div class="col-8">
+                                <h6 class="text-muted text-uppercase font-weight-bold">
+                                    Wallet Address
+                                </h6>
+                                <div class="h5 mb-0 addressTextWrap">
+                                    {{walletAddressWidget}}
                                 </div>
                             </div>
-
+                            <div class="col-4 pull-right h1">
+                                <i class="icon-wallet pull-right" aria-hidden="true"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4 col-sm-12">
-                    <div class="card card-inverse card-info">
+                <!--</a>-->
+            </div>
+            <div class="col-md-4 col-sm-12">
+                <a href="http://ropsten.etherscan.io/address/{{walletAddressWidget}}" target="_blank"
+                   class="a-no-hover" data-toggle="tooltip"
+                   data-placement="top"
+                   title="Click to view your Ether account">
+                    <div class="card card-inverse card-warning">
                         <div class="card-block">
                             <div class="row">
                                 <div class="col-8">
@@ -294,12 +299,16 @@
                                     <i class="icon-rocket pull-right" aria-hidden="true"></i>
                                 </div>
                             </div>
-
                         </div>
                     </div>
-                </div>
-                <div class="col-md-4 col-sm-12">
-                    <div class="card card-inverse card-info">
+                </a>
+
+            </div>
+            <div class="col-md-4 col-sm-12">
+                <a href="/search/ia/{{walletAddressWidget}}" class="a-no-hover" data-toggle="tooltip"
+                   data-placement="top"
+                   title="Click to view your published certificates">
+                    <div class="card card-inverse card-danger">
                         <div class="card-block">
                             <div class="row">
                                 <div class="col-8">
@@ -314,10 +323,9 @@
                                     <i class="icon-badge pull-right" aria-hidden="true"></i>
                                 </div>
                             </div>
-
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
         </div>
     </div>
@@ -327,8 +335,8 @@
 <template name="HomeCards">
     <div class="row">
         <div class="col-md-6">
-            <a href="{{pathFor route="search"}}">
-                <div class="card card-inverse card-info animated fadeIn">
+            <a href="{{pathFor route="search"}}" class="a-no-hover">
+                <div class="card card-inverse card-primary animated fadeIn">
                     <div class="card-header">
                         <h3>
                             Find a certificate
@@ -341,7 +349,7 @@
             </a>
         </div>
         <div class="col-md-6">
-            <a href="{{pathFor route="create"}}">
+            <a href="{{pathFor route="create"}}" class="a-no-hover">
                 <div class="card card-inverse card-success animated fadeIn">
                     <div class="card-header">
                         <h3>
@@ -623,6 +631,13 @@
                 </div>
             </div>
             <div class="card-block addressTextWrap">
+                {{#if TemplateVar.get "logoURL"}}
+                    <div class="row">
+                        <img class="card-img-top center-block"
+                             src="https://pbs.twimg.com/profile_images/553068392874139649/UagOekEh_400x400.png"
+                             alt="Card image cap" style="height: 150px; width: auto">
+                    </div>
+                {{/if}}
                 <div class="row">
                     <div class="col">
                         <table class="table">
@@ -857,40 +872,67 @@
     <div class="card animated fadeIn">
         <h3 class="card-header">Create</h3>
         <div class="card-block">
-            <select name="certificatesTemplates" id="certificatesTemplates"
-                    class="form-control">
-                {{#each template in certificatesTemplates}}
-                    <option value="{{template.id}}">{{template.name}}</option>
-                {{/each}}
-            </select>
-            <table class="table">
+            <div class="row">
 
-                <tbody>
-                {{#each inputs}}
-                    {{> inputFields}}
-                {{/each}}
-                </tbody>
-                <tfoot>
-                <tr>
-                    <td colspan="2">
-                        <button id='add-input' class="btn btn-secondary rounded" {{TemplateVar.get
-                                "addNewFieldButtonStatus"}}>
-                            <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
-                        </button>
-                        <div class="pull-right" style="padding-top: 4px">
-                            <strong class="text-muted">
-                                Anonymous certificate
-                            </strong>
-                            <label class="switch switch-text switch-pill switch-secondary">
-                                <input type="checkbox" class="switch-input" id="anonymousCreate">
-                                <span class="switch-label" data-on="On" data-off="Off"></span>
-                                <span class="switch-handle"></span>
-                            </label>
-                        </div>
-                    </td>
-                </tr>
-                </tfoot>
-            </table>
+                <div class="col-4">
+                    <div class="form-inline">
+                        <label class="mr-sm-2" for="certificatesTemplates" style="width: 40%">Select a template</label>
+                        <select name="certificatesTemplates" id="certificatesTemplates"
+                                class="form-control" style="width: 50%">
+                            {{#each template in certificatesTemplates}}
+                                <option value="{{template.id}}">{{template.name}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-8">
+                    <div class="input-group" style="width: 90%">
+                        <input type="text" class="form-control" placeholder="Enter University Logo URL"
+                               aria-label="Search for..." id="universityLogoURL">
+                        <span class="input-group-btn">
+                            <button class="btn btn-secondary" type="button" id="universityLogo"><i class="fa fa-camera"
+                                                                                                   aria-hidden="true"></i> Find</button>
+                        </span>
+                    </div>
+                    {{#if TemplateVar.get "universityLogoURL"}}
+                        <row class="center-block">
+                            <img src="{{TemplateVar.get "universityLogoURL"}}" class="pull-right"
+                                 style="height:10em; margin=0; padding=0">
+                        </row>
+                    {{/if}}
+                    <!--I know this looks like shit. need to fix it up but was getting pissed off with it. consider using http://via.placeholder.com/250x250-->
+                </div>
+            </div>
+            <div class="row">
+                <table class="table">
+                    <tbody>
+                    {{#each inputs}}
+                        {{> inputFields}}
+                    {{/each}}
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="2">
+                            <button id='add-input' class="btn btn-secondary rounded" {{TemplateVar.get
+                                    "addNewFieldButtonStatus"}}>
+                                <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
+                            </button>
+                            <div class="pull-right" style="padding-top: 4px">
+                                <strong class="text-muted">
+                                    Anonymous certificate
+                                </strong>
+                                <label class="switch switch-text switch-pill switch-secondary">
+                                    <input type="checkbox" class="switch-input" id="anonymousCreate">
+                                    <span class="switch-label" data-on="On" data-off="Off"></span>
+                                    <span class="switch-handle"></span>
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
             <button type="submit" id="createCertificate" class="btn btn-primary">
                 <i class="fa fa-fw fa-pencil" aria-hidden="true"></i> Create
             </button>
