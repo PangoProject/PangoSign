@@ -496,21 +496,6 @@ function buildTimeGraph(timeframe, template) {
     });
 }
 
-function getShortUrl(url, callback) {
-    var accessToken = 'R_009e941b1ab944f79cef629c07d36afc';
-    var url = 'https://api-ssl.bitly.com/v3/shorten?access_token=' + accessToken + '&longUrl=' + encodeURIComponent(url);
-
-    $.getJSON(
-        url,
-        {},
-        function (response) {
-            if (callback)
-                callback(response.data.url);
-        }
-    );
-}
-
-
 Meteor.setInterval(checkWeb3Status, 1000);
 
 Template.registerHelper("objectToPairs", function (object) {
