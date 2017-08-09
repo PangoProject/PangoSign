@@ -51,9 +51,9 @@ const BYTE_CODE = "6060604052341561000f57600080fd5b6040516104b13803806104b183398
 
 //global client variables
 let Address;
-
-Certificates = new Mongo.Collection("certificates");
-CertificatesProducedGraph = new Mongo.Collection("certificatesProducedGraph");
+//The Mongo Collections
+Certificates = new Mongo.Collection("certificates");    //The Certificate Index
+CertificatesProducedGraph = new Mongo.Collection("certificatesProducedGraph");  //Graph of certificates produced
 UniqueIssuerGraph = new Mongo.Collection("uniqueIssuerGraph");
 UniqueRecipientGraph = new Mongo.Collection("uniqueRecipientGraph");
 CertificateTemplates = new Mongo.Collection('certificateTemplates');
@@ -117,100 +117,104 @@ function getNetwork(networkId) {
 function createCertificate(candidateName, candidateDOB, sundryData, idHash = "") {
     return new Promise((resolve, error) => {
         let hash;
-        if (idHash === "") {
-            hash =
-                "0x" +
-                SHA256(
-                    candidateName.toString().toLowerCase() +
-                    candidateDOB.toString().toLowerCase()
-                )
-                    .toString()
-                    .toLowerCase();
+    if (idHash === "") {
+        hash =
+            "0x" +
+            SHA256(
+                candidateName.toString().toLowerCase() +
+                candidateDOB.toString().toLowerCase()
+            )
+                .toString()
+                .toLowerCase();
 
-        } else hash = idHash;
-        try {
-            let certificateContract = web3.eth.contract(ABI_ARRAY);
-            let certificate = certificateContract.new(
-                hash,
-                sundryData,
-                {
-                    from: Address,
-                    data: BYTE_CODE,
-                    gas: "4000000"
-                },
-                function (e, contract) {
-                    try {
-                        //must be contract.address as when function is called initially, it returns a null and later return another contract.
-                        if (typeof contract.address !== "undefined") {
-                            try {
-                                Meteor.call('insertCertificate', contract.address);
-                                resolve({address: contract.address, txHash: contract.transactionHash});
-                            }
-                            catch (err) {
-                                sAlert.error("Failed to add the certificate to the DB.");
-                                error(err);
-                                // console.log("DB Connection failed: " + err);
-                            }
+    } else hash = idHash;
+    try {
+        let certificateContract = web3.eth.contract(ABI_ARRAY);
+        let certificate = certificateContract.new(
+            hash,
+            sundryData,
+            {
+                from: Address,
+                data: BYTE_CODE,
+                gas: "4000000"
+            },
+            function (e, contract) {
+                try {
+                    //must be contract.address as when function is called initially, it returns a null and later return another contract.
+                    if (typeof contract.address !== "undefined") {
+                        try {
+                            Meteor.call('insertCertificate', contract.address);
+                            resolve({address: contract.address, txHash: contract.transactionHash});
                         }
-                    } catch (e2) {
-                        $('#reminderToWaitForMining').modal('hide');
-                        sAlert.error("It looks like you cancelled the transaction!");
-                        error("Error");
+                        catch (err) {
+                            sAlert.error("Failed to add the certificate to the DB.");
+                            error(err);
+                            // console.log("DB Connection failed: " + err);
+                        }
                     }
-                    if (e) {
-                        $('#reminderToWaitForMining').modal('hide');
-                        sAlert.error("Oh-No! The certificate could not to be mined.");
-                        error("Error");
-                    }
+                } catch (e2) {
+                    $('#reminderToWaitForMining').modal('hide');
+                    sAlert.error("It looks like you cancelled the transaction!");
+                    error("Error");
                 }
-            );
-        }
-        catch (err) {
-            sAlert.error("Failed to create the certificate.");
-            error(err);
-            // console.log("There was an error creating your certificate: " + err);
-        }
-    })
-        ;
+                if (e) {
+                    $('#reminderToWaitForMining').modal('hide');
+                    sAlert.error("Oh-No! The certificate could not to be mined.");
+                    error("Error");
+                }
+            }
+        );
+    }
+    catch (err) {
+        sAlert.error("Failed to create the certificate.");
+        error(err);
+        // console.log("There was an error creating your certificate: " + err);
+    }
+})
+    ;
 }
 
 function getCertificateFromBlockchain(certificateAddress, template) {
-    try {
-        //So that certificates aren't shown when the db loads before the blockchain query returns
-        TemplateVar.set(template, "isDeleted", true);
-        let myContract = getContract(certificateAddress);
+    return new Promise((resolve) => {
+        try {
+            //So that certificates aren't shown when the db loads before the blockchain query returns
+            TemplateVar.set(template, "isDeleted", true);
+    let myContract = getContract(certificateAddress);
 
-        TemplateVar.set(template, "certificateAddress", certificateAddress);
+    TemplateVar.set(template, "certificateAddress", certificateAddress);
 
-        myContract.idHash(function (err, res) {
-            TemplateVar.set(template, "idHash", res);
-        });
-        myContract.certificateIssuer(function (err, res) {
-            TemplateVar.set(template, "certificateIssuer", res);
-        });
-        myContract.sundryData(function (err, res) {
-            let mapOfJSON = JSONToMap(res);
-            if (mapOfJSON.Name === undefined) {
-                TemplateVar.set(template, 'anonymous', true);
-                TemplateVar.set(template, 'name', "Anonymous Certificate");
-            } else {
-                TemplateVar.set(template, 'name', mapOfJSON.Name);
-            }
-                        if(mapOfJSON.logoURL!==undefined){
-                TemplateVar.set(template,"logoURL",mapOfJSON.logoURL);
-                delete mapOfJSON.logoURL;
-            }
-            TemplateVar.set(template, "json", res);
-            TemplateVar.set(template, "sundryData", mapOfJSON);
-        });
-        myContract.isDeleted(function (err, res) {
-            TemplateVar.set(template, "isDeleted", res);
-        });
+    myContract.idHash(function (err, res) {
+        TemplateVar.set(template, "idHash", res);
+    });
+    myContract.certificateIssuer(function (err, res) {
+        TemplateVar.set(template, "certificateIssuer", res);
+    });
+    myContract.sundryData(function (err, res) {
+        let mapOfJSON = JSONToMap(res);
+        if (mapOfJSON.Name === undefined) {
+            TemplateVar.set(template, 'anonymous', true);
+            TemplateVar.set(template, 'name', "Anonymous Certificate");
+        } else {
+            TemplateVar.set(template, 'name', mapOfJSON.Name);
+        }
+        if (mapOfJSON.logoURL !== undefined) {
+            TemplateVar.set(template, "logoURL", mapOfJSON.logoURL);
+            delete mapOfJSON.logoURL;
+        }
+        TemplateVar.set(template, "json", res);
+        TemplateVar.set(template, "sundryData", mapOfJSON);
+    });
+    myContract.isDeleted(function (err, res) {
+        TemplateVar.set(template, "isDeleted", res);
+    });
 
-    }
-    catch (err) {
+}catch(err)
+    {
         sAlert.error("Unable to retrieve certificate from Blockchain.");
     }
+})
+    ;
+
 }
 
 function JSONToArrayOfObjects(json) {
@@ -272,45 +276,59 @@ function isContractAddressValidStr(contractAddres) {
 function deleteCertificate(certificateAddress) {
     return new Promise((error) => {
         let myContract = getContract(certificateAddress);
-        myContract.deleteCertificate(function (err, res) {
-            error(err);
-        });
-    })
-        ;
+    myContract.deleteCertificate(function (err, res) {
+        error(err);
+    });
+})
+    ;
 }
 
 function updateCertificate(oldCertificateAddress, candidateName = "", candidateDOB = "", sundryData = "") {
     return new Promise((result) => {
         myContract = getContract(oldCertificateAddress);
-        myContract.idHash((err, res) => {
-            if (!err) {
-                let oldIdHash = res;
-                let newIdHash;
-                if (candidateName !== "") {
-                    newIdHash =
-                        "0x" +
-                        SHA256(
-                            candidateName.toString().toLowerCase() +
-                            candidateDOB.toString().toLowerCase())
-                            .toString()
-                            .toLowerCase();
-                } else newIdHash = oldIdHash;
-                if (oldIdHash !== newIdHash) confirm("Are you sure you want to change this certificate, you have changed the owner.");
-                createCertificate(null, null, sundryData, newIdHash).then((newCertificate) => {
-                    if (newCertificate) {
-                        deleteCertificate(oldCertificateAddress).then((resolve) => {
-                            if (!resolve) {
-                                sAlert.warning("Error. A new certificate was created, but the old one has yet to be removed.");
-                            } else sAlert.success("The certificate " + newCertificate.address + " has been changed! <strong><a href='https://ropsten.etherscan.io/tx/" + newCertificate.txHash + "' target='_blank'> Click here</a></strong> to view it on the blockchain.");
-                        });
-                    }
-                });
+    myContract.idHash((err, res) => {
+        if(
+    !err
+)
+    {
+        let oldIdHash = res;
+        let newIdHash;
+        if (candidateName !== "") {
+            newIdHash =
+                "0x" +
+                SHA256(
+                    candidateName.toString().toLowerCase() +
+                    candidateDOB.toString().toLowerCase())
+                    .toString()
+                    .toLowerCase();
+        } else newIdHash = oldIdHash;
+        if (oldIdHash !== newIdHash) confirm("Are you sure you want to change this certificate, you have changed the owner.");
+        createCertificate(null, null, sundryData, newIdHash).then((newCertificate) => {
+            if(newCertificate) {
+                deleteCertificate(oldCertificateAddress).then((resolve) => {
+                    if(
+                !resolve
+            )
+                {
+                    sAlert.warning("Error. A new certificate was created, but the old one has yet to be removed.");
+                }
+            else
+                sAlert.success("The certificate " + newCertificate.address + " has been changed! <strong><a href='https://ropsten.etherscan.io/tx/" + newCertificate.txHash + "' target='_blank'> Click here</a></strong> to view it on the blockchain.");
+            })
+                ;
             }
-            else {
-                sAlert.warning("Oops! Something went wrong with updating.");
-            }
-        });
-    });
+        }
+    )
+        ;
+    }
+else
+    {
+        sAlert.warning("Oops! Something went wrong with updating.");
+    }
+})
+    ;
+})
+    ;
 }
 
 function JSONToMap(json) {
@@ -365,36 +383,37 @@ function checkWeb3Status() {
         let network;
         web3.version.getNetwork((error, result) => {
             network = getNetwork(result);
-            Session.set("connectedNetwork", network);
-            if (network !== "Ropsten") {
-                $('#worngNetworkModal').modal('show');
-            } else {
-                web3.eth.getAccounts(function (err, res) {
-                    if (!err) {
-                        Address = res[0];
-                        if (Address == undefined) {
-                            if (!Session.get("accountLocked")) {
-                                $('#accountsLockedModal').modal('show');
-                                Session.set("accountLocked", true);
-                                Session.set("Address", "0x");
-                                Session.set("walletBallance", 0);
-                                Session.set("numberOfCerts", 0);
-                            }
-                        } else {
-                            Session.set("Address", Address);
-                            $('#accountsLockedModal').modal('hide');
-                            Session.set("accountLocked", false);
-                            web3.eth.getBalance(Address, function (err, res) {
-                                let ethBlance = Math.round(web3.fromWei(res, "ether") * 10000) / 10000;
-                                Session.set("walletBallance", ethBlance);
-                            });
-                            numberOfCerts = Certificates.find({certificateIssuer: Address}).count();
-                            Session.set("numberOfCerts", numberOfCerts);
+        Session.set("connectedNetwork", network);
+        if (network !== "Ropsten") {
+            $('#worngNetworkModal').modal('show');
+        } else {
+            web3.eth.getAccounts(function (err, res) {
+                if (!err) {
+                    Address = res[0];
+                    if (Address == undefined) {
+                        if (!Session.get("accountLocked")) {
+                            $('#accountsLockedModal').modal('show');
+                            Session.set("accountLocked", true);
+                            Session.set("Address", "0x");
+                            Session.set("walletBallance", 0);
+                            Session.set("numberOfCerts", 0);
                         }
+                    } else {
+                        Session.set("Address", Address);
+                        $('#accountsLockedModal').modal('hide');
+                        Session.set("accountLocked", false);
+                        web3.eth.getBalance(Address, function (err, res) {
+                            let ethBlance = Math.round(web3.fromWei(res, "ether") * 10000) / 10000;
+                            Session.set("walletBallance", ethBlance);
+                        });
+                        numberOfCerts = Certificates.find({certificateIssuer: Address}).count();
+                        Session.set("numberOfCerts", numberOfCerts);
                     }
-                });
-            }
-        });
+                }
+            });
+        }
+    })
+        ;
     }
 };
 
@@ -477,16 +496,15 @@ function buildTimeGraph(timeframe, template) {
     });
 }
 
-function getShortUrl(url, callback){
+function getShortUrl(url, callback) {
     var accessToken = 'R_009e941b1ab944f79cef629c07d36afc';
     var url = 'https://api-ssl.bitly.com/v3/shorten?access_token=' + accessToken + '&longUrl=' + encodeURIComponent(url);
 
     $.getJSON(
         url,
         {},
-        function(response)
-        {
-            if(callback)
+        function (response) {
+            if (callback)
                 callback(response.data.url);
         }
     );
@@ -955,7 +973,17 @@ Template.DeleteCertificateForm.events({
             ).fetch();
             if (searchResults.length !== 0) {
                 if (searchResults[0].certificateIssuer === Address) {
-                    $('#deleteConfirmModal').modal('show');
+                    myContract = getContract(certificateAddress);
+                    myContract.isDeleted(function (err, res) {
+                        if(!err&&!res){
+                            $('#deleteConfirmModal').modal('show');
+                        } else if(!err){
+                            sAlert.warning("This certificate has already been deleted.");
+                        } else{
+                            sAlert.error("Oops!, something went wrong fetching your certificate.");
+                        }
+                    });
+
                 } else {
                     sAlert.error("<strong>You did not create this certificate and thus, cannot delete it.</strong>");
                 }
@@ -968,7 +996,6 @@ Template.DeleteCertificateForm.events({
             // console.log("Failed to delete certificate: " + err);
         }
     },
-
     "submit #deleteCertificateForm": function (event) {
         try {
             let certificateAddress = event.target.certificateAddress.value;
@@ -980,9 +1007,11 @@ Template.DeleteCertificateForm.events({
             if (searchResults.length !== 0) {
                 if (searchResults[0].certificateIssuer === Address) {
                     deleteCertificate(certificateAddress).then((error) => {
-                        if (!error) sAlert.success('Certificate successfully deleted.');
-                        else sAlert.error('Failed to delete certificate');
-
+                        if (!error) {
+                            sAlert.success('Certificate successfully deleted.');
+                        } else {
+                            sAlert.error('Failed to delete certificate');
+                        }
                     });
                 } else {
                     sAlert.error("<strong>You did not create this certificate and thus, cannot delete it.</strong>");
@@ -1134,11 +1163,14 @@ Template.createCertificate.events({
             json = arrayToJSON(sundryData);
             $('#reminderToWaitForMining').modal('show');
             createCertificate(candidateName, candidateDOB, json).then((resolve, err) => {
-                $('#reminderToWaitForMining').modal('hide');
-                if (resolve) {
-                    sAlert.success("<strong> Certificate added, with address" + resolve.address + ".</strong> <a href='https://ropsten.etherscan.io/tx/" + resolve.txHash + "' target='_blank'> Click here</a> to view it on the blockchain.")
-                }
-            });
+                $('#reminderToWaitForMining'
+        ).
+            modal('hide');
+            if (resolve) {
+                sAlert.success("<strong> Certificate added, with address" + resolve.address + ".</strong> <a href='https://ropsten.etherscan.io/tx/" + resolve.txHash + "' target='_blank'> Click here</a> to view it on the blockchain.")
+            }
+        })
+            ;
             event.preventDefault();
         }
     },
