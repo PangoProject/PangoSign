@@ -312,14 +312,8 @@ function updateCertificate(oldCertificateAddress, candidateName = "", candidateD
                 //First create the certifictae, if that is sucessfull, delete the old one.
                 createCertificate(null, null, sundryData, newIdHash).then((newCertificate) => {
                         if (newCertificate) {
-                            deleteCertificate(oldCertificateAddress).then((resolve) => {
-                                if (!resolve) {
-                                    sAlert.warning("Error. A new certificate was created, but the old one has yet to be removed.");
-                                }
-                                else
-                                    sAlert.success("The certificate " + newCertificate.address + " has been changed! <strong><a href='https://ropsten.etherscan.io/tx/" + newCertificate.txHash + "' target='_blank'> Click here</a></strong> to view it on the blockchain.");
-                            })
-                            ;
+                            deleteCertificate(oldCertificateAddress);
+                            sAlert.success("The certificate " + newCertificate.address + " has been changed! <strong><a href='https://ropsten.etherscan.io/tx/" + newCertificate.txHash + "' target='_blank'> Click here</a></strong> to view it on the blockchain.");
                         }
                     }
                 )
