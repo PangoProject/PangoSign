@@ -248,10 +248,7 @@ function JSONToArrayOfObjects(json) {
         if (pair == 0 && key != "Name") {   //Deal with anonymous certificates
             sAlert.info("This is an anonymous certificate. If you change Name or Date of Birth, the certificate owner may change.");
             Meteor.defer(function () {
-                $("#anonymousUpdate"
-                ").prop("
-                checked
-                ", true);
+                $("#anonymousUpdate").prop("checked", true);
             });
             //Supply the know fields
             objectArray = [
@@ -311,7 +308,7 @@ function updateCertificate(oldCertificateAddress, candidateName = "", candidateD
                             .toString()
                             .toLowerCase();
                 } else newIdHash = oldIdHash;
-                if (oldIdHash !== newIdHash) confirm("Are you sure you want to change this certificate, you have changed the owner.");
+                if (oldIdHash !== newIdHash) sAlert.warning("You are changing the owner of this certificate.");
                 //First create the certifictae, if that is sucessfull, delete the old one.
                 createCertificate(null, null, sundryData, newIdHash).then((newCertificate) => {
                         if (newCertificate) {
