@@ -67,8 +67,8 @@ Router.route('/search/:searchType/:searchQuery', {
                 commonMetaData = searchResults.length;
                 commonMetaDataText =
                     "Number of certificates issued to candidate: " + commonMetaData;
-                for (let result in searchResults) {
-                    let count = Certificates.find({certificateIssuer: searchResults[result].certificateIssuer}).count();
+                for (result in searchResults) {
+                    count = Certificates.find({certificateIssuer: searchResults[result].certificateIssuer}).count();
                     searchResults[result]["issuerMetaData"] = count;
                 }
                 break;
