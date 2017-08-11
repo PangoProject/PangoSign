@@ -87,8 +87,7 @@
                     </div>
                     <div class="row">
                         <div class="col">
-                            Just so you know, this certificate has been deleted previously. This could mean that it has
-                            been updated before too. If you want to know more, check out the FAQs.
+                            Just so you know, this certificate has been deleted previously. This could mean that it has been updated before too. If you want to know more, check out the FAQs.
                         </div>
                     </div>
                 </div>
@@ -534,16 +533,6 @@
                         <button type="submit" class="btn btn-primary">
                             <i class="fa fa-fw fa-search" aria-hidden="true"></i> Search
                         </button>
-                        <div class="btn-group" data-toggle="buttons" id="gridOrList">
-                            <label class="btn btn-secondary active">
-                                <input type="radio" name="gridOrList" value="grid" autocomplete="off" checked> <i
-                                    class="fa fa-th" aria-hidden="true"></i>Grid
-                            </label>
-                            <label class="btn btn-secondary">
-                                <input type="radio" name="gridOrList" value="list" autocomplete="off"> <i
-                                    class="fa fa-list" aria-hidden="true"></i>List
-                            </label>
-                        </div>
                         {{# if searchResults}}
                             <strong class="pull-right">{{commonMetaDataText}}</strong>
                         {{/if}}
@@ -626,96 +615,13 @@
 </template>
 
 <template name="searchResultsList">
-
-
     {{#if searchResults}}
-        {{#if compare GridOrList "Grid"}}
-            <div class="card-columns">
-                {{#each result in searchResults}} {{#with result}}
-                    {{> ChildCertificate resultCertificateAddress=certificateAddress resultTimeStamp=timeStamp issuerMetaData=issuerMetaData}}
-                {{/with}} {{/each}}
-            </div>
-        {{/if}}
-
-
-        {{#if compare GridOrList 'List'}}
-
-            {{>TableOrderInject}}
-
-            <table id="myTable" class="tablesorter">
-                <thead>
-                <tr>
-                    <th>Last Name</th>
-                    <th>First Name</th>
-                    <th>Email</th>
-                    <th>Due</th>
-                    <th>Web Site</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>Smith</td>
-                    <td>John</td>
-                    <td>jsmith@gmail.com</td>
-                    <td>$50.00</td>
-                    <td>http://www.jsmith.com</td>
-                </tr>
-                <tr>
-                    <td>Bach</td>
-                    <td>Frank</td>
-                    <td>fbach@yahoo.com</td>
-                    <td>$50.00</td>
-                    <td>http://www.frank.com</td>
-                </tr>
-                <tr>
-                    <td>Doe</td>
-                    <td>Jason</td>
-                    <td>jdoe@hotmail.com</td>
-                    <td>$100.00</td>
-                    <td>http://www.jdoe.com</td>
-                </tr>
-                <tr>
-                    <td>Conway</td>
-                    <td>Tim</td>
-                    <td>tconway@earthlink.net</td>
-                    <td>$50.00</td>
-                    <td>http://www.timconway.com</td>
-                </tr>
-                </tbody>
-            </table>
-
-            <table id="ListModeTable" class="tablesorter">
-                <thead>
-                <tr>
-                    <th>Last Name</th>
-                    <th>First Name</th>
-                </tr>
-                </thead>
-                <tbody>
-                {{#each result in searchResults}} {{#with result}}
-
-                    {{> ChildCertificateRow resultCertificateAddress=certificateAddress resultTimeStamp=timeStamp issuerMetaData=issuerMetaData}}
-
-                {{/with}} {{/each}}
-                </tbody>
-            </table>
-
-        {{/if}}
+        <div class="card-columns">
+            {{#each result in searchResults}} {{#with result}}
+                {{> ChildCertificate resultCertificateAddress=certificateAddress resultTimeStamp=timeStamp issuerMetaData=issuerMetaData}}
+            {{/with}} {{/each}}
+        </div>
     {{/if}}
-</template>
-
-<template name="ChildCertificateRow">
-    {{>TableOrderInject}}
-    {{#unless TemplateVar.get "isDeleted"}}
-        <tr role="row">
-            <td>
-                {{TemplateVar.get "name"}}
-            </td>
-            <td>
-                a
-            </td>
-        </tr>
-    {{/unless}}
 </template>
 
 <template name="ChildCertificate">
@@ -1096,9 +1002,6 @@
 </template>
 
 <template name="injectJqueryTooltip">
-</template>
-
-<template name="TableOrderInject">
 </template>
 
 <template name="QRCode">

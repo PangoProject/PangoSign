@@ -2,7 +2,6 @@ import {Template} from "meteor/templating";
 import {Session} from "meteor/session";
 import {Chart} from "chart.js";
 
-
 import "./main.html";
 import "./templates.html";
 import "./router.js";
@@ -528,13 +527,6 @@ Template.ChildCertificate.onCreated(function () {
     getCertificateFromBlockchain(address, template);
 });
 
-Template.ChildCertificateRow.onCreated(function () {
-    let template = Template.instance();
-    let address = template.data.resultCertificateAddress;
-    TemplateVar.set(template, "issuerMetaData", template.data.issuerMetaData);
-    getCertificateFromBlockchain(address, template);
-});
-
 Template.UpdateCertificate.onCreated(function () {
     Session.set("updateCertificateSearchResults", null);
 });
@@ -673,12 +665,6 @@ Template.modal.helpers({
     }
 });
 
-Template.searchResultsList.helpers({
-    GridOrList: function (){
-        return Session.get("GridOrList");
-    }
-})
-
 Template.main.helpers({
     accountLockedStatus: function () {
         if (Session.get("accountLocked")) return "icon-lock";
@@ -697,15 +683,6 @@ Template.main.helpers({
         if (Session.get("accountLocked")) return "The account is locked. Please unlock to edit or create new certificates.";
         return "The account is unlocked.";
     }
-});
-
-Template.TableOrderInject.onRendered(function (){
-    $(function(){
-        $("#ListModeTable").tablesorter();
-    });
-    $(function(){
-        $("#myTable").tablesorter();
-    });
 });
 
 Template.CandidateSearch.onRendered(function () {
@@ -753,21 +730,6 @@ Template.CandidateSearch.helpers({
 });
 
 Template.ChildCertificate.helpers({
-    sundryData: function () {
-        return _.map(this.Address, function (value, key) {
-            return {
-                key: key,
-                value: value
-            };
-        });
-    },
-    Address: function () {
-        return Session.get("Address");
-
-    }
-});
-
-Template.ChildCertificateRow.helpers({
     sundryData: function () {
         return _.map(this.Address, function (value, key) {
             return {
@@ -872,10 +834,6 @@ Template.CandidateSearch.events({
         Session.set("searchType", event.target.value);
         Session.set("certificateSearchResults", null);
         TemplateVar.set(template, 'valid', "");
-    },
-
-    "change #gridOrList": function (event) {
-        Session.set("GridOrList", event.target.innerText);
     },
 
     "submit .candidateSearch": function (event) {
@@ -1070,7 +1028,7 @@ Template.UpdateCertificateForm.events({
                             $("#infromDeletedOnUpdate").modal('show');
                         }
                     });
-                } else if (!Address === undefined) { //check whether user is logged in before shouting at them
+                } else if(!Address===undefined){ //check whether user is logged in before shouting at them
                     sAlert.error("You did not create this certificate and thus, cannot edit it.");
                 }
             } else {
