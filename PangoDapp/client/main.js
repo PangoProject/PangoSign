@@ -49,30 +49,31 @@ const ABI_ARRAY = [{
 }];
 const BYTE_CODE = "6060604052341561000f57600080fd5b6040516104b13803806104b1833981016040528080519060200190919080518201919050505b336000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550816001816000191690555080600290805190602001906100969291906100ba565b506000600360006101000a81548160ff0219169083151502179055505b505061015f565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f106100fb57805160ff1916838001178555610129565b82800160010185558215610129579182015b8281111561012857825182559160200191906001019061010d565b5b509050610136919061013a565b5090565b61015c91905b80821115610158576000816000905550600101610140565b5090565b90565b6103438061016e6000396000f30060606040526000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff168063083dfe681461006a5780635455e36b146100f9578063aa4107321461014e578063afa936b81461017f578063d7efb6b714610194575b600080fd5b341561007557600080fd5b61007d6101c1565b6040518080602001828103825283818151815260200191508051906020019080838360005b838110156100be5780820151818401525b6020810190506100a2565b50505050905090810190601f1680156100eb5780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b341561010457600080fd5b61010c61025f565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b341561015957600080fd5b610161610284565b60405180826000191660001916815260200191505060405180910390f35b341561018a57600080fd5b61019261028a565b005b341561019f57600080fd5b6101a7610304565b604051808215151515815260200191505060405180910390f35b60028054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156102575780601f1061022c57610100808354040283529160200191610257565b820191906000526020600020905b81548152906001019060200180831161023a57829003601f168201915b505050505081565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60015481565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff161415156102e557600080fd5b6001600360006101000a81548160ff0219169083151502179055505b5b565b600360009054906101000a900460ff16815600a165627a7a7230582009e651caf5d336c4233a93f7dbf345b82f62d77489c9a9cf4183f789750aacad0029";
 
-//global client variables
+// global client variables
 let Address;
-
-Certificates = new Mongo.Collection("certificates");
-CertificatesProducedGraph = new Mongo.Collection("certificatesProducedGraph");
-UniqueIssuerGraph = new Mongo.Collection("uniqueIssuerGraph");
-UniqueRecipientGraph = new Mongo.Collection("uniqueRecipientGraph");
-CertificateTemplates = new Mongo.Collection('certificateTemplates');
+//The Mongo Collections
+Certificates = new Mongo.Collection("certificates");    //The Certificate Index
+CertificatesProducedGraph = new Mongo.Collection("certificatesProducedGraph");  //Graph of certificates produced
+UniqueIssuerGraph = new Mongo.Collection("uniqueIssuerGraph");  //Graph of unique issuers
+UniqueRecipientGraph = new Mongo.Collection("uniqueRecipientGraph");    //Graph of recipients
+CertificateTemplates = new Mongo.Collection("certificateTemplates");    //Templates for creating new certificates
 
 Meteor.startup(function () {
+    //Set the neccicary variables to be null, empty or 0. Otherwise there can be errors with cookies
     Session.set("updateCertificateSearchResults", null);
     Session.set("accountLocked", false);
     Session.set("Address", "0x");
     Session.set("walletBallance", 0);
     Session.set("numberOfCerts", 0);
 
+    //Subscribe to the neccicary DBs
     try {
         Meteor.subscribe('theCertificates');
     }
     catch (err) {
         $('#catastrophicError').modal('show');
-        // console.log("Could not connect to DB: " + err);
     }
-
+    //Configure alert packages system wide
     sAlert.config({
         effect: 'flip',
         position: 'bottom',
@@ -88,16 +89,18 @@ Meteor.startup(function () {
 });
 
 function getContract(certificateAddress) {
+    //This function returns a web3 contract for later processing.
     try {
         return web3.eth.contract(ABI_ARRAY).at(certificateAddress);
     }
     catch (err) {
-        sAlert.error("Something went wrong with your web3 client.");
+        $('#catastrophicError').modal('show');
     }
     return null;
 }
 
 function getNetwork(networkId) {
+    //This fucntion returns the Ethereum network to which the user is connected.
     switch (networkId) {
         case '1':
             return 'Mainnet';
@@ -115,8 +118,10 @@ function getNetwork(networkId) {
 }
 
 function createCertificate(candidateName, candidateDOB, sundryData, idHash = "") {
+    //This function creates a new certificate and returns whether or not creation was sucessful via a promise
     return new Promise((resolve, error) => {
         let hash;
+        //If an idHash was not passed to the function, create one for the user
         if (idHash === "") {
             hash =
                 "0x" +
@@ -129,7 +134,7 @@ function createCertificate(candidateName, candidateDOB, sundryData, idHash = "")
 
         } else hash = idHash;
         try {
-            let certificateContract = web3.eth.contract(ABI_ARRAY);
+            let certificateContract = web3.eth.contract(ABI_ARRAY); //Create a new, empty contract object
             let certificate = certificateContract.new(
                 hash,
                 sundryData,
@@ -138,27 +143,30 @@ function createCertificate(candidateName, candidateDOB, sundryData, idHash = "")
                     data: BYTE_CODE,
                     gas: "4000000"
                 },
+                //Result of contract creation is a callback function
                 function (e, contract) {
                     try {
                         //must be contract.address as when function is called initially, it returns a null and later return another contract.
                         if (typeof contract.address !== "undefined") {
                             try {
+                                // Request that the server adds the new certificate to the DB on its side
                                 Meteor.call('insertCertificate', contract.address);
                                 resolve({address: contract.address, txHash: contract.transactionHash});
                             }
                             catch (err) {
                                 sAlert.error("Failed to add the certificate to the DB.");
                                 error(err);
-                                // console.log("DB Connection failed: " + err);
                             }
                         }
                     } catch (e2) {
-                        $('#reminderToWaitForMining').modal('hide');
+                        //The user cancels the transaction in their web3 client
+                        $("#reminderToWaitForMining").modal("hide");
                         sAlert.error("It looks like you cancelled the transaction!");
                         error("Error");
                     }
                     if (e) {
-                        $('#reminderToWaitForMining').modal('hide');
+                        //Something is thrown while trying to mine the certificate
+                        $("#reminderToWaitForMining").modal("hide");
                         sAlert.error("Oh-No! The certificate could not to be mined.");
                         error("Error");
                     }
@@ -168,57 +176,59 @@ function createCertificate(candidateName, candidateDOB, sundryData, idHash = "")
         catch (err) {
             sAlert.error("Failed to create the certificate.");
             error(err);
-            // console.log("There was an error creating your certificate: " + err);
         }
-    })
-        ;
+    });
 }
 
 function getCertificateFromBlockchain(certificateAddress, template) {
+    //This pulls a certificate from the blockChain and pushes it to template vars. It should probably be converted into 2 separate functions at some point.
     try {
         //So that certificates aren't shown when the db loads before the blockchain query returns
         TemplateVar.set(template, "isDeleted", true);
         let myContract = getContract(certificateAddress);
-
+        //Populate the variables we know already
         TemplateVar.set(template, "certificateAddress", certificateAddress);
-
+        //Populate the rest of the variables with db results
         myContract.idHash(function (err, res) {
             TemplateVar.set(template, "idHash", res);
         });
         myContract.certificateIssuer(function (err, res) {
             TemplateVar.set(template, "certificateIssuer", res);
         });
+        myContract.isDeleted(function (err, res) {
+            TemplateVar.set(template, "isDeleted", res);
+        });
         myContract.sundryData(function (err, res) {
+            //Convert Sundry Data fom JSON on blockhain to a map for populating templates later
             let mapOfJSON = JSONToMap(res);
+            //Handle anonymous certificates
             if (mapOfJSON.Name === undefined) {
                 TemplateVar.set(template, 'anonymous', true);
                 TemplateVar.set(template, 'name', "Anonymous Certificate");
             } else {
                 TemplateVar.set(template, 'name', mapOfJSON.Name);
             }
-                        if(mapOfJSON.logoURL!==undefined){
-                TemplateVar.set(template,"logoURL",mapOfJSON.logoURL);
+            //If there is a image, populate the template var.
+            if (mapOfJSON.logoURL !== undefined) {
+                TemplateVar.set(template, "logoURL", mapOfJSON.logoURL);
                 delete mapOfJSON.logoURL;
             }
             TemplateVar.set(template, "json", res);
             TemplateVar.set(template, "sundryData", mapOfJSON);
         });
-        myContract.isDeleted(function (err, res) {
-            TemplateVar.set(template, "isDeleted", res);
-        });
-
-    }
-    catch (err) {
+    } catch (err) {
         sAlert.error("Unable to retrieve certificate from Blockchain.");
     }
+    ;
 }
 
 function JSONToArrayOfObjects(json) {
-    if (json === "" || json === undefined) return [];
-    let objectArray = [];
-    json = json.substr(1, json.length - 2);
-    let arrayOfPairs = json.split('","');
+    if (json === "" || json === undefined) return []; //Deal with empty JSON
+    let objectArray = [];   //Array to store object results
+    json = json.substr(1, json.length - 2); //Get rid of quotes at start and end of json string, the rest are removed by the string.split below
+    let arrayOfPairs = json.split('","');  //Break the JSON into an array
     for (let pair in arrayOfPairs) {
+        //Add the required padding to each key-value pair and process:
         let jsonPair = '{"' + arrayOfPairs[pair] + '"}';
         let dictPair = JSON.parse(jsonPair);
         let key = Object.keys(dictPair)[0];
@@ -230,15 +240,17 @@ function JSONToArrayOfObjects(json) {
             readOnly: "",
             type: "text"
         };
+        //Prevent the user from editing read-only fields
         if ((key == "Name") || (key == "DOB")) {
             elem.readOnly = "readonly";
         }
-        if (key == "DOB") elem.type = "date"
-        if (pair == 0 && key != "Name") {
+        if (key == "DOB") elem.type = "date";   //Ensure DOB is a date field
+        if (pair == 0 && key != "Name") {   //Deal with anonymous certificates
             sAlert.info("This is an anonymous certificate. If you change Name or Date of Birth, the certificate owner may change.");
             Meteor.defer(function () {
-                $('#anonymousUpdate').prop('checked', true);
+                $("#anonymousUpdate").prop("checked", true);
             });
+            //Supply the know fields
             objectArray = [
                 {
                     uniqid: Random.id(),
@@ -262,6 +274,7 @@ function JSONToArrayOfObjects(json) {
 }
 
 function isContractAddressValidStr(contractAddres) {
+    // function returns text to be put into input field css classes for correct and incorrect Contract Addresses
     if (contractAddres.length === 0) return "";
     if (web3.isAddress(contractAddres)) {
         return "has-success";
@@ -272,11 +285,10 @@ function isContractAddressValidStr(contractAddres) {
 function deleteCertificate(certificateAddress) {
     return new Promise((error) => {
         let myContract = getContract(certificateAddress);
-        myContract.deleteCertificate(function (err, res) {
+        myContract.deleteCertificate(function (err, res) {  //Unfortunately there is no web3 success message for contract calls currently
             error(err);
         });
-    })
-        ;
+    });
 }
 
 function updateCertificate(oldCertificateAddress, candidateName = "", candidateDOB = "", sundryData = "") {
@@ -286,6 +298,7 @@ function updateCertificate(oldCertificateAddress, candidateName = "", candidateD
             if (!err) {
                 let oldIdHash = res;
                 let newIdHash;
+                //Create idHash if needed
                 if (candidateName !== "") {
                     newIdHash =
                         "0x" +
@@ -295,22 +308,24 @@ function updateCertificate(oldCertificateAddress, candidateName = "", candidateD
                             .toString()
                             .toLowerCase();
                 } else newIdHash = oldIdHash;
-                if (oldIdHash !== newIdHash) confirm("Are you sure you want to change this certificate, you have changed the owner.");
+                if (oldIdHash !== newIdHash) sAlert.warning("You are changing the owner of this certificate.");
+                //First create the certifictae, if that is sucessfull, delete the old one.
                 createCertificate(null, null, sundryData, newIdHash).then((newCertificate) => {
-                    if (newCertificate) {
-                        deleteCertificate(oldCertificateAddress).then((resolve) => {
-                            if (!resolve) {
-                                sAlert.warning("Error. A new certificate was created, but the old one has yet to be removed.");
-                            } else sAlert.success("The certificate " + newCertificate.address + " has been changed! <strong><a href='https://ropsten.etherscan.io/tx/" + newCertificate.txHash + "' target='_blank'> Click here</a></strong> to view it on the blockchain.");
-                        });
+                        if (newCertificate) {
+                            deleteCertificate(oldCertificateAddress);
+                            sAlert.success("The certificate " + newCertificate.address + " has been changed! <strong><a href='https://ropsten.etherscan.io/tx/" + newCertificate.txHash + "' target='_blank'> Click here</a></strong> to view it on the blockchain.");
+                        }
                     }
-                });
+                )
+                ;
             }
             else {
                 sAlert.warning("Oops! Something went wrong with updating.");
             }
-        });
-    });
+        })
+        ;
+    })
+        ;
 }
 
 function JSONToMap(json) {
@@ -328,7 +343,6 @@ function JSONToMap(json) {
 }
 
 function arrayToJSON(array) {
-    // try {
     let json = "";
     let isAnonymous = _.filter(array, function (x) {
         return x.keyValue == "Anonymous";
@@ -356,19 +370,17 @@ function isValidSHAStr(idHash) {
 }
 
 function checkWeb3Status() {
-    // $('#noWeb3Modal').on('shown.bs.modal', function () {
-    //     $('#myInput').focus()
-    // });
-    if (!web3.isConnected()) {
+    //This function throws all the modals if the client's browser is incorrectly configured
+    if (!web3.isConnected()) { //check for web3
         $('#noWeb3Modal').modal('show');
-    } else {
+    } else { //check if connected to correct network
         let network;
         web3.version.getNetwork((error, result) => {
             network = getNetwork(result);
             Session.set("connectedNetwork", network);
             if (network !== "Ropsten") {
                 $('#worngNetworkModal').modal('show');
-            } else {
+            } else { // Check whether account is locked
                 web3.eth.getAccounts(function (err, res) {
                     if (!err) {
                         Address = res[0];
@@ -380,7 +392,7 @@ function checkWeb3Status() {
                                 Session.set("walletBallance", 0);
                                 Session.set("numberOfCerts", 0);
                             }
-                        } else {
+                        } else { // Set all the apropriate variables
                             Session.set("Address", Address);
                             $('#accountsLockedModal').modal('hide');
                             Session.set("accountLocked", false);
@@ -394,7 +406,8 @@ function checkWeb3Status() {
                     }
                 });
             }
-        });
+        })
+        ;
     }
 };
 
@@ -476,22 +489,6 @@ function buildTimeGraph(timeframe, template) {
         }
     });
 }
-
-function getShortUrl(url, callback){
-    var accessToken = 'R_009e941b1ab944f79cef629c07d36afc';
-    var url = 'https://api-ssl.bitly.com/v3/shorten?access_token=' + accessToken + '&longUrl=' + encodeURIComponent(url);
-
-    $.getJSON(
-        url,
-        {},
-        function(response)
-        {
-            if(callback)
-                callback(response.data.url);
-        }
-    );
-}
-
 
 Meteor.setInterval(checkWeb3Status, 1000);
 
@@ -646,7 +643,6 @@ Template.injectJqueryPopover.onRendered(function () {
 
 Template.injectJqueryTooltip.onRendered(function () {
     $(function () {
-        //$('[data-toggle="tooltip"]').tooltip()
         $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
     })
 });
@@ -955,7 +951,17 @@ Template.DeleteCertificateForm.events({
             ).fetch();
             if (searchResults.length !== 0) {
                 if (searchResults[0].certificateIssuer === Address) {
-                    $('#deleteConfirmModal').modal('show');
+                    myContract = getContract(certificateAddress);
+                    myContract.isDeleted(function (err, res) {
+                        if (!err && !res) {
+                            $('#deleteConfirmModal').modal('show');
+                        } else if (!err) {
+                            sAlert.warning("This certificate has already been deleted.");
+                        } else {
+                            sAlert.error("Oops!, something went wrong fetching your certificate.");
+                        }
+                    });
+
                 } else {
                     sAlert.error("<strong>You did not create this certificate and thus, cannot delete it.</strong>");
                 }
@@ -968,7 +974,6 @@ Template.DeleteCertificateForm.events({
             // console.log("Failed to delete certificate: " + err);
         }
     },
-
     "submit #deleteCertificateForm": function (event) {
         try {
             let certificateAddress = event.target.certificateAddress.value;
@@ -980,9 +985,11 @@ Template.DeleteCertificateForm.events({
             if (searchResults.length !== 0) {
                 if (searchResults[0].certificateIssuer === Address) {
                     deleteCertificate(certificateAddress).then((error) => {
-                        if (!error) sAlert.success('Certificate successfully deleted.');
-                        else sAlert.error('Failed to delete certificate');
-
+                        if (!error) {
+                            sAlert.success('Certificate successfully deleted.');
+                        } else {
+                            sAlert.error('Failed to delete certificate');
+                        }
                     });
                 } else {
                     sAlert.error("<strong>You did not create this certificate and thus, cannot delete it.</strong>");
@@ -1015,7 +1022,13 @@ Template.UpdateCertificateForm.events({
             if (searchResults.length !== 0) {
                 if (searchResults[0].certificateIssuer === Address) {
                     Session.set("updateCertificateSearchResults", searchResults);
-                } else {
+                    window.history.pushState('', '', '/change/' + certificateAddress);
+                    getContract(searchResults[0].certificateAddress).isDeleted((err, res) => {
+                        if (!err && res) {
+                            $("#infromDeletedOnUpdate").modal('show');
+                        }
+                    });
+                } else if(!Address===undefined){ //check whether user is logged in before shouting at them
                     sAlert.error("You did not create this certificate and thus, cannot edit it.");
                 }
             } else {
@@ -1134,11 +1147,13 @@ Template.createCertificate.events({
             json = arrayToJSON(sundryData);
             $('#reminderToWaitForMining').modal('show');
             createCertificate(candidateName, candidateDOB, json).then((resolve, err) => {
-                $('#reminderToWaitForMining').modal('hide');
+                $('#reminderToWaitForMining'
+                ).modal('hide');
                 if (resolve) {
                     sAlert.success("<strong> Certificate added, with address" + resolve.address + ".</strong> <a href='https://ropsten.etherscan.io/tx/" + resolve.txHash + "' target='_blank'> Click here</a> to view it on the blockchain.")
                 }
-            });
+            })
+            ;
             event.preventDefault();
         }
     },
