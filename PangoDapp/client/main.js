@@ -258,16 +258,29 @@ function JSONToArrayOfObjects(json) {
                     value: "",
                     readOnly: "readonly",
                     type: "text"
-                },
-                {
+                },{
                     uniqid: Random.id(),
                     keyValue: "DOB",
                     value: "",
                     readOnly: "readonly",
                     type: "date"
                 }];
+        } else if(pair == 0){
+            objectArray = [{
+                uniqid: Random.id(),
+                keyValue: "Name",
+                value: value,
+                readOnly: "readonly",
+                type: "text"
+            },{
+                uniqid: Random.id(),
+                    keyValue: "DOB",
+                value: "",
+                readOnly: "readonly",
+                type: "date"
+            }];
+            continue;
         }
-
         objectArray.push(elem);
     }
     return objectArray;
@@ -297,26 +310,46 @@ function updateCertificate(oldCertificateAddress, candidateName = "", candidateD
         myContract.idHash((err, res) => {
             if (!err) {
                 let oldIdHash = res;
-                let newIdHash;
-                //Create idHash if needed
-                if (candidateName !== "") {
-                    newIdHash =
-                        web3.sha3(
-                            candidateName.toString().toLowerCase() +
-                            candidateDOB.toString().toLowerCase())
-                            .toString()
-                            .toLowerCase();
-                } else newIdHash = oldIdHash;
-                if (oldIdHash !== newIdHash) sAlert.warning("You are changing the owner of this certificate.");
-                //First create the certifictae, if that is sucessfull, delete the old one.
-                createCertificate(null, null, sundryData, newIdHash).then((newCertificate) => {
-                        if (newCertificate) {
-                            deleteCertificate(oldCertificateAddress);
-                            sAlert.success("The certificate " + newCertificate.address + " has been changed! <strong><a href='https://ropsten.etherscan.io/tx/" + newCertificate.txHash + "' target='_blank'> Click here</a></strong> to view it on the blockchain.");
+                let newIdHash = oldIdHash;
+                
+                myContract.sundryData((err,res)=> {
+                    if(!err){
+                        let mapOfJson = JSONToMap(res);
+                        if (_.keys(mapOfJson)[0]!=="Name"){ //if old cert is anonymous:
+                            if (candidateName !== "") { //If a new name has been entered
+                                newIdHash =
+                                    web3.sha3(
+                                        candidateName.toString().toLowerCase() +
+                                        candidateDOB.toString().toLowerCase())
+                                        .toString()
+                                        .toLowerCase();
+                            } else {
+                                if(candidateDOB !== ""){ // if a new DOB has been supplied
+                                    sAlert.warning("You cannot change the DOB of an anonymous certificate without also supplying a name.");
+                                }
+                            }
+                        } else { //if old cert is not anonymous
+                            if (candidateName !== _.values(mapOfJson)[0] || candidateDOB !== "") {
+                                newIdHash =
+                                    web3.sha3(
+                                        candidateName.toString().toLowerCase() +
+                                        candidateDOB.toString().toLowerCase())
+                                        .toString()
+                                        .toLowerCase();
+                            }
                         }
+                        if (oldIdHash !== newIdHash) sAlert.warning("You are changing the owner of this certificate.");
+                        //First create the certificate, if that is sucessfull, delete the old one.
+                        createCertificate(null, null, sundryData, newIdHash).then((newCertificate) => {
+                                if (newCertificate) {
+                                    deleteCertificate(oldCertificateAddress);
+                                    sAlert.success("The certificate " + newCertificate.address + " has been changed! <strong><a href='https://ropsten.etherscan.io/tx/" + newCertificate.txHash + "' target='_blank'> Click here</a></strong> to view it on the blockchain.");
+                                }
+                            }
+                        )
+                        ;
                     }
-                )
-                ;
+                });
             }
             else {
                 sAlert.warning("Oops! Something went wrong with updating.");
@@ -348,7 +381,7 @@ function arrayToJSON(array) {
     })[0]["value"];
 
     for (input in array) {
-        if (((array[input]["keyValue"] === "Name" || array[input]["keyValue"] === "DOB") && isAnonymous) || array[input]["keyValue"] === "Anonymous" || array[input]["KeyValue"] === "" || array[input]["value"] === "") continue;
+        if ((array[input]["keyValue"] === "Name" && isAnonymous) || array[input]["keyValue"] === "DOB" || array[input]["keyValue"] === "Anonymous" || array[input]["KeyValue"] === "" || array[input]["value"] === "") continue;
         let dictEntry = {};
         dictEntry[array[input]["keyValue"]] = array[input]["value"];
         let newEntry = JSON.stringify(dictEntry).toString();
@@ -1049,7 +1082,6 @@ Template.UpdateCertificateForm.events({
             }
         } catch (err) {
             sAlert.error("Oops! Your certificate has failed to be updated.");
-            // console.log("Failed to update certificate: " + err);
         }
         event.preventDefault();
     },
@@ -1090,7 +1122,6 @@ Template.UpdateCertificateFormChild.events({
             let certificateAddressOld = searchResults[0].certificateAddress;
             $('#reminderToWaitForMining').modal('show');
             updateCertificate(certificateAddressOld, candidateName, candidateDOB, json);
-
         }
         event.preventDefault();
     }
