@@ -361,7 +361,7 @@ function isValidSHAStr(idHash) {
     if (idHash.length === 0) {
         return "";
         //  Check if valid Keccak 256 SHA3 hash
-    } else if (/^u\/[a-f0-9]{64}$/i.test(idHash)) {
+    } else if (/^[a-f0-9]{64}$/i.test(idHash)) {
         return "has-success";
     } else {
         return "has-danger";
@@ -892,6 +892,7 @@ Template.CandidateSearch.events({
                 break;
             case "candidateIdSearch":
                 idHash = document.getElementById("searchCandidateIDHash").value.toLowerCase();
+                idHash = idHash.substr(idHash.length - 64);
                 if (idHash.substr(0, 2) != "0x") idHash = "0x" + idHash;
                 searchQuery = idHash;
                 searchResults = Certificates.find(
@@ -921,6 +922,7 @@ Template.CandidateSearch.events({
                 break;
             case "issuerAddressSearch":
                 let certificateIssuer = document.getElementById("searchCertificateIssuer").value.toLowerCase();
+                if (certificateIssuer.substr(0, 2) != "0x") certificateIssuer = "0x" + certificateIssuer;
                 searchQuery = certificateIssuer;
                 searchResults = Certificates.find(
                     {

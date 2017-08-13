@@ -53,6 +53,7 @@ Router.route('remove', function () {
 Router.route('/search/:searchType/:searchQuery', {
     data: function () {
         let searchQuery = this.params.searchQuery;
+        if (searchQuery.substr(0, 2) != "0x") searchQuery = "0x" + searchQuery; // Insert 0x if not supplied
         let searchType = this.params.searchType;
         let searchResults = [];
         let commonMetaData;
