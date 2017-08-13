@@ -65,7 +65,7 @@ Meteor.startup(function () {
     Session.set("Address", "0x");
     Session.set("walletBallance", 0);
     Session.set("numberOfCerts", 0);
-    Session.set("showDeletedCertificate",false);
+    Session.set("showDeletedCertificate", false);
 
     //Subscribe to the neccicary DBs
     try {
@@ -832,11 +832,15 @@ Template.certificateAddressSearch.events({
 });
 
 Template.CandidateSearch.events({
-    "change #showDeletedCertificate": function(){
-        Session.set("showDeletedCertificate",document.getElementById("showDeletedCertificate").checked);
-        if(Session.get("showDeletedCertificate")==true){
+    "change #showDeletedCertificate": function () {
+
+        if (Session.get("showDeletedCertificate") == true) {
             sAlert.info("You have chosen to show deleted certificates. Those that have been deleted are shown in red.")
         }
+        //let animation finish before pulling the deleted certs
+        setTimeout(function () {
+            Session.set("showDeletedCertificate", document.getElementById("showDeletedCertificate").checked);
+        }, 150);
     },
 
     "click #searchTab": function (event) {
@@ -1038,7 +1042,7 @@ Template.UpdateCertificateForm.events({
                             $("#infromDeletedOnUpdate").modal('show');
                         }
                     });
-                } else if(!Address===undefined){ //check whether user is logged in before shouting at them
+                } else if (!Address === undefined) { //check whether user is logged in before shouting at them
                     sAlert.error("You did not create this certificate and thus, cannot edit it.");
                 }
             } else {
