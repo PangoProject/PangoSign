@@ -311,7 +311,6 @@ function updateCertificate(oldCertificateAddress, candidateName = "", candidateD
             if (!err) {
                 let oldIdHash = res;
                 let newIdHash = oldIdHash;
-                
                 myContract.sundryData((err,res)=> {
                     if(!err){
                         let mapOfJson = JSONToMap(res);
