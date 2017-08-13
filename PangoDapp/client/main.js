@@ -125,8 +125,7 @@ function createCertificate(candidateName, candidateDOB, sundryData, idHash = "")
         //If an idHash was not passed to the function, create one for the user
         if (idHash === "") {
             hash =
-                "0x" +
-                SHA256(
+                web3.sha3(
                     candidateName.toString().toLowerCase() +
                     candidateDOB.toString().toLowerCase()
                 )
@@ -302,8 +301,7 @@ function updateCertificate(oldCertificateAddress, candidateName = "", candidateD
                 //Create idHash if needed
                 if (candidateName !== "") {
                     newIdHash =
-                        "0x" +
-                        SHA256(
+                        web3.sha3(
                             candidateName.toString().toLowerCase() +
                             candidateDOB.toString().toLowerCase())
                             .toString()
@@ -362,8 +360,8 @@ function arrayToJSON(array) {
 function isValidSHAStr(idHash) {
     if (idHash.length === 0) {
         return "";
-        //  Check if valid SHA256 hash
-    } else if (/[A-Fa-f0-9]{64}/.test(idHash)) {
+        //  Check if valid Keccak 256 SHA3 hash
+    } else if (/^u\/[a-f0-9]{64}$/i.test(idHash)) {
         return "has-success";
     } else {
         return "has-danger";
@@ -862,8 +860,7 @@ Template.CandidateSearch.events({
                 let candidateDOB = document.getElementById("searchCandidateDOB").value;
                 if (candidateDOB !== null && candidateDOB !== undefined && candidateDOB !== "") {
                     var idHashFull =
-                        "0x" +
-                        SHA256(
+                        web3.sha3(
                             candidateName.toString().toLowerCase() +
                             candidateDOB.toString().toLowerCase()
                         )
@@ -876,8 +873,7 @@ Template.CandidateSearch.events({
                 }
                 searchQuery = idHashFull;
                 var idHashShort =
-                    "0x" +
-                    SHA256(
+                    web3.sha3(
                         candidateName.toString().toLowerCase()
                     )
                         .toString()
