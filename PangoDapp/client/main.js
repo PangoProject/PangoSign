@@ -65,6 +65,7 @@ Meteor.startup(function () {
     Session.set("Address", "0x");
     Session.set("walletBallance", 0);
     Session.set("numberOfCerts", 0);
+    Session.set("showDeletedCertificate",false);
 
     //Subscribe to the neccicary DBs
     try {
@@ -726,7 +727,7 @@ Template.CandidateSearch.helpers({
     },
     issuerMetaData: function () {
         return Session.get("issuerMetaData");
-    }
+    },
 });
 
 Template.ChildCertificate.helpers({
@@ -740,8 +741,10 @@ Template.ChildCertificate.helpers({
     },
     Address: function () {
         return Session.get("Address");
-
-    }
+    },
+    showDeletedCertificate: function () {
+        return Session.get("showDeletedCertificate");
+    },
 });
 
 Template.UpdateCertificateForm.helpers({
@@ -829,6 +832,13 @@ Template.certificateAddressSearch.events({
 });
 
 Template.CandidateSearch.events({
+    "change #showDeletedCertificate": function(){
+        Session.set("showDeletedCertificate",document.getElementById("showDeletedCertificate").checked);
+        if(Session.get("showDeletedCertificate")==true){
+            sAlert.info("You have chosen to show deleted certificates. Those that have been deleted are shown in red.")
+        }
+    },
+
     "click #searchTab": function (event) {
         let template = Template.instance();
         Session.set("searchType", event.target.value);
