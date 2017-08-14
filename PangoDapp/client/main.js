@@ -325,6 +325,7 @@ function updateCertificate(oldCertificateAddress, candidateName = "", candidateD
                             } else {
                                 if(candidateDOB !== ""){ // if a new DOB has been supplied
                                     sAlert.warning("You cannot change the DOB of an anonymous certificate without also supplying a name.");
+                                    return;
                                 }
                             }
                         } else { //if old cert is not anonymous
@@ -339,6 +340,7 @@ function updateCertificate(oldCertificateAddress, candidateName = "", candidateD
                         }
                         if (oldIdHash !== newIdHash) sAlert.warning("You are changing the owner of this certificate.");
                         //First create the certificate, if that is sucessfull, delete the old one.
+                        $('#reminderToWaitForMining').modal('show');
                         createCertificate(null, null, sundryData, newIdHash).then((newCertificate) => {
                                 if (newCertificate) {
                                     deleteCertificate(oldCertificateAddress);
@@ -1119,7 +1121,6 @@ Template.UpdateCertificateFormChild.events({
             let json = arrayToJSON(inputs);
             let searchResults = template.data.updateCertificateSearchResults;
             let certificateAddressOld = searchResults[0].certificateAddress;
-            $('#reminderToWaitForMining').modal('show');
             updateCertificate(certificateAddressOld, candidateName, candidateDOB, json);
         }
         event.preventDefault();
