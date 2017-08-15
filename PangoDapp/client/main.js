@@ -125,8 +125,7 @@ function createCertificate(candidateName, candidateDOB, sundryData, idHash = "")
         //If an idHash was not passed to the function, create one for the user
         if (idHash === "") {
             hash =
-                "0x" +
-                SHA256(
+                web3.sha3(
                     candidateName.toString().toLowerCase() +
                     candidateDOB.toString().toLowerCase()
                 )
@@ -259,16 +258,29 @@ function JSONToArrayOfObjects(json) {
                     value: "",
                     readOnly: "readonly",
                     type: "text"
-                },
-                {
+                },{
                     uniqid: Random.id(),
                     keyValue: "DOB",
                     value: "",
                     readOnly: "readonly",
                     type: "date"
                 }];
+        } else if(pair == 0){
+            objectArray = [{
+                uniqid: Random.id(),
+                keyValue: "Name",
+                value: value,
+                readOnly: "readonly",
+                type: "text"
+            },{
+                uniqid: Random.id(),
+                    keyValue: "DOB",
+                value: "",
+                readOnly: "readonly",
+                type: "date"
+            }];
+            continue;
         }
-
         objectArray.push(elem);
     }
     return objectArray;
@@ -298,27 +310,47 @@ function updateCertificate(oldCertificateAddress, candidateName = "", candidateD
         myContract.idHash((err, res) => {
             if (!err) {
                 let oldIdHash = res;
-                let newIdHash;
-                //Create idHash if needed
-                if (candidateName !== "") {
-                    newIdHash =
-                        "0x" +
-                        SHA256(
-                            candidateName.toString().toLowerCase() +
-                            candidateDOB.toString().toLowerCase())
-                            .toString()
-                            .toLowerCase();
-                } else newIdHash = oldIdHash;
-                if (oldIdHash !== newIdHash) sAlert.warning("You are changing the owner of this certificate.");
-                //First create the certifictae, if that is sucessfull, delete the old one.
-                createCertificate(null, null, sundryData, newIdHash).then((newCertificate) => {
-                        if (newCertificate) {
-                            deleteCertificate(oldCertificateAddress);
-                            sAlert.success("The certificate " + newCertificate.address + " has been changed! <strong><a href='https://ropsten.etherscan.io/tx/" + newCertificate.txHash + "' target='_blank'> Click here</a></strong> to view it on the blockchain.");
+                let newIdHash = oldIdHash;
+                myContract.sundryData((err,res)=> {
+                    if(!err){
+                        let mapOfJson = JSONToMap(res);
+                        if (_.keys(mapOfJson)[0]!=="Name"){ //if old cert is anonymous:
+                            if (candidateName !== "") { //If a new name has been entered
+                                newIdHash =
+                                    web3.sha3(
+                                        candidateName.toString().toLowerCase() +
+                                        candidateDOB.toString().toLowerCase())
+                                        .toString()
+                                        .toLowerCase();
+                            } else {
+                                if(candidateDOB !== ""){ // if a new DOB has been supplied
+                                    sAlert.warning("You cannot change the DOB of an anonymous certificate without also supplying a name.");
+                                    return;
+                                }
+                            }
+                        } else { //if old cert is not anonymous
+                            if (candidateName !== _.values(mapOfJson)[0] || candidateDOB !== "") {
+                                newIdHash =
+                                    web3.sha3(
+                                        candidateName.toString().toLowerCase() +
+                                        candidateDOB.toString().toLowerCase())
+                                        .toString()
+                                        .toLowerCase();
+                            }
                         }
+                        if (oldIdHash !== newIdHash) sAlert.warning("You are changing the owner of this certificate.");
+                        //First create the certificate, if that is sucessfull, delete the old one.
+                        $('#reminderToWaitForMining').modal('show');
+                        createCertificate(null, null, sundryData, newIdHash).then((newCertificate) => {
+                                if (newCertificate) {
+                                    deleteCertificate(oldCertificateAddress);
+                                    sAlert.success("The certificate " + newCertificate.address + " has been changed! <strong><a href='https://ropsten.etherscan.io/tx/" + newCertificate.txHash + "' target='_blank'> Click here</a></strong> to view it on the blockchain.");
+                                }
+                            }
+                        )
+                        ;
                     }
-                )
-                ;
+                });
             }
             else {
                 sAlert.warning("Oops! Something went wrong with updating.");
@@ -350,7 +382,7 @@ function arrayToJSON(array) {
     })[0]["value"];
 
     for (input in array) {
-        if (((array[input]["keyValue"] === "Name" || array[input]["keyValue"] === "DOB") && isAnonymous) || array[input]["keyValue"] === "Anonymous" || array[input]["KeyValue"] === "" || array[input]["value"] === "") continue;
+        if ((array[input]["keyValue"] === "Name" && isAnonymous) || array[input]["keyValue"] === "DOB" || array[input]["keyValue"] === "Anonymous" || array[input]["KeyValue"] === "" || array[input]["value"] === "") continue;
         let dictEntry = {};
         dictEntry[array[input]["keyValue"]] = array[input]["value"];
         let newEntry = JSON.stringify(dictEntry).toString();
@@ -362,8 +394,8 @@ function arrayToJSON(array) {
 function isValidSHAStr(idHash) {
     if (idHash.length === 0) {
         return "";
-        //  Check if valid SHA256 hash
-    } else if (/[A-Fa-f0-9]{64}/.test(idHash)) {
+        //  Check if valid Keccak 256 SHA3 hash
+    } else if (/^[a-f0-9]{64}$/i.test(idHash)) {
         return "has-success";
     } else {
         return "has-danger";
@@ -862,8 +894,7 @@ Template.CandidateSearch.events({
                 let candidateDOB = document.getElementById("searchCandidateDOB").value;
                 if (candidateDOB !== null && candidateDOB !== undefined && candidateDOB !== "") {
                     var idHashFull =
-                        "0x" +
-                        SHA256(
+                        web3.sha3(
                             candidateName.toString().toLowerCase() +
                             candidateDOB.toString().toLowerCase()
                         )
@@ -876,8 +907,7 @@ Template.CandidateSearch.events({
                 }
                 searchQuery = idHashFull;
                 var idHashShort =
-                    "0x" +
-                    SHA256(
+                    web3.sha3(
                         candidateName.toString().toLowerCase()
                     )
                         .toString()
@@ -896,6 +926,7 @@ Template.CandidateSearch.events({
                 break;
             case "candidateIdSearch":
                 idHash = document.getElementById("searchCandidateIDHash").value.toLowerCase();
+                idHash = idHash.substr(idHash.length - 64);
                 if (idHash.substr(0, 2) != "0x") idHash = "0x" + idHash;
                 searchQuery = idHash;
                 searchResults = Certificates.find(
@@ -925,6 +956,7 @@ Template.CandidateSearch.events({
                 break;
             case "issuerAddressSearch":
                 let certificateIssuer = document.getElementById("searchCertificateIssuer").value.toLowerCase();
+                if (certificateIssuer.substr(0, 2) != "0x") certificateIssuer = "0x" + certificateIssuer;
                 searchQuery = certificateIssuer;
                 searchResults = Certificates.find(
                     {
@@ -1051,7 +1083,6 @@ Template.UpdateCertificateForm.events({
             }
         } catch (err) {
             sAlert.error("Oops! Your certificate has failed to be updated.");
-            // console.log("Failed to update certificate: " + err);
         }
         event.preventDefault();
     },
@@ -1090,9 +1121,7 @@ Template.UpdateCertificateFormChild.events({
             let json = arrayToJSON(inputs);
             let searchResults = template.data.updateCertificateSearchResults;
             let certificateAddressOld = searchResults[0].certificateAddress;
-            $('#reminderToWaitForMining').modal('show');
             updateCertificate(certificateAddressOld, candidateName, candidateDOB, json);
-
         }
         event.preventDefault();
     }

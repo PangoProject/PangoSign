@@ -25,6 +25,7 @@ Router.route('metrics', function () {
 Router.route('/change/:changeQuery', {
     data: function () {
         let changeQuery = this.params.changeQuery;
+        if (changeQuery.substr(0, 2) != "0x") changeQuery = "0x" + changeQuery; // Insert 0x if not supplied
         this.render('UpdateCertificate');
         Meteor.defer(function () {
             $('#updateAddress').val(changeQuery);
@@ -38,7 +39,7 @@ Router.route('/change/:changeQuery', {
 Router.route('/remove/:removeQuery', {
     data: function () {
         let removeQuery = this.params.removeQuery;
-
+        if (removeQuery.substr(0, 2) != "0x") removeQuery = "0x" + removeQuery; // Insert 0x if not supplied
         this.render('DeleteCertificate');
         Meteor.defer(function () {
             $('#deleteCertificateAddress').val(removeQuery);
@@ -53,6 +54,7 @@ Router.route('remove', function () {
 Router.route('/search/:searchType/:searchQuery', {
     data: function () {
         let searchQuery = this.params.searchQuery;
+        if (searchQuery.substr(0, 2) != "0x") searchQuery = "0x" + searchQuery; // Insert 0x if not supplied
         let searchType = this.params.searchType;
         let searchResults = [];
         let commonMetaData;
