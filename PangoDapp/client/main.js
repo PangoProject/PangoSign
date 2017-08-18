@@ -228,6 +228,7 @@ function JSONToArrayOfObjects(json) {
     json = json.substr(1, json.length - 2); //Get rid of quotes at start and end of json string, the rest are removed by the string.split below
     let arrayOfPairs = json.split('","');  //Break the JSON into an array
     for (let pair in arrayOfPairs) {
+        if (isNaN(parseInt(pair))) continue; // prevents the attempted parsing of extra data sometimes attached to last pair
         //Add the required padding to each key-value pair and process:
         let jsonPair = '{"' + arrayOfPairs[pair] + '"}';
         let dictPair = JSON.parse(jsonPair);
@@ -258,23 +259,23 @@ function JSONToArrayOfObjects(json) {
                     value: "",
                     readOnly: "readonly",
                     type: "text"
-                },{
+                }, {
                     uniqid: Random.id(),
                     keyValue: "DOB",
                     value: "",
                     readOnly: "readonly",
                     type: "date"
                 }];
-        } else if(pair == 0){
+        } else if (pair == 0) {
             objectArray = [{
                 uniqid: Random.id(),
                 keyValue: "Name",
                 value: value,
                 readOnly: "readonly",
                 type: "text"
-            },{
+            }, {
                 uniqid: Random.id(),
-                    keyValue: "DOB",
+                keyValue: "DOB",
                 value: "",
                 readOnly: "readonly",
                 type: "date"
@@ -311,10 +312,10 @@ function updateCertificate(oldCertificateAddress, candidateName = "", candidateD
             if (!err) {
                 let oldIdHash = res;
                 let newIdHash = oldIdHash;
-                myContract.sundryData((err,res)=> {
-                    if(!err){
+                myContract.sundryData((err, res) => {
+                    if (!err) {
                         let mapOfJson = JSONToMap(res);
-                        if (_.keys(mapOfJson)[0]!=="Name"){ //if old cert is anonymous:
+                        if (_.keys(mapOfJson)[0] !== "Name") { //if old cert is anonymous:
                             if (candidateName !== "") { //If a new name has been entered
                                 newIdHash =
                                     web3.sha3(
@@ -323,7 +324,7 @@ function updateCertificate(oldCertificateAddress, candidateName = "", candidateD
                                         .toString()
                                         .toLowerCase();
                             } else {
-                                if(candidateDOB !== ""){ // if a new DOB has been supplied
+                                if (candidateDOB !== "") { // if a new DOB has been supplied
                                     sAlert.warning("You cannot change the DOB of an anonymous certificate without also supplying a name.");
                                     return;
                                 }
@@ -367,6 +368,7 @@ function JSONToMap(json) {
     json = json.substr(1, json.length - 2);
     let arrayOfPairs = json.split('","');
     for (let pair in arrayOfPairs) {
+        if (isNaN(parseInt(pair))) continue; // prevents the attempted parsing of extra data sometimes attached to last pair
         let jsonPair = '{"' + arrayOfPairs[pair] + '"}';
         let dictPair = JSON.parse(jsonPair);
         let key = Object.keys(dictPair)[0];
@@ -523,6 +525,18 @@ function buildTimeGraph(timeframe, template) {
     });
 }
 
+qrScanner.on('scan', function (err, message) {
+    if (message != null) {
+        //Test if valid URL
+        let urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
+        if(urlRegex.test(message)){
+            return window.location.href = message;
+        } else{
+            return sAlert.warning("Oops, your QR code doesn't appear to contain a valid url.")
+        }
+    }
+});
+
 Meteor.setInterval(checkWeb3Status, 1000);
 
 Template.registerHelper("objectToPairs", function (object) {
@@ -551,6 +565,7 @@ Template.CandidateSearch.onCreated(function () {
     Session.set("certificateSearchResults", null);
     Session.set("searchType", "candidateNameDOB");
     Session.set("commonMetaData", null);
+    Session.set("showQrScanner", null);
 });
 
 Template.ChildCertificate.onCreated(function () {
@@ -726,6 +741,11 @@ Template.CandidateSearch.onRendered(function () {
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         let activeTab = e.target.href.split('#')[1]; // newly activated tab
         Session.set('searchType', activeTab);
+        if (activeTab == "qrSearch") { //if the selected tab is the qr search tab, set the visible flag to true.
+            Session.set("showQrScanner", true);
+        } else {
+            Session.set("showQrScanner", null);
+        }
     })
 });
 
@@ -760,6 +780,9 @@ Template.CandidateSearch.helpers({
     issuerMetaData: function () {
         return Session.get("issuerMetaData");
     },
+    showQrScanner: function () {
+        return Session.get("showQrScanner");
+    }
 });
 
 Template.ChildCertificate.helpers({
@@ -877,7 +900,6 @@ Template.CandidateSearch.events({
 
     "click #searchTab": function (event) {
         let template = Template.instance();
-        Session.set("searchType", event.target.value);
         Session.set("certificateSearchResults", null);
         TemplateVar.set(template, 'valid', "");
     },
