@@ -526,7 +526,7 @@ function buildTimeGraph(timeframe, template) {
 }
 
 qrScanner.on('scan', function (err, message) {
-    if (message != null) {
+    if (message !== null) {
         //Test if valid URL
         let urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
         if(urlRegex.test(message)){
@@ -733,6 +733,12 @@ Template.main.helpers({
     }
 });
 
+Template.modal.helpers({
+    'showQrScanner': function () {
+        return Session.get("showQrScanner");
+    }
+});
+
 Template.CandidateSearch.onRendered(function () {
     $('#myTab a').click(function (e) {
         e.preventDefault();
@@ -839,6 +845,10 @@ Template.modal.events({
     "click #modalDeleteButtonConfirm": function () {
         $('#deleteConfirmModal').modal('hide');
         $("#deleteCertificateForm").submit();
+    },
+
+    'click #closeQrScannerButton': function () {
+        Session.set("showQrScanner", null);
     }
 });
 
@@ -859,6 +869,13 @@ Template.UpdateCertificateFormChildChild.events({
                 });
             Session.set('inputs', inputs);
         }
+    }
+});
+
+Template.HomeCards.events({
+    'click #qrScannerWidgetButton': function () {
+        Session.set("showQrScanner", true);
+        $('#scanQRModal').modal('show');
     }
 });
 
@@ -1005,6 +1022,11 @@ Template.CandidateSearch.events({
         };
         window.history.pushState('', '', '/search/' + searchTypeDict[Session.get("searchType")] + "/" + searchQuery);
         event.preventDefault();
+    },
+
+    'click #qrSearchTab': function () {
+        $('#scanQRModal').modal('show');
+        Session.set("showQrScanner", true);
     }
 });
 
@@ -1039,7 +1061,6 @@ Template.DeleteCertificateForm.events({
             }
         } catch (err) {
             sAlert.error("Oops! Failed to delete this certificate.")
-            // console.log("Failed to delete certificate: " + err);
         }
     },
     "submit #deleteCertificateForm": function (event) {
