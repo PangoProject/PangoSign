@@ -283,6 +283,41 @@
         </div>
     </div>
 
+    <!--This is the modal for scanning  a QR Code-->
+    <div class="modal animated fadeInUpBig" id="scanQRModal"
+         tabindex="-1"
+         data-backdrop="static"
+         data-keyboard="false"
+         role="dialog"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <div class="row text-center">
+                        <div class="col">
+                            <h3 class="modal-title" id="exampleModalLabel">Scan a certificate</h3>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-body center-block">
+                    <div class="row text-center">
+                        <div class="col">
+                            {{#if showQrScanner}}
+                                {{>qrSearch}}
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="closeQrScannerButton" class="btn btn-primary" data-dismiss="modal">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </template>
 
 <template name="WalletBallance">
@@ -393,6 +428,20 @@
                     </div>
                 </div>
             </a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+                <div class="card card-inverse card-warning animated fadeIn" id="qrScannerWidgetButton" style="cursor: pointer; cursor: hand;">
+                    <div class="card-header">
+                        <h3>
+                            Scan a certificate
+                        </h3>
+                    </div>
+                    <div class="card-block text-xs-center">
+                        <h1><i class="fa fa-5x fa-qrcode"></i></h1>
+                    </div>
+                </div>
         </div>
     </div>
 </template>
@@ -510,9 +559,7 @@
                                    role="tab" aria-controls="profile">Issuer Address</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link grow-small" id="qrSearchTab" data-toggle="tab"
-                                   href="#qrSearch"
-                                   role="button" aria-controls="profile">QR Code</a>
+                                <a class="nav-link grow-small" id="qrSearchTab" href="#" >QR Code</a>
                             </li>
                         </ul>
                         <div class="tab-content" id="myTabContent">
@@ -531,11 +578,6 @@
                             <div class="tab-pane fade" id="issuerAddressSearch" role="tabpanel"
                                  aria-labelledby="profile-tab">
                                 {{>issuerAddressSearch}}
-                            </div>
-                            <div class="tab-pane fade" id="qrSearch" role="tabpanel">
-                                {{#if showQrScanner}}
-                                    {{>qrSearch}}
-                                {{/if}}
                             </div>
                         </div>
                     </div>
