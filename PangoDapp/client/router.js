@@ -127,9 +127,11 @@ Router.route('/search/:searchType/:searchQuery', {
         if (searchResults.length == 0 && Session.get("Address") != "0x") {
             sAlert.info("There were no certificates found for your search criteria.")
         }
-        Session.set("certificateSearchResults", searchResults);
-        Session.set("commonMetaData", commonMetaData);
-        Session.set("commonMetaDataText", commonMetaDataText);
+        Meteor.defer(function () {
+            Session.set("certificateSearchResults", searchResults);
+            Session.set("commonMetaData", commonMetaData);
+            Session.set("commonMetaDataText", commonMetaDataText);
+        });
         this.render('CandidateSearch');
     }
 });
