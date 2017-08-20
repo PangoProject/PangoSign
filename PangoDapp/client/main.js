@@ -366,6 +366,7 @@ function JSONToMap(json) {
     if (json === "" || json === undefined) return "";
     let map = new Map();
     json = json.substr(1, json.length - 2);
+
     let arrayOfPairs = json.split('","');
     for (let pair in arrayOfPairs) {
         if (isNaN(parseInt(pair))) continue; // prevents the attempted parsing of extra data sometimes attached to last pair
@@ -390,7 +391,7 @@ function arrayToJSON(array) {
         let newEntry = JSON.stringify(dictEntry).toString();
         json = json + newEntry.substring(1, newEntry.length - 1) + ",";
     }
-    return json.substring(0, json.length - 1);
+    return json.substring(0, json.length - 2);
 }
 
 function isValidSHAStr(idHash) {
@@ -1092,7 +1093,6 @@ Template.DeleteCertificateForm.events({
             }
         } catch (err) {
             sAlert.error("Oops! Failed to delete this certificate.")
-            // console.log("Failed to delete certificate: " + err);
         }
         event.preventDefault();
     },
