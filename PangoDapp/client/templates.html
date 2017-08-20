@@ -400,10 +400,11 @@
 </template>
 
 <template name="HomeCards">
+    {{> injectWOW}}
     <div class="row">
         <div class="col-md-6">
             <a href="{{pathFor route="search"}}" class="a-no-hover">
-                <div class="card card-inverse card-primary animated fadeIn">
+                <div class="card card-inverse card-primary wow fadeIn hvr-float">
                     <div class="card-header">
                         <h3>
                             Find a certificate
@@ -417,7 +418,7 @@
         </div>
         <div class="col-md-6">
             <a href="{{pathFor route="create"}}" class="a-no-hover">
-                <div class="card card-inverse card-success animated fadeIn">
+                <div class="card card-inverse card-success wow fadeIn hvr-float">
                     <div class="card-header">
                         <h3>
                             Create a certificate
@@ -432,7 +433,7 @@
     </div>
     <div class="row">
         <div class="col-md-6">
-                <div class="card card-inverse card-warning animated fadeIn" id="qrScannerWidgetButton" style="cursor: pointer; cursor: hand;">
+                <div class="card card-inverse card-warning wow fadeIn hvr-float" id="qrScannerWidgetButton" style="cursor: pointer; cursor: hand;">
                     <div class="card-header">
                         <h3>
                             Scan a certificate
