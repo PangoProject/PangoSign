@@ -400,10 +400,11 @@
 </template>
 
 <template name="HomeCards">
+    {{> injectWOW}}
     <div class="row">
         <div class="col-md-6">
             <a href="{{pathFor route="search"}}" class="a-no-hover">
-                <div class="card card-inverse card-primary animated fadeIn">
+                <div class="card card-inverse card-primary wow fadeIn hvr-float">
                     <div class="card-header">
                         <h3>
                             Find a certificate
@@ -417,7 +418,7 @@
         </div>
         <div class="col-md-6">
             <a href="{{pathFor route="create"}}" class="a-no-hover">
-                <div class="card card-inverse card-success animated fadeIn">
+                <div class="card card-inverse card-success wow fadeIn hvr-float">
                     <div class="card-header">
                         <h3>
                             Create a certificate
@@ -432,7 +433,7 @@
     </div>
     <div class="row">
         <div class="col-md-6">
-                <div class="card card-inverse card-warning animated fadeIn" id="qrScannerWidgetButton" style="cursor: pointer; cursor: hand;">
+                <div class="card card-inverse card-warning wow fadeIn hvr-float" id="qrScannerWidgetButton" style="cursor: pointer; cursor: hand;">
                     <div class="card-header">
                         <h3>
                             Scan a certificate
@@ -682,6 +683,7 @@
 
 <template name="searchResultsList">
     {{#if searchResults}}
+        {{>injectWOW}}
         <div class="card-columns">
             {{#each result in searchResults}} {{#with result}}
                 {{> ChildCertificate resultCertificateAddress=certificateAddress resultTimeStamp=timeStamp issuerMetaData=issuerMetaData}}
@@ -692,7 +694,7 @@
 
 <template name="ChildCertificate">
     {{#if showDeletedCertificate}}
-        <div class="card {{#if TemplateVar.get "isDeleted"}}card-outline-danger{{/if}} animated fadeInUpBig">
+        <div class="card {{#if TemplateVar.get "isDeleted"}}card-outline-danger{{/if}} wow fadeInUpBig">
             <div class="card-header {{#if TemplateVar.get "isDeleted"}}card-danger{{/if}}"
                  style="padding-top: 8px; padding-bottom: 8px">
                 <div class="row pt-1 mt-0">
@@ -852,7 +854,7 @@
     {{/if}}
     {{#unless showDeletedCertificate}}
         {{#unless TemplateVar.get "isDeleted"}}
-            <div class="card animated fadeInUpBig">
+            <div class="card wow fadeInUpBig">
                 <div class="card-header" style="padding-top: 8px; padding-bottom: 8px">
                     <div class="row pt-1 mt-0">
                         <div class="col p-l-1 p-r-0">
@@ -1020,8 +1022,12 @@
 
 <template name="DeleteCertificate">
     <div class="card animated fadeIn">
-        <h3 class="card-header">Remove</h3>
         <div class="card-block">
+            <div class="row">
+                <div class="col">
+                    <h4 class="card-title mb-0">Remove</h4>
+                </div>
+            </div>
             {{> DeleteCertificateForm}}
         </div>
     </div>
@@ -1050,8 +1056,12 @@
 
 <template name="UpdateCertificate">
     <div class="card animated fadeIn">
-        <h3 class="card-header">Change</h3>
         <div class="card-block">
+            <div class="row">
+                <div class="col">
+                    <h4 class="card-title mb-0">Change</h4>
+                </div>
+            </div>
             {{> UpdateCertificateForm}}
         </div>
     </div>
@@ -1139,10 +1149,13 @@
 
 <template name="createCertificate">
     <div class="card animated fadeIn">
-        <h3 class="card-header">Create</h3>
         <div class="card-block">
             <div class="row">
-
+                <div class="col">
+                    <h4 class="card-title mb-0">Create</h4>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-4">
                     <div class="form-inline">
                         <label class="mr-sm-2" for="certificatesTemplates" style="width: 40%">Select a
@@ -1241,6 +1254,9 @@
 </template>
 
 <template name="injectJqueryTooltip">
+</template>
+
+<template name="injectWOW">
 </template>
 
 <template name="QRCode">

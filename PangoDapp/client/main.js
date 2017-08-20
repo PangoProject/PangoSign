@@ -618,6 +618,10 @@ Template.candidateDetailsSearch.onRendered(function () {
     });
 });
 
+Template.injectWOW.onRendered(function () {
+    new WOW().init();
+});
+
 Template.UsageMetrics.onRendered(function () {
     Meteor.call('pageLoadCount', "IP");
     template = Template.instance();
@@ -906,7 +910,7 @@ Template.certificateAddressSearch.events({
 Template.CandidateSearch.events({
     "change #showDeletedCertificate": function () {
 
-        if (Session.get("showDeletedCertificate") == true) {
+        if (Session.get("showDeletedCertificate") == false) {
             sAlert.info("You have chosen to show deleted certificates. Those that have been deleted are shown in red.")
         }
         //let animation finish before pulling the deleted certs
