@@ -530,9 +530,9 @@ qrScanner.on('scan', function (err, message) {
     if (message !== null) {
         //Test if valid URL
         let urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
-        if(urlRegex.test(message)){
+        if (urlRegex.test(message)) {
             return window.location.href = message;
-        } else{
+        } else {
             return sAlert.warning("Oops, your QR code doesn't appear to contain a valid url.")
         }
     }
@@ -673,11 +673,8 @@ Template.inputFields.onRendered(function (event) {
 Template.injectJqueryPopover.onRendered(function () {
     //html:true enabled to put buttons within the popover content
     $('[data-toggle="popover"]').popover({html: true});
-    $('.popover-dismiss').popover({
-        trigger: 'focus'
-    })
     $(".popover-hover").popover({trigger: "manual", html: true, animation: false})
-        .on("mouseover", function () {
+        .on("mouseenter", function () {
             var _this = this;
             $(this).popover("show");
             $(".popover").on("mouseleave", function () {
@@ -689,9 +686,8 @@ Template.injectJqueryPopover.onRendered(function () {
             if (!$(".popover:hover").length) {
                 $(_this).popover("hide");
             }
-        }, 500);
+        }, 200);
     });
-
 });
 
 Template.injectJqueryTooltip.onRendered(function () {
