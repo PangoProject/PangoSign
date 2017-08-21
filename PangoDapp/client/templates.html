@@ -815,7 +815,8 @@
                            data-toggle="popover"
                            data-placement="bottom"
                            title="Certificate public address"
-                           data-content="{{TemplateVar.get "certificateAddress"}} ">
+                           data-content="{{TemplateVar.get "certificateAddress"}} <br> <a href='https://ropsten.etherscan.io/address/{{TemplateVar.get
+                                   "certificateAddress"}}' target='_blank'>View Certificate on blockchain</a>">
                             <h5 style="padding: 0px; margin: 0px">
                                 <i class="icon-badge grey-out nav-link text-muted"
                                    aria-hidden="true"></i>
@@ -854,7 +855,7 @@
     {{/if}}
     {{#unless showDeletedCertificate}}
         {{#unless TemplateVar.get "isDeleted"}}
-            <div class="card wow fadeInUpBig">
+            <div class="card animated fadeInUpBig">
                 <div class="card-header" style="padding-top: 8px; padding-bottom: 8px">
                     <div class="row pt-1 mt-0">
                         <div class="col p-l-1 p-r-0">
@@ -971,7 +972,8 @@
                                data-toggle="popover"
                                data-placement="bottom"
                                title="Certificate public address"
-                               data-content="{{TemplateVar.get "certificateAddress"}} ">
+                               data-content="{{TemplateVar.get "certificateAddress"}} <br> <a href='https://ropsten.etherscan.io/address/{{TemplateVar.get
+                                       "certificateAddress"}}' target='_blank'>View Certificate on blockchain</a>">
                                 <h5 style="padding: 0px; margin: 0px">
                                     <i class="icon-badge grey-out nav-link text-muted"
                                        aria-hidden="true"></i>
