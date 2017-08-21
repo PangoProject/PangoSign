@@ -265,6 +265,47 @@
                             <div id="shareCertificateQR"></div>
                         </div>
                     </div>
+                    {{shareCertificateAddress}}
+                    <div class="row social-icons icon-rounded icon-zoom">
+                        <div class="col"><a href="#"><i class="fa fa-linkedin"></i></a></div>
+                        <div class="col"><a href="#"><i class="fa fa-facebook"></i></a></div>
+                        <div class="col"><a href="#"><i class="fa fa-twitter"></i></a></div>
+                        <div class="col"><a href="#"><i class="fa fa-pinterest"></i></a></div>
+                        <div class="col"><a href="#"><i class="fa fa-github"></i></a></div>
+                        <div class="col"><a href="#"><i class="fa fa-instagram"></i></a></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="lockModalCloseButton" class="btn btn-primary" data-dismiss="modal">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--This is the modal for sharing a set of search results-->
+    <div class="modal animated fadeInUpBig" id="ShareSearchModal"
+         tabindex="-1"
+         role="dialog"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-success">
+                    <div class="row text-center">
+                        <div class="col">
+                            <h3 class="modal-title" id="exampleModalLabel">Share these search results</h3>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-body center-block">
+                    <div class="row text-center">
+                        <div class="col">
+                            <div id="shareSearchQR"></div>
+                        </div>
+                    </div>
+                    {{CurrentPageURL}}
                     <div class="row social-icons icon-rounded icon-zoom">
                         <div class="col"><a href="#"><i class="fa fa-linkedin"></i></a></div>
                         <div class="col"><a href="#"><i class="fa fa-facebook"></i></a></div>
@@ -400,11 +441,10 @@
 </template>
 
 <template name="HomeCards">
-    {{> injectWOW}}
     <div class="row">
         <div class="col-md-6">
             <a href="{{pathFor route="search"}}" class="a-no-hover">
-                <div class="card card-inverse card-primary wow fadeIn hvr-float">
+                <div class="card card-inverse card-primary animated fadeIn hvr-float">
                     <div class="card-header">
                         <h3>
                             Find a certificate
@@ -418,7 +458,7 @@
         </div>
         <div class="col-md-6">
             <a href="{{pathFor route="create"}}" class="a-no-hover">
-                <div class="card card-inverse card-success wow fadeIn hvr-float">
+                <div class="card card-inverse card-success animated fadeIn hvr-float">
                     <div class="card-header">
                         <h3>
                             Create a certificate
@@ -433,7 +473,7 @@
     </div>
     <div class="row">
         <div class="col-md-6">
-                <div class="card card-inverse card-warning wow fadeIn hvr-float" id="qrScannerWidgetButton" style="cursor: pointer; cursor: hand;">
+                <div class="card card-inverse card-warning animated fadeIn hvr-float" id="qrScannerWidgetButton" style="cursor: pointer; cursor: hand;">
                     <div class="card-header">
                         <h3>
                             Scan a certificate
@@ -532,6 +572,15 @@
             <div class="row">
                 <div class="col">
                     <h4 class="card-title mb-0">Search</h4>
+                </div>
+                <div class="col-2">
+                    <a role="button" id="shareSearch"
+                       data-toggle="tooltip"
+                       data-placement="top"
+                       title="Share This page"
+                       class="icon-share grey-out nav-link text-muted pull-right button btn-lg"
+                       style="padding:0"
+                       aria-hidden="true"></a>
                 </div>
             </div>
             <form class="candidateSearch">
@@ -683,7 +732,6 @@
 
 <template name="searchResultsList">
     {{#if searchResults}}
-        {{>injectWOW}}
         <div class="card-columns">
             {{#each result in searchResults}} {{#with result}}
                 {{> ChildCertificate resultCertificateAddress=certificateAddress resultTimeStamp=timeStamp issuerMetaData=issuerMetaData}}
@@ -694,7 +742,7 @@
 
 <template name="ChildCertificate">
     {{#if showDeletedCertificate}}
-        <div class="card {{#if TemplateVar.get "isDeleted"}}card-outline-danger{{/if}} wow fadeInUpBig">
+        <div class="card {{#if TemplateVar.get "isDeleted"}}card-outline-danger{{/if}} animated fadeInUpBig">
             <div class="card-header {{#if TemplateVar.get "isDeleted"}}card-danger{{/if}}"
                  style="padding-top: 8px; padding-bottom: 8px">
                 <div class="row pt-1 mt-0">
@@ -1257,9 +1305,6 @@
 </template>
 
 <template name="injectJqueryTooltip">
-</template>
-
-<template name="injectWOW">
 </template>
 
 <template name="QRCode">

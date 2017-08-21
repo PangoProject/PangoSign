@@ -619,10 +619,6 @@ Template.candidateDetailsSearch.onRendered(function () {
     });
 });
 
-Template.injectWOW.onRendered(function () {
-    new WOW().init();
-});
-
 Template.UsageMetrics.onRendered(function () {
     Meteor.call('pageLoadCount', "IP");
     template = Template.instance();
@@ -711,6 +707,12 @@ Template.WalletBallance.helpers({
 Template.modal.helpers({
     connectedNetwork: function () {
         return Session.get("connectedNetwork");
+    },
+    shareCertificateAddress: function () {
+        return Session.get("shareCertificateAddress");
+    },
+    CurrentPageURL: function () {
+        return Session.get("CurrentPageURL");
     }
 });
 
@@ -753,7 +755,7 @@ Template.CandidateSearch.onRendered(function () {
         } else {
             Session.set("showQrScanner", null);
         }
-    })
+    });
 });
 
 Template.UpdateCertificateFormChildChild.helpers({
@@ -789,7 +791,7 @@ Template.CandidateSearch.helpers({
     },
     showQrScanner: function () {
         return Session.get("showQrScanner");
-    }
+    },
 });
 
 Template.ChildCertificate.helpers({
@@ -905,8 +907,13 @@ Template.certificateAddressSearch.events({
 });
 
 Template.CandidateSearch.events({
-    "change #showDeletedCertificate": function () {
+    "click #shareSearch": function () {
+        console.log("share");
+        $('#ShareSearchModal').modal('show');
+        generateQRCode('#shareSearchQR',Session.get("CurrentPageURL"));
+    },
 
+    "change #showDeletedCertificate": function () {
         if (Session.get("showDeletedCertificate") == false) {
             sAlert.info("You have chosen to show deleted certificates. Those that have been deleted are shown in red.")
         }
