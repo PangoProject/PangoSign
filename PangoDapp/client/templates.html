@@ -249,7 +249,7 @@
          tabindex="-1"
          role="dialog"
          aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header bg-success">
                     <div class="row text-center">
@@ -259,20 +259,79 @@
                     </div>
 
                 </div>
-                <div class="modal-body center-block">
-                    <div class="row text-center">
-                        <div class="col">
-                            <div id="shareCertificateQR"></div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <img src="http://ceto.wits.ac.za/CustomFiles/virtualtours/wits/flash/resources/wits_350.jpg"/>
+                        </div>
+                        <div class="col-6">
+                            {{> ChildCertificate resultCertificateAddress="0xb0790abb0c8930db9709d08b9d7545d7362db543" resultTimeStamp=1503369845 issuerMetaData=issuerMetaData}}
                         </div>
                     </div>
-                    {{shareCertificateAddress}}
-                    <div class="row social-icons icon-rounded icon-zoom">
-                        <div class="col"><a href="#"><i class="fa fa-linkedin"></i></a></div>
-                        <div class="col"><a href="#"><i class="fa fa-facebook"></i></a></div>
-                        <div class="col"><a href="#"><i class="fa fa-twitter"></i></a></div>
-                        <div class="col"><a href="#"><i class="fa fa-pinterest"></i></a></div>
-                        <div class="col"><a href="#"><i class="fa fa-github"></i></a></div>
-                        <div class="col"><a href="#"><i class="fa fa-instagram"></i></a></div>
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <h4>Certificate</h4>
+                            <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+                                <button type="button" class="btn btn-secondary"><i class="fa fa-eye"></i></button>
+                                <button type="button" class="btn btn-secondary"><i class="fa fa-qrcode"></i></button>
+
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">
+                                        <i class="fa fa-share-alt"></i>
+                                    </button>
+                                    <div class="dropdown-menu social-icons btn-group-sm">
+                                        <a class="dropdown-item" href="#"><i class="fa fa-linkedin"></i></a>
+                                        <a class="dropdown-item" href="#"><i class="fa fa-facebook"></i></a>
+                                        <a class="dropdown-item" href="#"><i class="fa fa-twitter"></i></a>
+                                        <a class="dropdown-item" href="#"><i class="fa fa-pinterest"></i></a>
+                                        <a class="dropdown-item" href="#"><i class="fa fa-github"></i></a>
+                                        <a class="dropdown-item" href="#"><i class="fa fa-instagram"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <h4>Recipient</h4>
+                            <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+                                <button type="button" class="btn btn-secondary"><i class="fa fa-eye"></i></button>
+                                <button type="button" class="btn btn-secondary"><i class="fa fa-qrcode"></i></button>
+
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">
+                                        <i class="fa fa-share-alt"></i>
+                                    </button>
+                                    <div class="dropdown-menu social-icons btn-group-sm">
+                                        <a class="dropdown-item" href="#"><i class="fa fa-linkedin"></i></a>
+                                        <a class="dropdown-item" href="#"><i class="fa fa-facebook"></i></a>
+                                        <a class="dropdown-item" href="#"><i class="fa fa-twitter"></i></a>
+                                        <a class="dropdown-item" href="#"><i class="fa fa-pinterest"></i></a>
+                                        <a class="dropdown-item" href="#"><i class="fa fa-github"></i></a>
+                                        <a class="dropdown-item" href="#"><i class="fa fa-instagram"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <h4>Institution</h4>
+                            <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+                                <button type="button" class="btn btn-secondary"><i class="fa fa-eye"></i></button>
+                                <button type="button" class="btn btn-secondary"><i class="fa fa-qrcode"></i></button>
+
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">
+                                        <i class="fa fa-share-alt"></i>
+                                    </button>
+                                    <div class="dropdown-menu social-icons btn-group-sm">
+                                        <a class="dropdown-item" href="#"><i class="fa fa-linkedin"></i></a>
+                                        <a class="dropdown-item" href="#"><i class="fa fa-facebook"></i></a>
+                                        <a class="dropdown-item" href="#"><i class="fa fa-twitter"></i></a>
+                                        <a class="dropdown-item" href="#"><i class="fa fa-pinterest"></i></a>
+                                        <a class="dropdown-item" href="#"><i class="fa fa-github"></i></a>
+                                        <a class="dropdown-item" href="#"><i class="fa fa-instagram"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -473,16 +532,17 @@
     </div>
     <div class="row">
         <div class="col-md-6">
-                <div class="card card-inverse card-warning animated fadeIn hvr-float" id="qrScannerWidgetButton" style="cursor: pointer; cursor: hand;">
-                    <div class="card-header">
-                        <h3>
-                            Scan a certificate
-                        </h3>
-                    </div>
-                    <div class="card-block text-xs-center">
-                        <h1><i class="fa fa-5x fa-qrcode"></i></h1>
-                    </div>
+            <div class="card card-inverse card-warning animated fadeIn hvr-float" id="qrScannerWidgetButton"
+                 style="cursor: pointer; cursor: hand;">
+                <div class="card-header">
+                    <h3>
+                        Scan a certificate
+                    </h3>
                 </div>
+                <div class="card-block text-xs-center">
+                    <h1><i class="fa fa-5x fa-qrcode"></i></h1>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -609,7 +669,7 @@
                                    role="tab" aria-controls="profile">Issuer Address</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link grow-small" id="qrSearchTab" href="#" >QR Code</a>
+                                <a class="nav-link grow-small" id="qrSearchTab" href="#">QR Code</a>
                             </li>
                         </ul>
                         <div class="tab-content" id="myTabContent">
@@ -863,7 +923,8 @@
                            data-toggle="popover"
                            data-placement="bottom"
                            title="Certificate public address"
-                           data-content="{{TemplateVar.get "certificateAddress"}} <br> <a href='https://ropsten.etherscan.io/address/{{TemplateVar.get
+                           data-content="{{TemplateVar.get
+                                   "certificateAddress"}} <br> <a href='https://ropsten.etherscan.io/address/{{TemplateVar.get
                                    "certificateAddress"}}' target='_blank'>View Certificate on blockchain</a>">
                             <h5 style="padding: 0px; margin: 0px">
                                 <i class="icon-badge grey-out nav-link text-muted"
@@ -1021,7 +1082,8 @@
                                data-toggle="popover"
                                data-placement="bottom"
                                title="Certificate public address"
-                               data-content="{{TemplateVar.get "certificateAddress"}} <br> <a href='https://ropsten.etherscan.io/address/{{TemplateVar.get
+                               data-content="{{TemplateVar.get
+                                       "certificateAddress"}} <br> <a href='https://ropsten.etherscan.io/address/{{TemplateVar.get
                                        "certificateAddress"}}' target='_blank'>View Certificate on blockchain</a>">
                                 <h5 style="padding: 0px; margin: 0px">
                                     <i class="icon-badge grey-out nav-link text-muted"
