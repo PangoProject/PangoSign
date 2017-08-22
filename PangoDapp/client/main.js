@@ -708,8 +708,29 @@ Template.modal.helpers({
     connectedNetwork: function () {
         return Session.get("connectedNetwork");
     },
+    shareAnonymous: function () {
+        return Session.get("shareAnonymous");
+    },
+    shareLogoURL: function () {
+        return Session.get("shareLogoURL");
+    },
+    shareSundryData: function () {
+        return Session.get("shareSundryData");
+    },
+    shareCertificateIssuer: function () {
+        return Session.get("shareCertificateIssuer");
+    },
     shareCertificateAddress: function () {
         return Session.get("shareCertificateAddress");
+    },
+    shareIsDeleted: function () {
+        return Session.get("shareIsDeleted");
+    },
+    shareTimeStamp: function () {
+      return Session.get("shareTimeStamp");
+    },
+    shareName: function () {
+        return Session.get("shareName");
     },
     CurrentPageURL: function () {
         return Session.get("CurrentPageURL");
@@ -837,8 +858,22 @@ Template.UsageMetrics.events({
 Template.ChildCertificate.events({
     'click #shareCert': function () {
         let template = Template.instance();
+        let anonymous = TemplateVar.get(template, "anonymous");
+        let logoURL = TemplateVar.get(template,"logoURL");
+        let sundryData = TemplateVar.get(template,"sundryData");
+        let certificateIssuer = TemplateVar.get(template, "certificateIssuer");
         let certificateAddress = TemplateVar.get(template, "certificateAddress");
-        Session.set('shareCertificateAddress', certificateAddress);
+        let isDeleted = TemplateVar.get(template, "isDeleted");
+        let name = TemplateVar.get(template, "name");
+        let timeStamp = template.data.resultTimeStamp;
+        Session.set("shareCertificateAddress", certificateAddress);
+        Session.set("shareAnonymous", anonymous);
+        Session.set("shareLogoURL", logoURL);
+        Session.set("shareSundryData", sundryData);
+        Session.set("shareCertificateIssuer", certificateIssuer);
+        Session.set("shareIsDeleted", isDeleted);
+        Session.set("shareName", name);
+        Session.set("shareTimeStamp", timeStamp);
         $('#shareCertificateModal').modal('show');
         generateQRCode('#shareCertificateQR', 'http://localhost:3000/search/ca/' + certificateAddress);
     }

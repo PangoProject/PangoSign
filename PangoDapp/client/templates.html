@@ -260,14 +260,67 @@
 
                 </div>
                 <div class="modal-body">
-                    <div class="row">
-                        <div class="col-6">
-                            <img src="http://ceto.wits.ac.za/CustomFiles/virtualtours/wits/flash/resources/wits_350.jpg"/>
+                        <div class="card {{#if shareIsDeleted}}card-outline-danger{{/if}}">
+                            <div class="card-header {{#if shareIsDeleted}}card-danger{{/if}}"
+                                 style="padding-top: 8px; padding-bottom: 8px">
+                                <div class="row pt-1 mt-0">
+                                    <div class="col p-l-1 p-r-0">
+                                        <h5>
+                                            {{shareName}}
+                                        </h5>
+                                    </div>
+                                    <div class="col-1 p-l-0 p-r-0">
+                                        <h4 style="padding: 0px; margin: 0px">
+                                            {{>injectJqueryTooltip}}
+                                            {{#if shareAnonymous}}
+                                                <a id="searchResultCard" class="pull-right"
+                                                   data-toggle="tooltip"
+                                                   data-placement="top"
+                                                   title="This user chose not to have their information displayed.">
+                                                    <i class="icon-ghost grey-out nav-link text-muted pull-right p-t-0 p-b-0 m-t-0 m-b-0"
+                                                       aria-hidden="true" style="padding:0"></i>
+                                                </a>
+                                            {{/if}}
+                                        </h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-block addressTextWrap">
+                                <div class="row">
+                                    {{#if shareLogoURL}}
+                                        <div class="col">
+                                            <img class="card-img-top center-block"
+                                                 src="{{shareLogoURL}}"
+                                                 alt="Card image cap" style="height: 150px; width: auto">
+                                        </div>
+                                    {{/if}}
+
+                                    <div class="col">
+                                        <table class="table">
+                                            <tbody>
+                                            {{#each objectToPairs shareSundryData}}
+                                                <tr>
+                                                    <td style="width:35%"><b>{{key}}</b></td>
+                                                    <td>{{value}}</td>
+                                                </tr>
+                                            {{/each}}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer pl-8 pr-8" style="padding-top: 8px; padding-bottom: 8px">
+                                <div class="row pt-1 mt-0">
+                                    <div class="col pull-left">
+                                        <small class="text-muted pull-left">Added: <strong><br> {{formatDate
+                                                shareTimeStamp}}</strong>
+                                        </small>
+                                    </div>
+
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-6">
-                            {{> ChildCertificate resultCertificateAddress="0xb0790abb0c8930db9709d08b9d7545d7362db543" resultTimeStamp=1503369845 issuerMetaData=issuerMetaData}}
-                        </div>
-                    </div>
+
                     <div class="row text-center">
                         <div class="col-4">
                             <h4>Certificate</h4>
@@ -276,7 +329,8 @@
                                 <button type="button" class="btn btn-secondary"><i class="fa fa-qrcode"></i></button>
 
                                 <div class="btn-group btn-group-sm" role="group">
-                                    <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">
+                                    <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle"
+                                            data-toggle="dropdown">
                                         <i class="fa fa-share-alt"></i>
                                     </button>
                                     <div class="dropdown-menu social-icons btn-group-sm">
@@ -297,7 +351,8 @@
                                 <button type="button" class="btn btn-secondary"><i class="fa fa-qrcode"></i></button>
 
                                 <div class="btn-group btn-group-sm" role="group">
-                                    <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">
+                                    <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle"
+                                            data-toggle="dropdown">
                                         <i class="fa fa-share-alt"></i>
                                     </button>
                                     <div class="dropdown-menu social-icons btn-group-sm">
@@ -318,7 +373,8 @@
                                 <button type="button" class="btn btn-secondary"><i class="fa fa-qrcode"></i></button>
 
                                 <div class="btn-group btn-group-sm" role="group">
-                                    <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">
+                                    <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle"
+                                            data-toggle="dropdown">
                                         <i class="fa fa-share-alt"></i>
                                     </button>
                                     <div class="dropdown-menu social-icons btn-group-sm">
