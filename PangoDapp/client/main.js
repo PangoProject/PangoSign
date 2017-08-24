@@ -720,6 +720,9 @@ Template.modal.helpers({
     shareCertificateIssuer: function () {
         return Session.get("shareCertificateIssuer");
     },
+    shareIdHash: function () {
+      return Session.get("shareIdHash");
+    },
     shareCertificateAddress: function () {
         return Session.get("shareCertificateAddress");
     },
@@ -865,6 +868,7 @@ Template.ChildCertificate.events({
         let certificateAddress = TemplateVar.get(template, "certificateAddress");
         let isDeleted = TemplateVar.get(template, "isDeleted");
         let name = TemplateVar.get(template, "name");
+        let idHash = TemplateVar.get(template, "idHash");
         let timeStamp = template.data.resultTimeStamp;
         Session.set("shareCertificateAddress", certificateAddress);
         Session.set("shareAnonymous", anonymous);
@@ -874,6 +878,7 @@ Template.ChildCertificate.events({
         Session.set("shareIsDeleted", isDeleted);
         Session.set("shareName", name);
         Session.set("shareTimeStamp", timeStamp);
+        Session.set("shareIdHash", idHash);
         $('#shareCertificateModal').modal('show');
         generateQRCode('#shareCertificateQR', 'http://localhost:3000/search/ca/' + certificateAddress);
     }
@@ -887,6 +892,10 @@ Template.modal.events({
 
     'click #closeQrScannerButton': function () {
         Session.set("showQrScanner", null);
+    },
+    //The folowing events are to hand creating qr code for the share button:
+    "click #shareCandidateQrButton": function () {
+        
     }
 });
 

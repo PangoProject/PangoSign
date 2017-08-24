@@ -325,21 +325,21 @@
                         <div class="col-4">
                             <h4>Certificate</h4>
                             <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
-                                <button type="button" class="btn btn-secondary"><i class="fa fa-eye"></i></button>
-                                <button type="button" class="btn btn-secondary"><i class="fa fa-qrcode"></i></button>
-
+                                <!--<button type="button" class="btn btn-secondary" onclick="location.href='/search/ca/{{shareCertificateAddress}}'"><i class="fa fa-eye"></i></button>-->
                                 <div class="btn-group btn-group-sm" role="group">
                                     <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle"
                                             data-toggle="dropdown">
                                         <i class="fa fa-share-alt"></i>
                                     </button>
-                                    <div class="dropdown-menu social-icons btn-group-sm">
-                                        <a class="dropdown-item" href="#"><i class="fa fa-linkedin"></i></a>
-                                        <a class="dropdown-item" href="#"><i class="fa fa-facebook"></i></a>
-                                        <a class="dropdown-item" href="#"><i class="fa fa-twitter"></i></a>
-                                        <a class="dropdown-item" href="#"><i class="fa fa-pinterest"></i></a>
-                                        <a class="dropdown-item" href="#"><i class="fa fa-github"></i></a>
-                                        <a class="dropdown-item" href="#"><i class="fa fa-instagram"></i></a>
+                                    <div class="dropdown-menu social-icons">
+                                        <div class="dropdown-item m-a-0 p-a-0">
+                                        <a href="#"><i class="fa fa-linkedin"></i></a>
+                                        <a href="#"><i class="fa fa-facebook"></i></a>
+                                        <a href="#"><i class="fa fa-twitter"></i></a>
+                                        <a href="#"><i class="fa fa-pinterest"></i></a>
+                                        <a href="#"><i class="fa fa-github"></i></a>
+                                        <a href="#"><i class="fa fa-instagram"></i></a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -347,21 +347,22 @@
                         <div class="col-4">
                             <h4>Recipient</h4>
                             <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
-                                <button type="button" class="btn btn-secondary"><i class="fa fa-eye"></i></button>
-                                <button type="button" class="btn btn-secondary"><i class="fa fa-qrcode"></i></button>
+                                <button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="View the candidate's other certificates" onclick="location.href='/search/id/{{shareIdHash}}'"><i class="fa fa-eye"></i></button>
 
                                 <div class="btn-group btn-group-sm" role="group">
                                     <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle"
                                             data-toggle="dropdown">
                                         <i class="fa fa-share-alt"></i>
                                     </button>
-                                    <div class="dropdown-menu social-icons btn-group-sm">
-                                        <a class="dropdown-item" href="#"><i class="fa fa-linkedin"></i></a>
-                                        <a class="dropdown-item" href="#"><i class="fa fa-facebook"></i></a>
-                                        <a class="dropdown-item" href="#"><i class="fa fa-twitter"></i></a>
-                                        <a class="dropdown-item" href="#"><i class="fa fa-pinterest"></i></a>
-                                        <a class="dropdown-item" href="#"><i class="fa fa-github"></i></a>
-                                        <a class="dropdown-item" href="#"><i class="fa fa-instagram"></i></a>
+                                    <div class="dropdown-menu social-icons">
+                                        <div class="dropdown-item m-a-0 p-a-0">
+                                            <a href="#"><i class="fa fa-linkedin"></i></a>
+                                            <a href="#"><i class="fa fa-facebook"></i></a>
+                                            <a href="#"><i class="fa fa-twitter"></i></a>
+                                            <a href="#"><i class="fa fa-pinterest"></i></a>
+                                            <a href="#"><i class="fa fa-github"></i></a>
+                                            <a href="#"><i class="fa fa-instagram"></i></a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -369,21 +370,22 @@
                         <div class="col-4">
                             <h4>Institution</h4>
                             <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
-                                <button type="button" class="btn btn-secondary"><i class="fa fa-eye"></i></button>
-                                <button type="button" class="btn btn-secondary"><i class="fa fa-qrcode"></i></button>
+                                <button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="View other certificates created by this issuer" onclick="location.href='/search/ia/{{shareCertificateIssuer}}'"><i class="fa fa-eye"></i></button>
 
                                 <div class="btn-group btn-group-sm" role="group">
                                     <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle"
                                             data-toggle="dropdown">
                                         <i class="fa fa-share-alt"></i>
                                     </button>
-                                    <div class="dropdown-menu social-icons btn-group-sm">
-                                        <a class="dropdown-item" href="#"><i class="fa fa-linkedin"></i></a>
-                                        <a class="dropdown-item" href="#"><i class="fa fa-facebook"></i></a>
-                                        <a class="dropdown-item" href="#"><i class="fa fa-twitter"></i></a>
-                                        <a class="dropdown-item" href="#"><i class="fa fa-pinterest"></i></a>
-                                        <a class="dropdown-item" href="#"><i class="fa fa-github"></i></a>
-                                        <a class="dropdown-item" href="#"><i class="fa fa-instagram"></i></a>
+                                    <div class="dropdown-menu social-icons">
+                                        <div class="dropdown-item m-a-0 p-a-0">
+                                            <a href="#"><i class="fa fa-linkedin"></i></a>
+                                            <a href="#"><i class="fa fa-facebook"></i></a>
+                                            <a href="#"><i class="fa fa-twitter"></i></a>
+                                            <a href="#"><i class="fa fa-pinterest"></i></a>
+                                            <a href="#"><i class="fa fa-github"></i></a>
+                                            <a href="#"><i class="fa fa-instagram"></i></a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1340,7 +1342,7 @@
 
                 <div class="col-8">
                     <div class="input-group" style="width: 90%">
-                        <input type="text" class="form-control" placeholder="Enter University Logo URL"
+                        <input type="text" class="form-control" placeholder="Enter a Logo URL"
                                aria-label="Search for..." id="universityLogoURL">
                         <span class="input-group-btn">
                             <button class="btn btn-secondary" type="button" id="universityLogo"><i class="fa fa-camera"
