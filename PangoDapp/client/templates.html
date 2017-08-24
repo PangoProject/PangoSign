@@ -252,11 +252,11 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <!--<div class="modal-header bg-success">-->
-                    <!--<div class="row text-center">-->
-                        <!--<div class="col">-->
-                            <!--<h3 class="modal-title" id="exampleModalLabel">Share this certificate</h3>-->
-                        <!--</div>-->
-                    <!--</div>-->
+                <!--<div class="row text-center">-->
+                <!--<div class="col">-->
+                <!--<h3 class="modal-title" id="exampleModalLabel">Share this certificate</h3>-->
+                <!--</div>-->
+                <!--</div>-->
 
                 <!--</div>-->
                 <div class="modal-body">
@@ -315,12 +315,12 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="card-footer pl-8 pr-8" style="padding-top: 8px; padding-bottom: 8px">
+                                    <div class="card-footer pl-8 pr-8 pb-0">
                                         <div class="row pt-1 mt-0">
                                             <div class="col pull-left">
-                                                <small class="text-muted pull-left">Added: <strong><br> {{formatDate
+                                                <p class="text-muted pull-left">Added: <strong>{{formatDate
                                                         shareTimeStamp}}</strong>
-                                                </small>
+                                                </p>
                                             </div>
 
                                         </div>
@@ -377,9 +377,17 @@
                             <h3 class="modal-title" id="exampleModalLabel">Share these search results</h3>
                         </div>
                     </div>
-
                 </div>
                 <div class="modal-body center-block">
+                    <div class="row">
+                        <div class="col">
+                            <p>
+                                You can share your search results here. This will share the exact page you see right
+                                now.
+                                The content here will differ based on what page you are viewing.
+                            </p>
+                        </div>
+                    </div>
                     <div class="row text-center">
                         <div class="col">
                             <div id="shareSearchQR"></div>
