@@ -525,6 +525,20 @@ function buildTimeGraph(timeframe, template) {
         }
     });
 }
+//prints certificate Div
+function PrintElem(elem){
+    var mywindow = window.open('', 'PRINT', 'height=400,width=600');
+    mywindow.document.write('<html><head><title>' + document.title  + '</title>');
+    mywindow.document.write('</head><body >');
+    mywindow.document.write('<h1>' + document.title  + '</h1>');
+    mywindow.document.write(document.getElementById(elem).innerHTML);
+    mywindow.document.write('</body></html>');
+    mywindow.document.close(); // necessary for IE >= 10
+    mywindow.focus(); // necessary for IE >= 10*/
+    mywindow.print();
+    mywindow.close();
+    return true;
+}
 
 qrScanner.on('scan', function (err, message) {
     if (message !== null) {
@@ -896,6 +910,9 @@ Template.modal.events({
     //The folowing events are to hand creating qr code for the share button:
     "click #shareCandidateQrButton": function () {
         
+    },
+    "click #printCertificate": function (){
+        window.print();
     }
 });
 

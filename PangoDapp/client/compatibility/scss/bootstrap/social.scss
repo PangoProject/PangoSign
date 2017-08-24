@@ -10,11 +10,11 @@
     text-align: center;
     color: #FFF;
     color: rgba(255, 255, 255, 0.8);
-    -webkit-transition: all 0.3s ease-in-out;
-    -moz-transition: all 0.3s ease-in-out;
-    -ms-transition: all 0.3s ease-in-out;
-    -o-transition: all 0.3s ease-in-out;
-    transition: all 0.3s ease-in-out;
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -ms-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
 }
 
 .social-icons.icon-circle .fa {
@@ -89,3 +89,12 @@
 .social-icons .fa-twitter, .social-icons .fa-twitter-square {
     background-color: #32CCFE;
 }
+
+.social-icons .fa-print, .social-icons .fa-print-square {
+    background-color: #939393;
+}
+
+.social-icons .fa-envelope-o, .social-icons .fa-envelope-o-square{
+    background-color: #67BFC5;
+}
+
