@@ -194,7 +194,7 @@
                     </div>
                     <div class="row">
                         <div class="col">
-                            As we are still in the early stages of development, we are still running on Ropsten testnet.
+                            As we are still in the early stages of development, we are running on the Ropsten testnet.
                             Please change to this network through your Web3 Provider.
                         </div>
                     </div>
@@ -754,6 +754,13 @@
 </template>
 
 <template name="candidateDetailsSearch">
+    <div class="alert alert-info" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        Due to the way the system is constructed, a recipient can be found by their name and date of birth, even
+        if these details aren’t stored.
+    </div>
     <div class="row">
         <div class="col-lg-6">
             <div class="input-group">
@@ -771,11 +778,16 @@
                        class="form-control date" placeholder="Date of Birth">
             </div>
         </div>
-
     </div>
 </template>
 
 <template name="candidateIdSearch">
+    <div class="alert alert-info" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        Each candidate gets a unique ID which they can use to view all their associated certificates.
+    </div>
     <div class="row">
         <div class="col">
             <div class="input-group {{TemplateVar.get "valid"}}">
@@ -790,6 +802,12 @@
 </template>
 
 <template name="certificateAddressSearch">
+    <div class="alert alert-info" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        Every certificate has its own unique address which is stored on the blockchain.
+    </div>
     <div class="row">
         <div class="col">
             <div class="input-group {{TemplateVar.get "valid"}}">
@@ -805,6 +823,12 @@
 </template>
 
 <template name="issuerAddressSearch">
+    <div class="alert alert-info" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        Here, you can find certificates by looking at what certificates an institute has issued.
+    </div>
     <div class="row">
         <div class="col">
             <div class="input-group {{TemplateVar.get "valid"}}">
@@ -1170,6 +1194,13 @@
                     <h4 class="card-title mb-0">Remove</h4>
                 </div>
             </div>
+            <div class="row" role="alert">
+                <div class="col" role="alert">
+                    <div class="alert alert-info m-b-0" role="alert">
+                        As an institution, you can revoke certificates that you have created. This is as a “soft delete” meaning that the information is recoverable if need be, but will no longer be pubicaly displayed.
+                    </div>
+                </div>
+            </div>
             {{> DeleteCertificateForm}}
         </div>
     </div>
@@ -1210,6 +1241,14 @@
 </template>
 
 <template name="UpdateCertificateForm">
+    <div class="row" role="alert">
+        <div class="col" role="alert">
+            <div class="alert alert-info m-b-0" role="alert">
+                As the authority who created a certificate, you can edit it should the information become outdated. Just incase, we don’t actually get rid of the obsolete certificate, we just mark that it is no longer valid. If you want to know why, click here to look to look at the FAQ.
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col">
             <form id="updateCertificateForm">
@@ -1295,6 +1334,13 @@
             <div class="row">
                 <div class="col">
                     <h4 class="card-title mb-0">Create</h4>
+                </div>
+            </div>
+            <div class="row" role="alert">
+                <div class="col" role="alert">
+                    <div class="alert alert-info m-b-0" role="alert">
+                        Here an institution can create and issue new certificates. Due to the nature of the blockchain, only the issuer can ever create certificates in their name, herein lies the security and authenticity of our network.
+                    </div>
                 </div>
             </div>
             <div class="row">
@@ -1414,6 +1460,71 @@
                     <h1 class="float-left display-3 mr-4">404</h1>
                     <h4 class="pt-3">Oops! You're lost.</h4>
                     <p class="text-muted">The page you are looking for was not found.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="faqPage">
+    <div class="card animated fadeIn">
+        <div class="card-block">
+            <div class="row">
+                <div class="col">
+                    <h4 class="card-title mb-0">Frequently Asked Questions</h4>
+                </div>
+            </div>
+            {{> faqAccordion}}
+        </div>
+    </div>
+</template>
+
+<template name="faqAccordion">
+    <div class="row">
+        <div class="col">
+            <div id="accordion" role="tablist">
+                <div class="card">
+                    <div class="card-header" role="tab" id="headingOne">
+                        <h5 class="mb-0">
+                            <a data-toggle="collapse" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                Collapsible Group Item #1
+                            </a>
+                        </h5>
+                    </div>
+
+                    <div id="collapseOne" class="collapse show" role="tabpanel" aria-labelledby="headingOne" data-parent="#accordion">
+                        <div class="card-body">
+                            Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" role="tab" id="headingTwo">
+                        <h5 class="mb-0">
+                            <a class="collapsed" data-toggle="collapse" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                Collapsible Group Item #2
+                            </a>
+                        </h5>
+                    </div>
+                    <div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo" data-parent="#accordion">
+                        <div class="card-body">
+                            Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" role="tab" id="headingThree">
+                        <h5 class="mb-0">
+                            <a class="collapsed" data-toggle="collapse" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                Collapsible Group Item #3
+                            </a>
+                        </h5>
+                    </div>
+                    <div id="collapseThree" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="#accordion">
+                        <div class="card-body">
+                            Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
