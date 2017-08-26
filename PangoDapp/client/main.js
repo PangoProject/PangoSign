@@ -706,8 +706,8 @@ Template.injectJqueryTooltip.onRendered(function () {
     })
 });
 
-Template.injectJqueryAccordion.onRendered(() => {
-    $(()=>{
+Template.injectJqueryAccordion.onRendered(function() {
+    $(function(){
         $('[data-toggle="collapse"]').toggle({trigger: 'click'});
     })
 });
@@ -860,6 +860,12 @@ Template.UpdateCertificateForm.helpers({
         return Session.get("updateCertificateSearchResults");
     }
 });
+//fix persistance popovers on click of certs-published
+Template.WalletBallance.events({
+    'click #certsPublishedButton':function(){
+        $('div').tooltip('hide');
+    }
+})
 
 Template.UsageMetrics.events({
     'change': function (event) {
@@ -879,6 +885,13 @@ Template.UsageMetrics.events({
 });
 
 Template.ChildCertificate.events({
+    // Fix broken popovers on button click.
+    'click #changeCertButton': function (){
+        $('div').tooltip('hide');
+    },
+    'click #removeCertButton':function(){
+        $('div').tooltip('hide');
+    },
     'click #shareCert': function () {
         let template = Template.instance();
         let anonymous = TemplateVar.get(template, "anonymous");

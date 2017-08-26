@@ -450,12 +450,10 @@
 </template>
 
 <template name="WalletBallance">
-
+    {{>injectJqueryTooltip}}
     <div class="animated fadeIn">
         <div class="row">
             <div class="col-md-4 col-sm-12">
-                <!--<a href="http://ropsten.etherscan.io/address/{{walletAddressWidget}}" target="_blank"-->
-                <!--class="a-no-hover">-->
                 <div class="card card-inverse card-info">
                     <div class="card-block">
                         <div class="row">
@@ -503,6 +501,7 @@
             <div class="col-md-4 col-sm-12">
                 <a href="/search/ia/{{walletAddressWidget}}" class="a-no-hover" data-toggle="tooltip"
                    data-placement="top"
+                   id="certsPublishedButton"
                    title="Click to view your published certificates">
                     <div class="card card-inverse card-danger">
                         <div class="card-block">
@@ -924,6 +923,7 @@
                                         <h4>
                                             <a role="button"
                                                data-toggle="tooltip"
+                                               id="changeCertButton"
                                                data-placement="top"
                                                title="Edit"
                                                href="/change/{{TemplateVar.get "certificateAddress"}}"
@@ -935,6 +935,7 @@
                                         <h4>
                                             <a role="button"
                                                data-toggle="tooltip"
+                                               id="removeCertButton"
                                                data-placement="top"
                                                title="Remove"
                                                href="/remove/{{TemplateVar.get "certificateAddress"}}"
@@ -1083,6 +1084,7 @@
                                             <a role="button"
                                                data-toggle="tooltip"
                                                data-placement="top"
+                                               id="changeCertButton"
                                                title="Edit"
                                                href="/change/{{TemplateVar.get "certificateAddress"}}"
                                                class="icon-pencil grey-out nav-link text-muted pull-right p-t-0 p-b-0 m-t-0 m-b-0 button"
@@ -1094,6 +1096,7 @@
                                             <a role="button"
                                                data-toggle="tooltip"
                                                data-placement="top"
+                                               id="removeCertButton"
                                                title="Remove"
                                                href="/remove/{{TemplateVar.get "certificateAddress"}}"
                                                class="icon-trash grey-out nav-link text-muted pull-right p-t-0 p-b-0 m-t-0 m-b-0 button"
