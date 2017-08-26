@@ -706,6 +706,12 @@ Template.injectJqueryTooltip.onRendered(function () {
     })
 });
 
+Template.injectJqueryAccordion.onRendered(() => {
+    $(()=>{
+        $('[data-toggle="collapse"]').toggle({trigger: 'click'});
+    })
+});
+
 Template.WalletBallance.helpers({
     walletAddressWidget: function () {
         return Session.get("Address");

@@ -1444,6 +1444,9 @@
 <template name="injectJqueryTooltip">
 </template>
 
+<template name="injectJqueryAccordion">
+</template>
+
 <template name="QRCode">
     <div class="row">
         <div class="col">
@@ -1480,49 +1483,97 @@
 </template>
 
 <template name="faqAccordion">
+    {{injectJqueryAccordion}}
     <div class="row">
         <div class="col">
             <div id="accordion" role="tablist">
-                <div class="card">
-                    <div class="card-header" role="tab" id="headingOne">
-                        <h5 class="mb-0">
-                            <a data-toggle="collapse" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                Collapsible Group Item #1
-                            </a>
-                        </h5>
-                    </div>
 
-                    <div id="collapseOne" class="collapse show" role="tabpanel" aria-labelledby="headingOne" data-parent="#accordion">
-                        <div class="card-body">
-                            Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-                        </div>
-                    </div>
-                </div>
                 <div class="card">
-                    <div class="card-header" role="tab" id="headingTwo">
+                    <div class="card-header" role="tab">
                         <h5 class="mb-0">
-                            <a class="collapsed" data-toggle="collapse" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                Collapsible Group Item #2
+                            <a data-toggle="collapse" href="#faq1">
+                                How is it possible to search for recipients by name when some of them are supposedly anonymous?
                             </a>
                         </h5>
                     </div>
-                    <div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo" data-parent="#accordion">
+                    <div id="faq1" class="collapse" role="tabpanel" data-parent="#accordion">
                         <div class="card-body">
-                            Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                            The name is combined with the date of birth and put through a hashing function. This means that it is easy to calculate the recipient's ID from their name, but it is not possible to determine the name and DOB from the ID.
                         </div>
                     </div>
                 </div>
+
                 <div class="card">
-                    <div class="card-header" role="tab" id="headingThree">
+                    <div class="card-header" role="tab">
                         <h5 class="mb-0">
-                            <a class="collapsed" data-toggle="collapse" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                                Collapsible Group Item #3
+                            <a data-toggle="collapse" href="#faq2">
+                                Why are name and date of birth required for anonymous certificates?
                             </a>
                         </h5>
                     </div>
-                    <div id="collapseThree" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="#accordion">
+                    <div id="faq2" class="collapse" role="tabpanel" data-parent="#accordion">
                         <div class="card-body">
-                            Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                            The name and date of birth are used to pseudo-uniquely identify certificates. This means that recipients, do not need accounts on this system. For a further discussion on the consequences of this decision, please read the white paper.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" role="tab">
+                        <h5 class="mb-0">
+                            <a data-toggle="collapse" href="#faq3">
+                                Why is this running on a test net?
+                            </a>
+                        </h5>
+                    </div>
+                    <div id="faq3" class="collapse" role="tabpanel" data-parent="#accordion">
+                        <div class="card-body">
+                            The purpose of this application is to demonstrate the feasibility of such a system as well as exploring a possible implementation using the current state of development on the Ethereum blockchain.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" role="tab">
+                        <h5 class="mb-0">
+                            <a data-toggle="collapse" href="#faq4">
+                                Why do I need to sign two transactions when I update a certificate?
+                            </a>
+                        </h5>
+                    </div>
+                    <div id="faq4" class="collapse" role="tabpanel" data-parent="#accordion">
+                        <div class="card-body">
+                            For the sake of security, a new certificate is created first and the old one is subsequently removed. This has multiple security benefits for all parities involved with the system. The full extent of these benefits can be seen in the white paper.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" role="tab">
+                        <h5 class="mb-0">
+                            <a data-toggle="collapse" href="#faq5">
+                                Why do I have to wait ±7 seconds every time I create, remove or change a certificate?
+                            </a>
+                        </h5>
+                    </div>
+                    <div id="faq5" class="collapse" role="tabpanel" data-parent="#accordion">
+                        <div class="card-body">
+                            In the Ethereum blockchain's current form, block times currently average 15 seconds (by design). This means that a certificate is unlikely to be added in less than 7.5 seconds.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" role="tab">
+                        <h5 class="mb-0">
+                            <a data-toggle="collapse" href="#faq6">
+                                Why is it so expensive to add certificates?
+                            </a>
+                        </h5>
+                    </div>
+                    <div id="faq6" class="collapse" role="tabpanel" data-parent="#accordion">
+                        <div class="card-body">
+                            There are a few factors at play. Firstly, these are still very early days in the time-line of the Ethereum network. This means that the price will drop drastically in the near future. Moreover, the price you see quoted by MetaMask (or your web3 client of choice) is for the transaction assuming that all of the gas is used, this is a worst case scenario. If you want to use fewer Wei, you can select a lower gas price, but this can yield inconsistent results on the Ropsten testnet.
                         </div>
                     </div>
                 </div>
