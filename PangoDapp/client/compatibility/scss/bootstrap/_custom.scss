@@ -125,27 +125,6 @@
   float: none;
 }
 
-//Fix error on printing where letter drops low
-h1::first-letter {
-  margin-top: 0;
-}
-
-h2::first-letter {
-  margin-top: 0;
-}
-
-h3::first-letter {
-  margin-top: 0;
-}
-
-h4::first-letter {
-  margin-top: 0;
-}
-
-h5::first-letter {
-  margin-top: 0;
-}
-
 @media print {
   body * {
     visibility: hidden;
