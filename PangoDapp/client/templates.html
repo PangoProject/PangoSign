@@ -453,83 +453,130 @@
     {{>injectJqueryTooltip}}
     <div class="animated fadeIn">
         <div class="row">
-            <div class="col-md-4 col-sm-12">
-                <div class="card card-inverse card-info">
-                    <div class="card-block">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body p-l-1 p-r-1 p-b-1">
                         <div class="row">
-                            <div class="col-8">
-                                <h6 class="text-muted text-uppercase font-weight-bold">
-                                    Wallet Address
-                                </h6>
-                                <div class="h5 mb-0 addressTextWrap">
-                                    {{walletAddressWidget}}
-                                </div>
-                            </div>
-                            <div class="col-4 pull-right h1">
-                                <i class="icon-wallet pull-right" aria-hidden="true"></i>
+                            <div class="col">
+
+                                <h4 class="card-title">Welcome to the Pango MVP Dapp! </h4>
+                                <p class="card-text">This Dapp is running live on the Ethereum testnet. You can go ahead
+                                    and view certificates currently stored on the blockchain. If you want to create, edit or
+                                    delete
+                                    certificates, you are going to need some Ropsten testnet Ether. We welcome any
+                                    feedback you have on our system, enjoy exploring!
+                                    <br>
+                                    {{>HomeCards}}
+                                    <br>
+                                    If this seems too complex to set up, please consider trying our <a href="#" class="card-link">Demo</a> version, that
+                                    is simplified and not running on the blockchain.
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!--</a>-->
-            </div>
-            <div class="col-md-4 col-sm-12">
-                <a href="http://ropsten.etherscan.io/address/{{walletAddressWidget}}" target="_blank"
-                   class="a-no-hover" data-toggle="tooltip"
-                   data-placement="top"
-                   title="Click to view your Ether account">
-                    <div class="card card-inverse card-warning">
-                        <div class="card-block">
-                            <div class="row">
-                                <div class="col-8">
-                                    <h6 class="text-muted text-uppercase font-weight-bold">
-                                        Ether Balance
-                                    </h6>
-                                    <div class="h5 mb-0 addressTextWrap">
-                                        {{walletBallanceWidget}}
-                                    </div>
-                                </div>
-                                <div class="col-4 pull-right h1">
-                                    <i class="icon-rocket pull-right" aria-hidden="true"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-
-            </div>
-            <div class="col-md-4 col-sm-12">
-                <a href="/search/ia/{{walletAddressWidget}}" class="a-no-hover" data-toggle="tooltip"
-                   data-placement="top"
-                   id="certsPublishedButton"
-                   title="Click to view your published certificates">
-                    <div class="card card-inverse card-danger">
-                        <div class="card-block">
-                            <div class="row">
-                                <div class="col-8">
-                                    <h6 class="text-muted text-uppercase font-weight-bold">
-                                        Certs published
-                                    </h6>
-                                    <div class="h5 mb-0 addressTextWrap">
-                                        {{numberOfCertsWidget}}
-                                    </div>
-                                </div>
-                                <div class="col-4 pull-right h1">
-                                    <i class="icon-badge pull-right" aria-hidden="true"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </a>
             </div>
         </div>
+
+
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body p-l-1 p-r-1 p-b-1">
+                        <div class="row">
+                            <div class="col">
+
+                                <h4 class="card-title">Your wallet Details </h4>
+                                <p class="card-text">Here, you can view information pertaining to your current signed in
+                                    web3 wallet</p>
+                                <div class="row">
+                                    <div class="col-md-4 col-sm-12">
+                                        <div class="card card-inverse card-info">
+                                            <div class="card-block">
+                                                <div class="row">
+                                                    <div class="col-8">
+                                                        <h6 class="text-muted text-uppercase font-weight-bold">
+                                                            Wallet Address
+                                                        </h6>
+                                                        <div class="h5 mb-0 addressTextWrap">
+                                                            {{walletAddressWidget}}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-4 pull-right h1">
+                                                        <i class="icon-wallet pull-right" aria-hidden="true"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--</a>-->
+                                    </div>
+                                    <div class="col-md-4 col-sm-12">
+                                        <a href="http://ropsten.etherscan.io/address/{{walletAddressWidget}}"
+                                           target="_blank"
+                                           class="a-no-hover" data-toggle="tooltip"
+                                           data-placement="top"
+                                           title="Click to view your Ether account">
+                                            <div class="card card-inverse card-warning">
+                                                <div class="card-block">
+                                                    <div class="row">
+                                                        <div class="col-8">
+                                                            <h6 class="text-muted text-uppercase font-weight-bold">
+                                                                Ether Balance
+                                                            </h6>
+                                                            <div class="h5 mb-0 addressTextWrap">
+                                                                {{walletBallanceWidget}}
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-4 pull-right h1">
+                                                            <i class="icon-rocket pull-right" aria-hidden="true"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+
+                                    </div>
+                                    <div class="col-md-4 col-sm-12">
+                                        <a href="/search/ia/{{walletAddressWidget}}" class="a-no-hover"
+                                           data-toggle="tooltip"
+                                           data-placement="top"
+                                           id="certsPublishedButton"
+                                           title="Click to view your published certificates">
+                                            <div class="card card-inverse card-danger">
+                                                <div class="card-block">
+                                                    <div class="row">
+                                                        <div class="col-8">
+                                                            <h6 class="text-muted text-uppercase font-weight-bold">
+                                                                Certs published
+                                                            </h6>
+                                                            <div class="h5 mb-0 addressTextWrap">
+                                                                {{numberOfCertsWidget}}
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-4 pull-right h1">
+                                                            <i class="icon-badge pull-right" aria-hidden="true"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
     </div>
-    {{>HomeCards}}
 </template>
 
 <template name="HomeCards">
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-4">
             <a href="{{pathFor route="search"}}" class="a-no-hover">
                 <div class="card card-inverse card-primary animated fadeIn hvr-float">
                     <div class="card-header">
@@ -537,13 +584,13 @@
                             Find a certificate
                         </h3>
                     </div>
-                    <div class="card-block text-xs-center">
-                        <h1><i class="fa fa-5x fa-search "></i></h1>
+                    <div class="card-block text-xs-center p-t-1">
+                        <h1><i class="fa fa-3x fa-search "></i></h1>
                     </div>
                 </div>
             </a>
         </div>
-        <div class="col-md-6">
+        <div class="col-4">
             <a href="{{pathFor route="create"}}" class="a-no-hover">
                 <div class="card card-inverse card-success animated fadeIn hvr-float">
                     <div class="card-header">
@@ -551,15 +598,14 @@
                             Create a certificate
                         </h3>
                     </div>
-                    <div class="card-block text-xs-center">
-                        <h1><i class="fa fa-5x fa-pencil"></i></h1>
+                    <div class="card-block text-xs-center p-t-1">
+                        <h1><i class="fa fa-3x fa-pencil"></i></h1>
                     </div>
                 </div>
             </a>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
+
+        <div class="col-4">
             <div class="card card-inverse card-warning animated fadeIn hvr-float" id="qrScannerWidgetButton"
                  style="cursor: pointer; cursor: hand;">
                 <div class="card-header">
@@ -567,8 +613,8 @@
                         Scan a certificate
                     </h3>
                 </div>
-                <div class="card-block text-xs-center">
-                    <h1><i class="fa fa-5x fa-qrcode"></i></h1>
+                <div class="card-block text-xs-center p-t-1">
+                    <h1><i class="fa fa-3x fa-qrcode"></i></h1>
                 </div>
             </div>
         </div>
@@ -1200,7 +1246,9 @@
             <div class="row" role="alert">
                 <div class="col" role="alert">
                     <div class="alert alert-info m-b-0" role="alert">
-                        As an institution, you can revoke certificates that you have created. This is as a “soft delete” meaning that the information is recoverable if need be, but will no longer be pubicaly displayed.
+                        As an institution, you can revoke certificates that you have created. This is as a “soft delete”
+                        meaning that the information is recoverable if need be, but will no longer be pubicaly
+                        displayed.
                     </div>
                 </div>
             </div>
@@ -1247,7 +1295,9 @@
     <div class="row" role="alert">
         <div class="col" role="alert">
             <div class="alert alert-info m-b-0" role="alert">
-                As the authority who created a certificate, you can edit it should the information become outdated. Just incase, we don’t actually get rid of the obsolete certificate, we just mark that it is no longer valid. If you want to know why, click here to look to look at the FAQ.
+                As the authority who created a certificate, you can edit it should the information become outdated. Just
+                incase, we don’t actually get rid of the obsolete certificate, we just mark that it is no longer valid.
+                If you want to know why, click here to look to look at the FAQ.
             </div>
         </div>
     </div>
@@ -1342,7 +1392,9 @@
             <div class="row" role="alert">
                 <div class="col" role="alert">
                     <div class="alert alert-info m-b-0" role="alert">
-                        Here an institution can create and issue new certificates. Due to the nature of the blockchain, only the issuer can ever create certificates in their name, herein lies the security and authenticity of our network.
+                        Here an institution can create and issue new certificates. Due to the nature of the blockchain,
+                        only the issuer can ever create certificates in their name, herein lies the security and
+                        authenticity of our network.
                     </div>
                 </div>
             </div>
@@ -1495,13 +1547,16 @@
                     <div class="card-header" role="tab">
                         <h5 class="mb-0">
                             <a data-toggle="collapse" href="#faq1">
-                                How is it possible to search for recipients by name when some of them are supposedly anonymous?
+                                How is it possible to search for recipients by name when some of them are supposedly
+                                anonymous?
                             </a>
                         </h5>
                     </div>
                     <div id="faq1" class="collapse" role="tabpanel" data-parent="#accordion">
                         <div class="card-body">
-                            The name is combined with the date of birth and put through a hashing function. This means that it is easy to calculate the recipient's ID from their name, but it is not possible to determine the name and DOB from the ID.
+                            The name is combined with the date of birth and put through a hashing function. This means
+                            that it is easy to calculate the recipient's ID from their name, but it is not possible to
+                            determine the name and DOB from the ID.
                         </div>
                     </div>
                 </div>
@@ -1516,7 +1571,9 @@
                     </div>
                     <div id="faq2" class="collapse" role="tabpanel" data-parent="#accordion">
                         <div class="card-body">
-                            The name and date of birth are used to pseudo-uniquely identify certificates. This means that recipients, do not need accounts on this system. For a further discussion on the consequences of this decision, please read the white paper.
+                            The name and date of birth are used to pseudo-uniquely identify certificates. This means
+                            that recipients, do not need accounts on this system. For a further discussion on the
+                            consequences of this decision, please read the white paper.
                         </div>
                     </div>
                 </div>
@@ -1531,7 +1588,9 @@
                     </div>
                     <div id="faq3" class="collapse" role="tabpanel" data-parent="#accordion">
                         <div class="card-body">
-                            The purpose of this application is to demonstrate the feasibility of such a system as well as exploring a possible implementation using the current state of development on the Ethereum blockchain.
+                            The purpose of this application is to demonstrate the feasibility of such a system as well
+                            as exploring a possible implementation using the current state of development on the
+                            Ethereum blockchain.
                         </div>
                     </div>
                 </div>
@@ -1546,7 +1605,9 @@
                     </div>
                     <div id="faq4" class="collapse" role="tabpanel" data-parent="#accordion">
                         <div class="card-body">
-                            For the sake of security, a new certificate is created first and the old one is subsequently removed. This has multiple security benefits for all parities involved with the system. The full extent of these benefits can be seen in the white paper.
+                            For the sake of security, a new certificate is created first and the old one is subsequently
+                            removed. This has multiple security benefits for all parities involved with the system. The
+                            full extent of these benefits can be seen in the white paper.
                         </div>
                     </div>
                 </div>
@@ -1561,7 +1622,8 @@
                     </div>
                     <div id="faq5" class="collapse" role="tabpanel" data-parent="#accordion">
                         <div class="card-body">
-                            In the Ethereum blockchain's current form, block times currently average 15 seconds (by design). This means that a certificate is unlikely to be added in less than 7.5 seconds.
+                            In the Ethereum blockchain's current form, block times currently average 15 seconds (by
+                            design). This means that a certificate is unlikely to be added in less than 7.5 seconds.
                         </div>
                     </div>
                 </div>
@@ -1576,7 +1638,12 @@
                     </div>
                     <div id="faq6" class="collapse" role="tabpanel" data-parent="#accordion">
                         <div class="card-body">
-                            There are a few factors at play. Firstly, these are still very early days in the time-line of the Ethereum network. This means that the price will drop drastically in the near future. Moreover, the price you see quoted by MetaMask (or your web3 client of choice) is for the transaction assuming that all of the gas is used, this is a worst case scenario. If you want to use fewer Wei, you can select a lower gas price, but this can yield inconsistent results on the Ropsten testnet.
+                            There are a few factors at play. Firstly, these are still very early days in the time-line
+                            of the Ethereum network. This means that the price will drop drastically in the near future.
+                            Moreover, the price you see quoted by MetaMask (or your web3 client of choice) is for the
+                            transaction assuming that all of the gas is used, this is a worst case scenario. If you want
+                            to use fewer Wei, you can select a lower gas price, but this can yield inconsistent results
+                            on the Ropsten testnet.
                         </div>
                     </div>
                 </div>
