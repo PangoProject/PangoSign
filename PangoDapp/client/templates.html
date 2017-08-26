@@ -75,7 +75,7 @@
                 <div class="modal-header bg-info">
                     <div class="row">
                         <div class="col">
-                            <h3 class="modal-title" id="exampleModalLabel">FYI:</h3>
+                            <h3 class="modal-title" id="exampleModalLabel">Deleted certificate</h3>
                         </div>
                     </div>
 
@@ -781,7 +781,10 @@
                         {{/if}}
                     </div>
                     <div class="col">
-                        <div class="text-muted pull-right">Show deleted certificates
+                        <div data-toggle="tooltip"
+                             data-placement="bottom"
+                             title="View soft deleted certificates" class="text-muted pull-right">Show deleted
+                            certificates
                             <label class="switch switch-text switch-pill switch-secondary-outline-alt">
                                 <input type="checkbox" id="showDeletedCertificate" class="switch-input">
                                 <span class="switch-label" data-on="On" data-off="Off"></span>
@@ -803,7 +806,7 @@
 <template name="candidateDetailsSearch">
     <div class="alert alert-info" role="alert">
         <!--<button type="button" class="close" data-dismiss="alert" aria-label="Close">-->
-            <!--<span aria-hidden="true">&times;</span>-->
+        <!--<span aria-hidden="true">&times;</span>-->
         <!--</button>-->
         Due to the way the system is constructed, a recipient can be found by their name and date of birth, even
         if these details aren’t stored.
@@ -831,7 +834,7 @@
 <template name="candidateIdSearch">
     <div class="alert alert-info" role="alert">
         <!--<button type="button" class="close" data-dismiss="alert" aria-label="Close">-->
-            <!--<span aria-hidden="true">&times;</span>-->
+        <!--<span aria-hidden="true">&times;</span>-->
         <!--</button>-->
         Each candidate gets a unique ID which they can use to view all their associated certificates.
     </div>
@@ -851,7 +854,7 @@
 <template name="certificateAddressSearch">
     <div class="alert alert-info" role="alert">
         <!--<button type="button" class="close" data-dismiss="alert" aria-label="Close">-->
-            <!--<span aria-hidden="true">&times;</span>-->
+        <!--<span aria-hidden="true">&times;</span>-->
         <!--</button>-->
         Every certificate has its own unique address which is stored on the blockchain.
     </div>
@@ -872,7 +875,7 @@
 <template name="issuerAddressSearch">
     <div class="alert alert-info" role="alert">
         <!--<button type="button" class="close" data-dismiss="alert" aria-label="Close">-->
-            <!--<span aria-hidden="true">&times;</span>-->
+        <!--<span aria-hidden="true">&times;</span>-->
         <!--</button>-->
         Here, you can find certificates by looking at what certificates an institute has issued.
     </div>
@@ -1262,19 +1265,18 @@
 <template name="DeleteCertificateForm">
     <div class="row">
         <div class="col">
+            <label class="form-control-label" for="deleteCertificateAddress">
+                Certificate address
+            </label>
             <form id="deleteCertificateForm">
-                <div class="form-group {{TemplateVar.get "valid"}}">
-                    <label class="form-control-label" for="deleteCertificateAddress">
-                        Input Certificate address
-                    </label>
+                <div class="input-group {{TemplateVar.get "valid"}}">
                     <input type="text" class="form-control form-control-success" id="deleteCertificateAddress"
                            name="certificateAddress"
                            placeholder="0x0123456789abcdef012345679abcdef0123456"/>
-
+                    <button type="button" id="deleteCertificateButton" class="btn btn-danger m-l-1">
+                        <i class="fa fa-fw fa-trash" aria-hidden="true"></i> Remove
+                    </button>
                 </div>
-                <button type="button" id="deleteCertificateButton" class="btn btn-danger">
-                    <i class="fa fa-fw fa-trash" aria-hidden="true"></i> Remove
-                </button>
             </form>
         </div>
     </div>
@@ -1307,17 +1309,17 @@
     <div class="row">
         <div class="col">
             <form id="updateCertificateForm">
-                <div class="form-group {{TemplateVar.get "valid"}}">
-                    <label class="form-control-label" for="updateAddress">
-                        Input certificate address
-                    </label>
+                <label class="form-control-label" for="updateAddress">
+                    Certificate address
+                </label>
+                <div class="input-group {{TemplateVar.get "valid"}}">
                     <input type="text" class="form-control form-control-success" id="updateAddress"
                            name="certificateAddress"
                            placeholder="0x0123456789abcdef012345679abcdef0123456"/>
+                    <button type="submit" id="findCertificate" class="btn btn-primary m-l-1">
+                        <i class="fa fa-fw fa-search" aria-hidden="true"></i> Find
+                    </button>
                 </div>
-                <button type="submit" id="findCertificate" class="btn btn-primary">
-                    <i class="fa fa-fw fa-search" aria-hidden="true"></i> Find
-                </button>
             </form>
         </div>
     </div>
@@ -1340,6 +1342,7 @@
 </template>
 
 <template name="UpdateCertificateFormChildChild">
+    {{>injectJqueryTooltip}}
     <table class="table">
         <thead>
         <tr>
@@ -1367,7 +1370,10 @@
                         "addNewFieldButtonStatus"}}>
                     <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
                 </button>
-                <div class="pull-right" style="padding-top: 4px">
+                <div class="pull-right" style="padding-top: 4px"
+                     data-toggle="tooltip"
+                     data-placement="bottom"
+                     title="Hide the input name and DOB from the public record">
                     <strong class="text-muted">
                         Anonymous certificate
                     </strong>
@@ -1433,6 +1439,7 @@
                 </div>
             </div>
             <div class="row">
+                {{>injectJqueryTooltip}}
                 <table class="table">
                     <tbody>
                     {{#each inputs}}
@@ -1446,7 +1453,10 @@
                                     "addNewFieldButtonStatus"}}>
                                 <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
                             </button>
-                            <div class="pull-right" style="padding-top: 4px">
+                            <div class="pull-right" style="padding-top: 4px"
+                                 data-toggle="tooltip"
+                                 data-placement="bottom"
+                                 title="Hide the input name and DOB from the public record">
                                 <strong class="text-muted">
                                     Anonymous certificate
                                 </strong>
