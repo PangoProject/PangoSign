@@ -20,7 +20,11 @@ Router.route('change', function () {
 
 Router.route('metrics', function () {
     this.render('UsageMetrics');
-})
+});
+
+Router.route('faq', function () {
+    this.render('faqPage');
+});
 
 Router.route('/change/:changeQuery', {
     data: function () {

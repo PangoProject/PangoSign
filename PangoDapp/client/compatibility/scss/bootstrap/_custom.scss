@@ -63,6 +63,7 @@
   -webkit-transition-timing-function: ease-out;
   transition-timing-function: ease-out;
 }
+
 .hvr-float:hover, .hvr-float:focus, .hvr-float:active {
   -webkit-transform: translateY(-8px);
   transform: translateY(-8px);
@@ -86,6 +87,7 @@
 .sk-spinner-rotating-plane.sk-spinner {
   background-color: #fff;
 }
+
 .popover-title {
   width: auto;
   font-size: 20px;
@@ -93,13 +95,16 @@
   font-family: sans-serif;
   background: #DCDDDF;
 }
+
 .popover-content {
   width: auto;
 }
-.popover{
+
+.popover {
   max-width: 100%;
 }
-.card-header{
+
+.card-header {
   background: #DCDDDF;
 }
 
@@ -112,4 +117,10 @@
   display: block;
   margin-left: auto;
   margin-right: auto;
+}
+
+.vcenter {
+  display: inline-block;
+  vertical-align: middle;
+  float: none;
 }
