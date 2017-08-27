@@ -460,13 +460,18 @@
                             <div class="col">
 
                                 <h4 class="card-title">Welcome to the Pango MVP Dapp! </h4>
-                                <p class="card-text">This Dapp is running live on the Ethereum testnet. You can go ahead
-                                    and view certificates currently stored on the blockchain. If you want to create,
-                                    edit or
-                                    delete
-                                    certificates, you are going to need Ropsten testnet Ether. We welcome any
-                                    feedback you have on our system, enjoy exploring!
-                                    <br>
+                                <div class="col p-l-0 p-r-0" role="alert">
+                                    <div class="alert alert-info m-b-0" role="alert">
+                                        This Dapp is running live on the Ethereum testnet. You can go ahead
+                                        and view certificates currently stored on the blockchain. If you want to create,
+                                        edit or
+                                        delete
+                                        certificates, you are going to need Ropsten testnet Ether. We welcome any
+                                        feedback you have on our system, enjoy exploring!
+                                    </div>
+                                </div>
+
+                                <p class="card-text">
                                     {{>HomeCards}}
                                     If this seems too complex to set up, please consider trying our <a href="#"
                                                                                                        class="card-link">Demo</a>
@@ -577,10 +582,10 @@
 
 <template name="HomeCards">
     <div class="row">
-        <div class="col-lg-4 col-sm-12">
+        <div class="col-lg-3 col-sm-12">
             <a href="{{pathFor route="search"}}" class="a-no-hover">
-                <div class="card card-inverse card-primary animated fadeIn hvr-float">
-                    <div class="card-header">
+                <div class="card card-inverse card-light animated fadeIn hvr-float">
+                    <div class="card-header text-center">
                         <h4>
                             Find a certificate
                         </h4>
@@ -591,10 +596,10 @@
                 </div>
             </a>
         </div>
-        <div class="col-lg-4 col-sm-12">
+        <div class="col-lg-3 col-sm-12">
             <a href="{{pathFor route="create"}}" class="a-no-hover">
-                <div class="card card-inverse card-primary animated fadeIn hvr-float">
-                    <div class="card-header">
+                <div class="card card-inverse card-light animated fadeIn hvr-float">
+                    <div class="card-header text-center">
                         <h4>
                             Create a certificate
                         </h4>
@@ -606,10 +611,10 @@
             </a>
         </div>
 
-        <div class="col-lg-4 col-sm-12">
-            <div class="card card-inverse card-primary animated fadeIn hvr-float" id="qrScannerWidgetButton"
+        <div class="col-lg-3 col-sm-12">
+            <div class="card card-inverse card-light animated fadeIn hvr-float" id="qrScannerWidgetButton"
                  style="cursor: pointer; cursor: hand;">
-                <div class="card-header">
+                <div class="card-header text-center">
                     <h4>
                         Scan a certificate
                     </h4>
@@ -618,6 +623,20 @@
                     <h1><i class="fa fa-2x fa-qrcode"></i></h1>
                 </div>
             </div>
+        </div>
+        <div class="col-lg-3 col-sm-12">
+            <a href="{{pathFor route="faq"}}" class="a-no-hover">
+                <div class="card card-inverse card-light animated fadeIn hvr-float">
+                    <div class="card-header text-center">
+                        <h4>
+                            Read the FAQ
+                        </h4>
+                    </div>
+                    <div class="card-block text-xs-center p-t-1">
+                        <h1><i class="fa fa-2x fa-question"></i></h1>
+                    </div>
+                </div>
+            </a>
         </div>
     </div>
 </template>

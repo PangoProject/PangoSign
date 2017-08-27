@@ -104,6 +104,9 @@
 // Background variations
 //
 
+.card-light {
+  @include card-variant($gray, $gray);
+}
 .card-primary {
   @include card-variant($brand-primary, $brand-primary);
 }
