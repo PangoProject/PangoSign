@@ -1,6 +1,6 @@
 <template name="modal">
     <!--This is the modal for a catastrophic Error-->
-    <div class="modal show animated fadeInUpBig" data-backdrop="static" data-keyboard="false" id="catastrophicError"
+    <div class="modal show animated fadeInUpBig m-b-1" data-backdrop="static" data-keyboard="false" id="catastrophicError"
          tabindex="-1"
          role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -468,7 +468,6 @@
                                     feedback you have on our system, enjoy exploring!
                                     <br>
                                     {{>HomeCards}}
-                                    <br>
                                     If this seems too complex to set up, please consider trying our <a href="#"
                                                                                                        class="card-link">Demo</a>
                                     version, that
@@ -485,7 +484,7 @@
         <div class="row">
             <div class="col">
                 <div class="card">
-                    <div class="card-body p-l-1 p-r-1 p-b-1">
+                    <div class="card-body p-l-1 p-r-1">
                         <div class="row">
                             <div class="col">
 
@@ -519,7 +518,7 @@
                                            class="a-no-hover" data-toggle="tooltip"
                                            data-placement="top"
                                            title="Click to view your Ether account">
-                                            <div class="card card-inverse card-warning">
+                                            <div class="card card-inverse card-info">
                                                 <div class="card-block">
                                                     <div class="row">
                                                         <div class="col-8">
@@ -545,7 +544,7 @@
                                            data-placement="top"
                                            id="certsPublishedButton"
                                            title="Click to view your published certificates">
-                                            <div class="card card-inverse card-danger">
+                                            <div class="card card-inverse card-info">
                                                 <div class="card-block">
                                                     <div class="row">
                                                         <div class="col-8">
@@ -578,45 +577,45 @@
 
 <template name="HomeCards">
     <div class="row">
-        <div class="col-4">
+        <div class="col-lg-4 col-sm-12">
             <a href="{{pathFor route="search"}}" class="a-no-hover">
                 <div class="card card-inverse card-primary animated fadeIn hvr-float">
                     <div class="card-header">
-                        <h3>
+                        <h4>
                             Find a certificate
-                        </h3>
+                        </h4>
                     </div>
                     <div class="card-block text-xs-center p-t-1">
-                        <h1><i class="fa fa-3x fa-search "></i></h1>
+                        <h1><i class="fa fa-2x fa-search "></i></h1>
                     </div>
                 </div>
             </a>
         </div>
-        <div class="col-4">
+        <div class="col-lg-4 col-sm-12">
             <a href="{{pathFor route="create"}}" class="a-no-hover">
-                <div class="card card-inverse card-success animated fadeIn hvr-float">
+                <div class="card card-inverse card-primary animated fadeIn hvr-float">
                     <div class="card-header">
-                        <h3>
+                        <h4>
                             Create a certificate
-                        </h3>
+                        </h4>
                     </div>
                     <div class="card-block text-xs-center p-t-1">
-                        <h1><i class="fa fa-3x fa-pencil"></i></h1>
+                        <h1><i class="fa fa-2x fa-pencil"></i></h1>
                     </div>
                 </div>
             </a>
         </div>
 
-        <div class="col-4">
-            <div class="card card-inverse card-warning animated fadeIn hvr-float" id="qrScannerWidgetButton"
+        <div class="col-lg-4 col-sm-12">
+            <div class="card card-inverse card-primary animated fadeIn hvr-float" id="qrScannerWidgetButton"
                  style="cursor: pointer; cursor: hand;">
                 <div class="card-header">
-                    <h3>
+                    <h4>
                         Scan a certificate
-                    </h3>
+                    </h4>
                 </div>
                 <div class="card-block text-xs-center p-t-1">
-                    <h1><i class="fa fa-3x fa-qrcode"></i></h1>
+                    <h1><i class="fa fa-2x fa-qrcode"></i></h1>
                 </div>
             </div>
         </div>
@@ -703,8 +702,9 @@
 </template>
 
 <template name="CandidateSearch">
+    {{>injectJqueryTooltip}}
     <div class="card animated fadeIn">
-        <div class="card-block">
+        <div class="card-block p-b-0">
             <div class="row">
                 <div class="col">
                     <h4 class="card-title mb-0">Search</h4>
@@ -749,19 +749,19 @@
                             </li>
                         </ul>
                         <div class="tab-content" id="myTabContent">
-                            <div class="tab-pane fade show active" id="candidateDetailsSearch" role="tabpanel"
+                            <div class="tab-pane fade show active p-l-0 p-r-0" id="candidateDetailsSearch" role="tabpanel"
                                  aria-labelledby="home-tab">
                                 {{>candidateDetailsSearch}}
                             </div>
-                            <div class="tab-pane fade" id="candidateIdSearch" role="tabpanel"
+                            <div class="tab-pane fade p-l-0 p-r-0" id="candidateIdSearch" role="tabpanel"
                                  aria-labelledby="profile-tab">
                                 {{>candidateIdSearch}}
                             </div>
-                            <div class="tab-pane fade" id="certificateAddressSearch" role="tabpanel"
+                            <div class="tab-pane fade p-l-0 p-r-0" id="certificateAddressSearch" role="tabpanel"
                                  aria-labelledby="home-tab">
                                 {{>certificateAddressSearch}}
                             </div>
-                            <div class="tab-pane fade" id="issuerAddressSearch" role="tabpanel"
+                            <div class="tab-pane fade p-l-0 p-r-0" id="issuerAddressSearch" role="tabpanel"
                                  aria-labelledby="profile-tab">
                                 {{>issuerAddressSearch}}
                             </div>
@@ -1069,7 +1069,7 @@
     {{/if}}
     {{#unless showDeletedCertificate}}
         {{#unless TemplateVar.get "isDeleted"}}
-            <div class="card animated fadeInUpBig">
+            <div class="card animated fadeInUpBig m-b-1">
                 <div class="card-header" style="padding-top: 8px; padding-bottom: 8px">
                     <div class="row pt-1 mt-0">
                         <div class="col p-l-1 p-r-0">
@@ -1284,7 +1284,7 @@
 
 <template name="UpdateCertificate">
     <div class="card animated fadeIn">
-        <div class="card-block">
+        <div class="card-block p-b-0">
             <div class="row">
                 <div class="col">
                     <h4 class="card-title mb-0">Change</h4>
@@ -1407,8 +1407,8 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-4">
-                    <div class="form-inline">
+                <div class="col-4 p-l-0">
+                    <div class="form-inline ">
                         <label class="mr-sm-2" for="certificatesTemplates" style="width: 40%">Select a
                             template</label>
                         <select name="certificatesTemplates" id="certificatesTemplates"
@@ -1420,7 +1420,7 @@
                     </div>
                 </div>
 
-                <div class="col-8">
+                <div class="col-8 p-r-0 pull-right">
                     <div class="input-group" style="width: 90%">
                         <input type="text" class="form-control" placeholder="Enter a Logo URL"
                                aria-label="Search for..." id="universityLogoURL">
@@ -1440,7 +1440,7 @@
             </div>
             <div class="row">
                 {{>injectJqueryTooltip}}
-                <table class="table">
+                <table class="table m-b-0">
                     <tbody>
                     {{#each inputs}}
                         {{> inputFields}}
@@ -1538,7 +1538,7 @@
 
 <template name="faqPage">
     <div class="card animated fadeIn">
-        <div class="card-block">
+        <div class="card-block p-b-0">
             <div class="row">
                 <div class="col">
                     <h4 class="card-title mb-0">Frequently Asked Questions</h4>
