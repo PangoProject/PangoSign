@@ -124,38 +124,3 @@
   vertical-align: middle;
   float: none;
 }
-
-@media print {
-  body * {
-    visibility: hidden;
-  }
-  head * {
-    visibility: hidden;
-    display: none;
-  }
-  footer * {
-    visibility: hidden;
-    display: none;
-  }
-  #sectionToPrint, #sectionToPrint * {
-    visibility: visible;
-  }
-  #sectionToPrint {
-    position: absolute;
-    left: 0;
-    top: 0;
-    background-color: white;
-    height: 100%;
-    width: 100%;
-    margin: 0;
-    padding: 15px;
-    font-size: 14px;
-    line-height: 18px;
-  }
-}
-
-.navbarSplitter{
-  border: 2px solid #AFBDC4;
-  padding: 0;
-  margin:5px 0px;
-}
