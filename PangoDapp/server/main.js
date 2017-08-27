@@ -306,24 +306,26 @@ Meteor.publish('certificateTemplates', function(){
 
 Meteor.methods({
     'insertCertificate': function (certificateAddress) {
-        if (BYTE_CODE.includes(web3.eth.getCode(certificateAddress).substr(2))) {
-            let timeStamp = Date.now() / 1000;
-            getCertificateFromBlockchain(certificateAddress).then((res, err) => {
-                    if (!err) {
-                        Certificates.insert({
-                            idHash: res["idHash"],
-                            certificateIssuer: res["certificateIssuer"],
-                            certificateAddress: certificateAddress,
-                            timeStamp: timeStamp
-                        });
-                        console.log("Entry successfully added to DB");
-                        contractCreationStatus = "Entry " + certificateAddress + " successfully added to db";
+        web3.eth.getCode(certificateAddress, (err, res)=>{
+            if(!err && BYTE_CODE.includes(res).substr(2)){
+                let timeStamp = Date.now() / 1000;
+                getCertificateFromBlockchain(certificateAddress).then((res, err) => {
+                        if (!err) {
+                            Certificates.insert({
+                                idHash: res["idHash"],
+                                certificateIssuer: res["certificateIssuer"],
+                                certificateAddress: certificateAddress,
+                                timeStamp: timeStamp
+                            });
+                            console.log("Entry successfully added to DB");
+                            contractCreationStatus = "Entry " + certificateAddress + " successfully added to db";
+                        }
                     }
-                }
-            );
-        } else {
+                );
+            } else {
             console.log("Byte Codes Don't Match, it looks like you are doing something fishy");
         }
+        });
     },
     'pageLoadCount': function (clientInfomation) {
         console.log(clientInfomation);

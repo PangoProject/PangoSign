@@ -1,6 +1,6 @@
 <template name="modal">
     <!--This is the modal for a catastrophic Error-->
-    <div class="modal show animated fadeInUpBig" data-backdrop="static" data-keyboard="false" id="catastrophicError"
+    <div class="modal show animated fadeInUpBig m-b-1" data-backdrop="static" data-keyboard="false" id="catastrophicError"
          tabindex="-1"
          role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -75,7 +75,7 @@
                 <div class="modal-header bg-info">
                     <div class="row">
                         <div class="col">
-                            <h3 class="modal-title" id="exampleModalLabel">FYI:</h3>
+                            <h3 class="modal-title" id="exampleModalLabel">Deleted certificate</h3>
                         </div>
                     </div>
 
@@ -162,10 +162,10 @@
                 <div class="modal-footer">
                     <img src="/images/metamask.png" class="pull-right"
                          style=" padding-left:0.75em; height: 1.5em">
-                    <button type="button" class="btn btn-secondary pull-left" target="_blank"
-                            href="https://metamask.io/">Try
+                    <a role="button" class="btn btn-secondary pull-left" target="_blank"
+                       href="https://metamask.io/">Try
                         MetaMask
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
@@ -194,7 +194,7 @@
                     </div>
                     <div class="row">
                         <div class="col">
-                            As we are still in the early stages of development, we are still running on Ropsten testnet.
+                            As we are still in the early stages of development, we are running on the Ropsten testnet.
                             Please change to this network through your Web3 Provider.
                         </div>
                     </div>
@@ -249,30 +249,110 @@
          tabindex="-1"
          role="dialog"
          aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
-                <div class="modal-header bg-success">
-                    <div class="row text-center">
-                        <div class="col">
-                            <h3 class="modal-title" id="exampleModalLabel">Share this certificate</h3>
-                        </div>
-                    </div>
+                <!--<div class="modal-header bg-success">-->
+                <!--<div class="row text-center">-->
+                <!--<div class="col">-->
+                <!--<h3 class="modal-title" id="exampleModalLabel">Share this certificate</h3>-->
+                <!--</div>-->
+                <!--</div>-->
 
-                </div>
-                <div class="modal-body center-block">
-                    <div class="row text-center">
-                        <div class="col">
-                            <div id="shareCertificateQR"></div>
+                <!--</div>-->
+                <div class="modal-body">
+                    <!--div to define section to print-->
+                    <div id="sectionToPrint">
+                        <div class="row center-block text-center">
+                            <h2>Pango Certificate of Authenticity</h2>
+                            {{#if shareLogoURL}}
+                                <div class="col">
+                                    <img class="card-img-top center-block"
+                                         src="{{shareLogoURL}}"
+                                         alt="Card image cap" style="height: 150px; width: auto">
+                                </div>
+                            {{/if}}
+                        </div>
+                        <div class="row">
+                            <div class="col-8">
+                                <div class="card {{#if shareIsDeleted}}card-outline-danger{{/if}}">
+                                    <div class="card-header {{#if shareIsDeleted}}card-danger{{/if}}"
+                                         style="padding-top: 8px; padding-bottom: 8px">
+                                        <div class="row pt-1 mt-0">
+                                            <div class="col p-l-1 p-r-0">
+                                                <h4>
+                                                    {{shareName}}
+                                                </h4>
+                                            </div>
+                                            <div class="col-1 p-l-0 p-r-0">
+                                                <h4 style="padding: 0px; margin: 0px">
+                                                    {{>injectJqueryTooltip}}
+                                                    {{#if shareAnonymous}}
+                                                        <a id="searchResultCard" class="pull-right"
+                                                           data-toggle="tooltip"
+                                                           data-placement="top"
+                                                           title="This user chose not to have their information displayed.">
+                                                            <i class="icon-ghost grey-out nav-link text-muted pull-right p-t-0 p-b-0 m-t-0 m-b-0"
+                                                               aria-hidden="true" style="padding:0"></i>
+                                                        </a>
+                                                    {{/if}}
+                                                </h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-block addressTextWrap">
+                                        <div class="row">
+                                            <div class="col">
+                                                <table class="table">
+                                                    <tbody>
+                                                    {{#each objectToPairs shareSundryData}}
+                                                        <tr>
+                                                            <td style="width:35%"><b>{{key}}</b></td>
+                                                            <td>{{value}}</td>
+                                                        </tr>
+                                                    {{/each}}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer pl-8 pr-8 pb-0">
+                                        <div class="row pt-1 mt-0">
+                                            <div class="col pull-left">
+                                                <p class="text-muted pull-left">Added: <strong>{{formatDate
+                                                        shareTimeStamp}}</strong>
+                                                </p>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4 center-block text-center">
+                                <br>
+                                <h4>Certificate QR Code</h4>
+                                <br>
+                                <div class="center-block" id="shareCertificateQR"></div>
+                            </div>
                         </div>
                     </div>
-                    {{shareCertificateAddress}}
-                    <div class="row social-icons icon-rounded icon-zoom">
-                        <div class="col"><a href="#"><i class="fa fa-linkedin"></i></a></div>
-                        <div class="col"><a href="#"><i class="fa fa-facebook"></i></a></div>
-                        <div class="col"><a href="#"><i class="fa fa-twitter"></i></a></div>
-                        <div class="col"><a href="#"><i class="fa fa-pinterest"></i></a></div>
-                        <div class="col"><a href="#"><i class="fa fa-github"></i></a></div>
-                        <div class="col"><a href="#"><i class="fa fa-instagram"></i></a></div>
+                    <div class="row text-center">
+                        <div class="col">
+                            <h4>Share This Certificate</h4>
+                        </div>
+                    </div>
+                    <div class="row text-center">
+                        <div class="col">
+                            <div class="row social-icons icon-rounded icon-zoom">
+                                <div class="col"><a href="#"><i class="fa fa-envelope-o"></i></a></div>
+                                <div class="col"><a id="printCertificate" href="#"><i class="fa fa-print"></i></a></div>
+                                <div class="col"><a href="#"><i class="fa fa-linkedin"></i></a></div>
+                                <div class="col"><a href="#"><i class="fa fa-facebook"></i></a></div>
+                                <div class="col"><a href="#"><i class="fa fa-twitter"></i></a></div>
+                                <div class="col"><a href="#"><i class="fa fa-pinterest"></i></a></div>
+                                <div class="col"><a href="#"><i class="fa fa-github"></i></a></div>
+                                <div class="col"><a href="#"><i class="fa fa-instagram"></i></a></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -297,9 +377,17 @@
                             <h3 class="modal-title" id="exampleModalLabel">Share these search results</h3>
                         </div>
                     </div>
-
                 </div>
                 <div class="modal-body center-block">
+                    <div class="row">
+                        <div class="col">
+                            <p>
+                                You can share your search results here. This will share the exact page you see right
+                                now.
+                                The content here will differ based on what page you are viewing.
+                            </p>
+                        </div>
+                    </div>
                     <div class="row text-center">
                         <div class="col">
                             <div id="shareSearchQR"></div>
@@ -362,127 +450,174 @@
 </template>
 
 <template name="WalletBallance">
-
+    {{>injectJqueryTooltip}}
     <div class="animated fadeIn">
         <div class="row">
-            <div class="col-md-4 col-sm-12">
-                <!--<a href="http://ropsten.etherscan.io/address/{{walletAddressWidget}}" target="_blank"-->
-                <!--class="a-no-hover">-->
-                <div class="card card-inverse card-info">
-                    <div class="card-block">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body p-l-1 p-r-1 p-b-1">
                         <div class="row">
-                            <div class="col-8">
-                                <h6 class="text-muted text-uppercase font-weight-bold">
-                                    Wallet Address
-                                </h6>
-                                <div class="h5 mb-0 addressTextWrap">
-                                    {{walletAddressWidget}}
-                                </div>
-                            </div>
-                            <div class="col-4 pull-right h1">
-                                <i class="icon-wallet pull-right" aria-hidden="true"></i>
+                            <div class="col">
+
+                                <h4 class="card-title">Welcome to the Pango MVP Dapp! </h4>
+                                <p class="card-text">This Dapp is running live on the Ethereum testnet. You can go ahead
+                                    and view certificates currently stored on the blockchain. If you want to create,
+                                    edit or
+                                    delete
+                                    certificates, you are going to need Ropsten testnet Ether. We welcome any
+                                    feedback you have on our system, enjoy exploring!
+                                    <br>
+                                    {{>HomeCards}}
+                                    If this seems too complex to set up, please consider trying our <a href="#"
+                                                                                                       class="card-link">Demo</a>
+                                    version, that
+                                    is simplified and not running on the blockchain.
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!--</a>-->
-            </div>
-            <div class="col-md-4 col-sm-12">
-                <a href="http://ropsten.etherscan.io/address/{{walletAddressWidget}}" target="_blank"
-                   class="a-no-hover" data-toggle="tooltip"
-                   data-placement="top"
-                   title="Click to view your Ether account">
-                    <div class="card card-inverse card-warning">
-                        <div class="card-block">
-                            <div class="row">
-                                <div class="col-8">
-                                    <h6 class="text-muted text-uppercase font-weight-bold">
-                                        Ether Balance
-                                    </h6>
-                                    <div class="h5 mb-0 addressTextWrap">
-                                        {{walletBallanceWidget}}
-                                    </div>
-                                </div>
-                                <div class="col-4 pull-right h1">
-                                    <i class="icon-rocket pull-right" aria-hidden="true"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-
-            </div>
-            <div class="col-md-4 col-sm-12">
-                <a href="/search/ia/{{walletAddressWidget}}" class="a-no-hover" data-toggle="tooltip"
-                   data-placement="top"
-                   title="Click to view your published certificates">
-                    <div class="card card-inverse card-danger">
-                        <div class="card-block">
-                            <div class="row">
-                                <div class="col-8">
-                                    <h6 class="text-muted text-uppercase font-weight-bold">
-                                        Certs published
-                                    </h6>
-                                    <div class="h5 mb-0 addressTextWrap">
-                                        {{numberOfCertsWidget}}
-                                    </div>
-                                </div>
-                                <div class="col-4 pull-right h1">
-                                    <i class="icon-badge pull-right" aria-hidden="true"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </a>
             </div>
         </div>
+
+
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body p-l-1 p-r-1">
+                        <div class="row">
+                            <div class="col">
+
+                                <h4 class="card-title">Your wallet details </h4>
+                                <p class="card-text">View information pertaining to your current signed in web3
+                                    wallet.</p>
+                                <div class="row">
+                                    <div class="col-md-4 col-sm-12">
+                                        <div class="card card-inverse card-info">
+                                            <div class="card-block">
+                                                <div class="row">
+                                                    <div class="col-8">
+                                                        <h6 class="text-muted text-uppercase font-weight-bold">
+                                                            Wallet Address
+                                                        </h6>
+                                                        <div class="h5 mb-0 addressTextWrap">
+                                                            {{walletAddressWidget}}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-4 pull-right h1">
+                                                        <i class="icon-wallet pull-right" aria-hidden="true"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--</a>-->
+                                    </div>
+                                    <div class="col-md-4 col-sm-12">
+                                        <a href="http://ropsten.etherscan.io/address/{{walletAddressWidget}}"
+                                           target="_blank"
+                                           class="a-no-hover" data-toggle="tooltip"
+                                           data-placement="top"
+                                           title="Click to view your Ether account">
+                                            <div class="card card-inverse card-info">
+                                                <div class="card-block">
+                                                    <div class="row">
+                                                        <div class="col-8">
+                                                            <h6 class="text-muted text-uppercase font-weight-bold">
+                                                                Ether Balance
+                                                            </h6>
+                                                            <div class="h5 mb-0 addressTextWrap">
+                                                                {{walletBallanceWidget}}
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-4 pull-right h1">
+                                                            <i class="icon-rocket pull-right" aria-hidden="true"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+
+                                    </div>
+                                    <div class="col-md-4 col-sm-12">
+                                        <a href="/search/ia/{{walletAddressWidget}}" class="a-no-hover"
+                                           data-toggle="tooltip"
+                                           data-placement="top"
+                                           id="certsPublishedButton"
+                                           title="Click to view your published certificates">
+                                            <div class="card card-inverse card-info">
+                                                <div class="card-block">
+                                                    <div class="row">
+                                                        <div class="col-8">
+                                                            <h6 class="text-muted text-uppercase font-weight-bold">
+                                                                Certs published
+                                                            </h6>
+                                                            <div class="h5 mb-0 addressTextWrap">
+                                                                {{numberOfCertsWidget}}
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-4 pull-right h1">
+                                                            <i class="icon-badge pull-right" aria-hidden="true"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
     </div>
-    {{>HomeCards}}
 </template>
 
 <template name="HomeCards">
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-lg-4 col-sm-12">
             <a href="{{pathFor route="search"}}" class="a-no-hover">
                 <div class="card card-inverse card-primary animated fadeIn hvr-float">
                     <div class="card-header">
-                        <h3>
+                        <h4>
                             Find a certificate
-                        </h3>
+                        </h4>
                     </div>
-                    <div class="card-block text-xs-center">
-                        <h1><i class="fa fa-5x fa-search "></i></h1>
+                    <div class="card-block text-xs-center p-t-1">
+                        <h1><i class="fa fa-2x fa-search "></i></h1>
                     </div>
                 </div>
             </a>
         </div>
-        <div class="col-md-6">
+        <div class="col-lg-4 col-sm-12">
             <a href="{{pathFor route="create"}}" class="a-no-hover">
-                <div class="card card-inverse card-success animated fadeIn hvr-float">
+                <div class="card card-inverse card-primary animated fadeIn hvr-float">
                     <div class="card-header">
-                        <h3>
+                        <h4>
                             Create a certificate
-                        </h3>
+                        </h4>
                     </div>
-                    <div class="card-block text-xs-center">
-                        <h1><i class="fa fa-5x fa-pencil"></i></h1>
+                    <div class="card-block text-xs-center p-t-1">
+                        <h1><i class="fa fa-2x fa-pencil"></i></h1>
                     </div>
                 </div>
             </a>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-                <div class="card card-inverse card-warning animated fadeIn hvr-float" id="qrScannerWidgetButton" style="cursor: pointer; cursor: hand;">
-                    <div class="card-header">
-                        <h3>
-                            Scan a certificate
-                        </h3>
-                    </div>
-                    <div class="card-block text-xs-center">
-                        <h1><i class="fa fa-5x fa-qrcode"></i></h1>
-                    </div>
+
+        <div class="col-lg-4 col-sm-12">
+            <div class="card card-inverse card-primary animated fadeIn hvr-float" id="qrScannerWidgetButton"
+                 style="cursor: pointer; cursor: hand;">
+                <div class="card-header">
+                    <h4>
+                        Scan a certificate
+                    </h4>
                 </div>
+                <div class="card-block text-xs-center p-t-1">
+                    <h1><i class="fa fa-2x fa-qrcode"></i></h1>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -567,8 +702,9 @@
 </template>
 
 <template name="CandidateSearch">
+    {{>injectJqueryTooltip}}
     <div class="card animated fadeIn">
-        <div class="card-block">
+        <div class="card-block p-b-0">
             <div class="row">
                 <div class="col">
                     <h4 class="card-title mb-0">Search</h4>
@@ -609,23 +745,23 @@
                                    role="tab" aria-controls="profile">Issuer Address</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link grow-small" id="qrSearchTab" href="#" >QR Code</a>
+                                <a class="nav-link grow-small" id="qrSearchTab" href="#">QR Code</a>
                             </li>
                         </ul>
                         <div class="tab-content" id="myTabContent">
-                            <div class="tab-pane fade show active" id="candidateDetailsSearch" role="tabpanel"
+                            <div class="tab-pane fade show active p-l-0 p-r-0" id="candidateDetailsSearch" role="tabpanel"
                                  aria-labelledby="home-tab">
                                 {{>candidateDetailsSearch}}
                             </div>
-                            <div class="tab-pane fade" id="candidateIdSearch" role="tabpanel"
+                            <div class="tab-pane fade p-l-0 p-r-0" id="candidateIdSearch" role="tabpanel"
                                  aria-labelledby="profile-tab">
                                 {{>candidateIdSearch}}
                             </div>
-                            <div class="tab-pane fade" id="certificateAddressSearch" role="tabpanel"
+                            <div class="tab-pane fade p-l-0 p-r-0" id="certificateAddressSearch" role="tabpanel"
                                  aria-labelledby="home-tab">
                                 {{>certificateAddressSearch}}
                             </div>
-                            <div class="tab-pane fade" id="issuerAddressSearch" role="tabpanel"
+                            <div class="tab-pane fade p-l-0 p-r-0" id="issuerAddressSearch" role="tabpanel"
                                  aria-labelledby="profile-tab">
                                 {{>issuerAddressSearch}}
                             </div>
@@ -645,7 +781,10 @@
                         {{/if}}
                     </div>
                     <div class="col">
-                        <div class="text-muted pull-right">Show deleted certificates
+                        <div data-toggle="tooltip"
+                             data-placement="bottom"
+                             title="View soft deleted certificates" class="text-muted pull-right">Show deleted
+                            certificates
                             <label class="switch switch-text switch-pill switch-secondary-outline-alt">
                                 <input type="checkbox" id="showDeletedCertificate" class="switch-input">
                                 <span class="switch-label" data-on="On" data-off="Off"></span>
@@ -665,6 +804,13 @@
 </template>
 
 <template name="candidateDetailsSearch">
+    <div class="alert alert-info" role="alert">
+        <!--<button type="button" class="close" data-dismiss="alert" aria-label="Close">-->
+        <!--<span aria-hidden="true">&times;</span>-->
+        <!--</button>-->
+        Due to the way the system is constructed, a recipient can be found by their name and date of birth, even
+        if these details aren’t stored.
+    </div>
     <div class="row">
         <div class="col-lg-6">
             <div class="input-group">
@@ -682,11 +828,16 @@
                        class="form-control date" placeholder="Date of Birth">
             </div>
         </div>
-
     </div>
 </template>
 
 <template name="candidateIdSearch">
+    <div class="alert alert-info" role="alert">
+        <!--<button type="button" class="close" data-dismiss="alert" aria-label="Close">-->
+        <!--<span aria-hidden="true">&times;</span>-->
+        <!--</button>-->
+        Each candidate gets a unique ID which they can use to view all their associated certificates.
+    </div>
     <div class="row">
         <div class="col">
             <div class="input-group {{TemplateVar.get "valid"}}">
@@ -701,6 +852,12 @@
 </template>
 
 <template name="certificateAddressSearch">
+    <div class="alert alert-info" role="alert">
+        <!--<button type="button" class="close" data-dismiss="alert" aria-label="Close">-->
+        <!--<span aria-hidden="true">&times;</span>-->
+        <!--</button>-->
+        Every certificate has its own unique address which is stored on the blockchain.
+    </div>
     <div class="row">
         <div class="col">
             <div class="input-group {{TemplateVar.get "valid"}}">
@@ -716,6 +873,12 @@
 </template>
 
 <template name="issuerAddressSearch">
+    <div class="alert alert-info" role="alert">
+        <!--<button type="button" class="close" data-dismiss="alert" aria-label="Close">-->
+        <!--<span aria-hidden="true">&times;</span>-->
+        <!--</button>-->
+        Here, you can find certificates by looking at what certificates an institute has issued.
+    </div>
     <div class="row">
         <div class="col">
             <div class="input-group {{TemplateVar.get "valid"}}">
@@ -811,6 +974,7 @@
                                         <h4>
                                             <a role="button"
                                                data-toggle="tooltip"
+                                               id="changeCertButton"
                                                data-placement="top"
                                                title="Edit"
                                                href="/change/{{TemplateVar.get "certificateAddress"}}"
@@ -822,6 +986,7 @@
                                         <h4>
                                             <a role="button"
                                                data-toggle="tooltip"
+                                               id="removeCertButton"
                                                data-placement="top"
                                                title="Remove"
                                                href="/remove/{{TemplateVar.get "certificateAddress"}}"
@@ -863,7 +1028,8 @@
                            data-toggle="popover"
                            data-placement="bottom"
                            title="Certificate public address"
-                           data-content="{{TemplateVar.get "certificateAddress"}} <br> <a href='https://ropsten.etherscan.io/address/{{TemplateVar.get
+                           data-content="{{TemplateVar.get
+                                   "certificateAddress"}} <br> <a href='https://ropsten.etherscan.io/address/{{TemplateVar.get
                                    "certificateAddress"}}' target='_blank'>View Certificate on blockchain</a>">
                             <h5 style="padding: 0px; margin: 0px">
                                 <i class="icon-badge grey-out nav-link text-muted"
@@ -903,7 +1069,7 @@
     {{/if}}
     {{#unless showDeletedCertificate}}
         {{#unless TemplateVar.get "isDeleted"}}
-            <div class="card animated fadeInUpBig">
+            <div class="card animated fadeInUpBig m-b-1">
                 <div class="card-header" style="padding-top: 8px; padding-bottom: 8px">
                     <div class="row pt-1 mt-0">
                         <div class="col p-l-1 p-r-0">
@@ -969,6 +1135,7 @@
                                             <a role="button"
                                                data-toggle="tooltip"
                                                data-placement="top"
+                                               id="changeCertButton"
                                                title="Edit"
                                                href="/change/{{TemplateVar.get "certificateAddress"}}"
                                                class="icon-pencil grey-out nav-link text-muted pull-right p-t-0 p-b-0 m-t-0 m-b-0 button"
@@ -980,6 +1147,7 @@
                                             <a role="button"
                                                data-toggle="tooltip"
                                                data-placement="top"
+                                               id="removeCertButton"
                                                title="Remove"
                                                href="/remove/{{TemplateVar.get "certificateAddress"}}"
                                                class="icon-trash grey-out nav-link text-muted pull-right p-t-0 p-b-0 m-t-0 m-b-0 button"
@@ -1021,7 +1189,8 @@
                                data-toggle="popover"
                                data-placement="bottom"
                                title="Certificate public address"
-                               data-content="{{TemplateVar.get "certificateAddress"}} <br> <a href='https://ropsten.etherscan.io/address/{{TemplateVar.get
+                               data-content="{{TemplateVar.get
+                                       "certificateAddress"}} <br> <a href='https://ropsten.etherscan.io/address/{{TemplateVar.get
                                        "certificateAddress"}}' target='_blank'>View Certificate on blockchain</a>">
                                 <h5 style="padding: 0px; margin: 0px">
                                     <i class="icon-badge grey-out nav-link text-muted"
@@ -1079,6 +1248,15 @@
                     <h4 class="card-title mb-0">Remove</h4>
                 </div>
             </div>
+            <div class="row" role="alert">
+                <div class="col" role="alert">
+                    <div class="alert alert-info m-b-0" role="alert">
+                        As an institution, you can revoke certificates that you have created. This is as a “soft delete”
+                        meaning that the information is recoverable if need be, but will no longer be pubicaly
+                        displayed.
+                    </div>
+                </div>
+            </div>
             {{> DeleteCertificateForm}}
         </div>
     </div>
@@ -1087,19 +1265,18 @@
 <template name="DeleteCertificateForm">
     <div class="row">
         <div class="col">
+            <label class="form-control-label" for="deleteCertificateAddress">
+                Certificate address
+            </label>
             <form id="deleteCertificateForm">
-                <div class="form-group {{TemplateVar.get "valid"}}">
-                    <label class="form-control-label" for="deleteCertificateAddress">
-                        Input Certificate address
-                    </label>
+                <div class="input-group {{TemplateVar.get "valid"}}">
                     <input type="text" class="form-control form-control-success" id="deleteCertificateAddress"
                            name="certificateAddress"
                            placeholder="0x0123456789abcdef012345679abcdef0123456"/>
-
+                    <button type="button" id="deleteCertificateButton" class="btn btn-danger m-l-1">
+                        <i class="fa fa-fw fa-trash" aria-hidden="true"></i> Remove
+                    </button>
                 </div>
-                <button type="button" id="deleteCertificateButton" class="btn btn-danger">
-                    <i class="fa fa-fw fa-trash" aria-hidden="true"></i> Remove
-                </button>
             </form>
         </div>
     </div>
@@ -1107,7 +1284,7 @@
 
 <template name="UpdateCertificate">
     <div class="card animated fadeIn">
-        <div class="card-block">
+        <div class="card-block p-b-0">
             <div class="row">
                 <div class="col">
                     <h4 class="card-title mb-0">Change</h4>
@@ -1119,20 +1296,30 @@
 </template>
 
 <template name="UpdateCertificateForm">
+    <div class="row" role="alert">
+        <div class="col" role="alert">
+            <div class="alert alert-info m-b-0" role="alert">
+                As the authority who created a certificate, you can edit it should the information become outdated. Just
+                incase, we don’t actually get rid of the obsolete certificate, we just mark that it is no longer valid.
+                If you want to know why, click here to look to look at the FAQ.
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col">
             <form id="updateCertificateForm">
-                <div class="form-group {{TemplateVar.get "valid"}}">
-                    <label class="form-control-label" for="updateAddress">
-                        Input certificate address
-                    </label>
+                <label class="form-control-label" for="updateAddress">
+                    Certificate address
+                </label>
+                <div class="input-group {{TemplateVar.get "valid"}}">
                     <input type="text" class="form-control form-control-success" id="updateAddress"
                            name="certificateAddress"
                            placeholder="0x0123456789abcdef012345679abcdef0123456"/>
+                    <button type="submit" id="findCertificate" class="btn btn-primary m-l-1">
+                        <i class="fa fa-fw fa-search" aria-hidden="true"></i> Find
+                    </button>
                 </div>
-                <button type="submit" id="findCertificate" class="btn btn-primary">
-                    <i class="fa fa-fw fa-search" aria-hidden="true"></i> Find
-                </button>
             </form>
         </div>
     </div>
@@ -1155,6 +1342,7 @@
 </template>
 
 <template name="UpdateCertificateFormChildChild">
+    {{>injectJqueryTooltip}}
     <table class="table">
         <thead>
         <tr>
@@ -1182,7 +1370,10 @@
                         "addNewFieldButtonStatus"}}>
                     <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
                 </button>
-                <div class="pull-right" style="padding-top: 4px">
+                <div class="pull-right" style="padding-top: 4px"
+                     data-toggle="tooltip"
+                     data-placement="bottom"
+                     title="Hide the input name and DOB from the public record">
                     <strong class="text-muted">
                         Anonymous certificate
                     </strong>
@@ -1206,9 +1397,18 @@
                     <h4 class="card-title mb-0">Create</h4>
                 </div>
             </div>
+            <div class="row" role="alert">
+                <div class="col" role="alert">
+                    <div class="alert alert-info m-b-0" role="alert">
+                        Here an institution can create and issue new certificates. Due to the nature of the blockchain,
+                        only the issuer can ever create certificates in their name, herein lies the security and
+                        authenticity of our network.
+                    </div>
+                </div>
+            </div>
             <div class="row">
-                <div class="col-4">
-                    <div class="form-inline">
+                <div class="col-4 p-l-0">
+                    <div class="form-inline ">
                         <label class="mr-sm-2" for="certificatesTemplates" style="width: 40%">Select a
                             template</label>
                         <select name="certificatesTemplates" id="certificatesTemplates"
@@ -1220,9 +1420,9 @@
                     </div>
                 </div>
 
-                <div class="col-8">
+                <div class="col-8 p-r-0 pull-right">
                     <div class="input-group" style="width: 90%">
-                        <input type="text" class="form-control" placeholder="Enter University Logo URL"
+                        <input type="text" class="form-control" placeholder="Enter a Logo URL"
                                aria-label="Search for..." id="universityLogoURL">
                         <span class="input-group-btn">
                             <button class="btn btn-secondary" type="button" id="universityLogo"><i class="fa fa-camera"
@@ -1239,7 +1439,8 @@
                 </div>
             </div>
             <div class="row">
-                <table class="table">
+                {{>injectJqueryTooltip}}
+                <table class="table m-b-0">
                     <tbody>
                     {{#each inputs}}
                         {{> inputFields}}
@@ -1252,7 +1453,10 @@
                                     "addNewFieldButtonStatus"}}>
                                 <i class="fa fa-fw fa-plus" aria-hidden="true"></i>
                             </button>
-                            <div class="pull-right" style="padding-top: 4px">
+                            <div class="pull-right" style="padding-top: 4px"
+                                 data-toggle="tooltip"
+                                 data-placement="bottom"
+                                 title="Hide the input name and DOB from the public record">
                                 <strong class="text-muted">
                                     Anonymous certificate
                                 </strong>
@@ -1307,6 +1511,9 @@
 <template name="injectJqueryTooltip">
 </template>
 
+<template name="injectJqueryAccordion">
+</template>
+
 <template name="QRCode">
     <div class="row">
         <div class="col">
@@ -1323,6 +1530,134 @@
                     <h1 class="float-left display-3 mr-4">404</h1>
                     <h4 class="pt-3">Oops! You're lost.</h4>
                     <p class="text-muted">The page you are looking for was not found.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="faqPage">
+    <div class="card animated fadeIn">
+        <div class="card-block p-b-0">
+            <div class="row">
+                <div class="col">
+                    <h4 class="card-title mb-0">Frequently Asked Questions</h4>
+                </div>
+            </div>
+            {{> faqAccordion}}
+        </div>
+    </div>
+</template>
+
+<template name="faqAccordion">
+    {{injectJqueryAccordion}}
+    <div class="row">
+        <div class="col">
+            <div id="accordion" role="tablist">
+
+                <div class="card">
+                    <div class="card-header" role="tab">
+                        <h5 class="mb-0">
+                            <a data-toggle="collapse" href="#faq1">
+                                How is it possible to search for recipients by name when some of them are supposedly
+                                anonymous?
+                            </a>
+                        </h5>
+                    </div>
+                    <div id="faq1" class="collapse" role="tabpanel" data-parent="#accordion">
+                        <div class="card-body">
+                            The name is combined with the date of birth and put through a hashing function. This means
+                            that it is easy to calculate the recipient's ID from their name, but it is not possible to
+                            determine the name and DOB from the ID.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" role="tab">
+                        <h5 class="mb-0">
+                            <a data-toggle="collapse" href="#faq2">
+                                Why are name and date of birth required for anonymous certificates?
+                            </a>
+                        </h5>
+                    </div>
+                    <div id="faq2" class="collapse" role="tabpanel" data-parent="#accordion">
+                        <div class="card-body">
+                            The name and date of birth are used to pseudo-uniquely identify certificates. This means
+                            that recipients, do not need accounts on this system. For a further discussion on the
+                            consequences of this decision, please read the white paper.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" role="tab">
+                        <h5 class="mb-0">
+                            <a data-toggle="collapse" href="#faq3">
+                                Why is this running on a test net?
+                            </a>
+                        </h5>
+                    </div>
+                    <div id="faq3" class="collapse" role="tabpanel" data-parent="#accordion">
+                        <div class="card-body">
+                            The purpose of this application is to demonstrate the feasibility of such a system as well
+                            as exploring a possible implementation using the current state of development on the
+                            Ethereum blockchain.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" role="tab">
+                        <h5 class="mb-0">
+                            <a data-toggle="collapse" href="#faq4">
+                                Why do I need to sign two transactions when I update a certificate?
+                            </a>
+                        </h5>
+                    </div>
+                    <div id="faq4" class="collapse" role="tabpanel" data-parent="#accordion">
+                        <div class="card-body">
+                            For the sake of security, a new certificate is created first and the old one is subsequently
+                            removed. This has multiple security benefits for all parities involved with the system. The
+                            full extent of these benefits can be seen in the white paper.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" role="tab">
+                        <h5 class="mb-0">
+                            <a data-toggle="collapse" href="#faq5">
+                                Why do I have to wait ±7 seconds every time I create, remove or change a certificate?
+                            </a>
+                        </h5>
+                    </div>
+                    <div id="faq5" class="collapse" role="tabpanel" data-parent="#accordion">
+                        <div class="card-body">
+                            In the Ethereum blockchain's current form, block times currently average 15 seconds (by
+                            design). This means that a certificate is unlikely to be added in less than 7.5 seconds.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" role="tab">
+                        <h5 class="mb-0">
+                            <a data-toggle="collapse" href="#faq6">
+                                Why is it so expensive to add certificates?
+                            </a>
+                        </h5>
+                    </div>
+                    <div id="faq6" class="collapse" role="tabpanel" data-parent="#accordion">
+                        <div class="card-body">
+                            There are a few factors at play. Firstly, these are still very early days in the time-line
+                            of the Ethereum network. This means that the price will drop drastically in the near future.
+                            Moreover, the price you see quoted by MetaMask (or your web3 client of choice) is for the
+                            transaction assuming that all of the gas is used, this is a worst case scenario. If you want
+                            to use fewer Wei, you can select a lower gas price, but this can yield inconsistent results
+                            on the Ropsten testnet.
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
