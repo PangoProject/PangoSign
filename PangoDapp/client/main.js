@@ -748,6 +748,9 @@ Template.modal.helpers({
     },
     CurrentPageURL: function () {
         return Session.get("CurrentPageURL");
+    },
+    shareCertificateURL: function () {
+        return Session.get("shareCertificateURL");
     }
 });
 
@@ -903,8 +906,9 @@ Template.ChildCertificate.events({
         Session.set("shareName", name);
         Session.set("shareTimeStamp", timeStamp);
         Session.set("shareIdHash", idHash);
+        Session.set("shareCertificateURL",'http://localhost:3000/search/ca/' + certificateAddress)
         $('#shareCertificateModal').modal('show');
-        generateQRCode('#shareCertificateQR', 'http://localhost:3000/search/ca/' + certificateAddress);
+        generateQRCode('#shareCertificateQR', Session.get("shareCertificateURL"));
     }
 });
 
@@ -1102,7 +1106,7 @@ Template.certificateAddressSearch.events({
 
 Template.CandidateSearch.events({
     "click #shareSearch": function () {
-        console.log("share");
+        Session.set("CurrentPageURL", window.location.href);
         $('#ShareSearchModal').modal('show');
         generateQRCode('#shareSearchQR', Session.get("CurrentPageURL"));
     },

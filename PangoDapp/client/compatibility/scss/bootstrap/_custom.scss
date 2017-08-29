@@ -124,3 +124,13 @@
   vertical-align: middle;
   float: none;
 }
+
+
+// Custom vars for share icons cuz aparently not all are supported:
+.social-icons .fa-reddit-alien, .social-icons .fa-reddit, .social-icons .fa-reddit-square {
+  background-color: orangered;
+}
+
+.social-icons .fa-envelope {
+  background-color: yellowgreen;
+}

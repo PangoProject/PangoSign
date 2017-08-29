@@ -1,6 +1,7 @@
 <template name="modal">
     <!--This is the modal for a catastrophic Error-->
-    <div class="modal show animated fadeInUpBig m-b-1" data-backdrop="static" data-keyboard="false" id="catastrophicError"
+    <div class="modal show animated fadeInUpBig m-b-1" data-backdrop="static" data-keyboard="false"
+         id="catastrophicError"
          tabindex="-1"
          role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -273,7 +274,7 @@
                             {{/if}}
                         </div>
                         <div class="row">
-                            <div class="col-8">
+                            <div class="col-lg-8">
                                 <div class="card {{#if shareIsDeleted}}card-outline-danger{{/if}}">
                                     <div class="card-header {{#if shareIsDeleted}}card-danger{{/if}}"
                                          style="padding-top: 8px; padding-bottom: 8px">
@@ -327,7 +328,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-4 center-block text-center">
+                            <div class="col-lg-4 center-block text-center">
                                 <br>
                                 <h4>Certificate QR Code</h4>
                                 <br>
@@ -337,20 +338,29 @@
                     </div>
                     <div class="row text-center">
                         <div class="col">
-                            <h4>Share This Certificate</h4>
+                            <h4>Share This Certificate:</h4>
                         </div>
                     </div>
                     <div class="row text-center">
                         <div class="col">
                             <div class="row social-icons icon-rounded icon-zoom">
-                                <div class="col"><a href="#"><i class="fa fa-envelope-o"></i></a></div>
-                                <div class="col"><a id="printCertificate" href="#"><i class="fa fa-print"></i></a></div>
-                                <div class="col"><a href="#"><i class="fa fa-linkedin"></i></a></div>
-                                <div class="col"><a href="#"><i class="fa fa-facebook"></i></a></div>
-                                <div class="col"><a href="#"><i class="fa fa-twitter"></i></a></div>
-                                <div class="col"><a href="#"><i class="fa fa-pinterest"></i></a></div>
-                                <div class="col"><a href="#"><i class="fa fa-github"></i></a></div>
-                                <div class="col"><a href="#"><i class="fa fa-instagram"></i></a></div>
+                                <div class="col-2 p-x-0"><a id="printCertificate" href="#"><i class="fa fa-print"></i></a>
+                                </div>
+                                <div class="col-2 p-x-0"><a
+                                        href="https://www.linkedin.com/shareArticle?mini=true&url={{shareCertificateURL}}&title=Have%20a%20look%20at%20these%20Pango%20Certificates&summary=&source="><i
+                                        class="fa fa-linkedin"></i></a></div>
+                                <div class="col-2 p-x-0"><a
+                                        href="https://www.facebook.com/sharer/sharer.php?u={{shareCertificateURL}}"><i
+                                        class="fa fa-facebook"></i></a></div>
+                                <div class="col-2 p-x-0"><a
+                                        href="http://twitter.com/share?text=Look at these certificates! &url={{shareCertificateURL}}&hashtags=PangoProjecrt"><i
+                                        class="fa fa-twitter"></i></a></div>
+                                <div class="col-2 p-x-0"><a
+                                        href="mailto:?&subject=Look at these certificates stored on the Pango Network&body={{shareCertificateURL}}"><i
+                                        class="fa fa-envelope-o"></i></a></div>
+                                <!--<div class="col"><a href="https://plus.google.com/share?url={{shareCertificateURL}}"><i class="fa fa-google-plus"></i></a></div>-->
+                                <div class="col-2 p-x-0"><a href="//www.reddit.com/submit?url={{shareCertificateURL}}"><i
+                                        class="fa fa-reddit-alien"></i></a></div>
                             </div>
                         </div>
                     </div>
@@ -379,28 +389,27 @@
                     </div>
                 </div>
                 <div class="modal-body center-block">
-                    <div class="row">
-                        <div class="col">
-                            <p>
-                                You can share your search results here. This will share the exact page you see right
-                                now.
-                                The content here will differ based on what page you are viewing.
-                            </p>
-                        </div>
-                    </div>
                     <div class="row text-center">
                         <div class="col">
                             <div id="shareSearchQR"></div>
                         </div>
                     </div>
-                    {{CurrentPageURL}}
                     <div class="row social-icons icon-rounded icon-zoom">
-                        <div class="col"><a href="#"><i class="fa fa-linkedin"></i></a></div>
-                        <div class="col"><a href="#"><i class="fa fa-facebook"></i></a></div>
-                        <div class="col"><a href="#"><i class="fa fa-twitter"></i></a></div>
-                        <div class="col"><a href="#"><i class="fa fa-pinterest"></i></a></div>
-                        <div class="col"><a href="#"><i class="fa fa-github"></i></a></div>
-                        <div class="col"><a href="#"><i class="fa fa-instagram"></i></a></div>
+                        <div class="col"><a
+                                href="https://www.linkedin.com/shareArticle?mini=true&url={{CurrentPageURL}}&title=Have%20a%20look%20at%20these%20Pango%20Certificates&summary=&source="><i
+                                class="fa fa-linkedin"></i></a></div>
+                        <div class="col"><a href="https://www.facebook.com/sharer/sharer.php?u={{CurrentPageURL}}"><i
+                                class="fa fa-facebook"></i></a></div>
+                        <div class="col"><a
+                                href="http://twitter.com/share?text=Look at these certificates! &url={{CurrentPageURL}}&hashtags=PangoProjecrt"><i
+                                class="fa fa-twitter"></i></a></div>
+                        <div class="col"><a
+                                href="mailto:?&subject=Look at these certificates stored on the Pango Network&body={{CurrentPageURL}}"><i
+                                class="fa fa-envelope-o"></i></a></div>
+                        <div class="col"><a href="https://plus.google.com/share?url={{CurrentPageURL}}"><i
+                                class="fa fa-google-plus"></i></a></div>
+                        <div class="col"><a href="//www.reddit.com/submit?url={{CurrentPageURL}}"><i
+                                class="fa fa-reddit-alien"></i></a></div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -749,7 +758,8 @@
                             </li>
                         </ul>
                         <div class="tab-content" id="myTabContent">
-                            <div class="tab-pane fade show active p-l-0 p-r-0" id="candidateDetailsSearch" role="tabpanel"
+                            <div class="tab-pane fade show active p-l-0 p-r-0" id="candidateDetailsSearch"
+                                 role="tabpanel"
                                  aria-labelledby="home-tab">
                                 {{>candidateDetailsSearch}}
                             </div>
